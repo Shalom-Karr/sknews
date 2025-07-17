@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - SK News</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+    <script src='https://cdn.jotfor.ms/agent/embedjs/01955ca9772271df8b07b04d0cf624510bf5/embed.js?skipWelcome=1&maximizable=1'></script>
+</head>
+<body class="contact-page-bg">
+
+    <header class="main-header scrolled">
+        <div class="container">
+            <a href="index.html" class="logo">SK News</a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="news.html">News</a></li>
+                    <li><a href="chats.html">Chats</a></li>
+                    <li><a href="sites.html">Sites</a></li>
+                    <li><a href="join.html">Join</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="advertise.html">Advertise</a></li>
+                    <li><a href="contact.html" class="active">Contact</a></li>
+                </ul>
+            </nav>
+            <button class="hamburger" id="hamburger-menu" aria-label="Open Menu"><span></span><span></span><span></span></button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h1>Get in Touch</h1>
+                <p>We're here for your questions, technical assistance, or collaboration opportunities. Reach out via the form or the details below.</p>
+                <ul class="contact-details">
+                    <li><a href="tel:+16673908823"><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C9.47 21 3 14.53 3 7c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>(667) 390-8823</a></li>
+                    <li><a href="mailto:info.skjmedia@gmail.com"><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>info.skjmedia@gmail.com</a></li>
+                </ul>
+            </div>
+            <div class="netlify-form-wrapper">
+                <form name="contact" method="POST" data-netlify="true" class="contact-form">
+                    <input type="hidden" name="form-name" value="contact">
+                    <div class="form-group">
+                        <label for="name">Your Name:</label>
+                        <input type="text" name="name" id="name" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Your Email:</label>
+                        <input type="email" name="email" id="email" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message:</label>
+                        <textarea name="message" id="message" rows="6" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

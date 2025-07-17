@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - SK News</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <main class="admin-container">
+        <!-- Login Section - Shown by default -->
+        <section id="login-section">
+            <h1>Admin Login</h1>
+            <form id="login-form" class="admin-form">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Log In</button>
+            </form>
+        </section>
+
+        <!-- Admin Section - Hidden by default, shown after login -->
+        <section id="admin-section" style="display: none;">
+            <h1>Admin Panel</h1>
+            <p>Welcome, <span id="user-email"></span>!</p>
+            
+            <form id="add-feed-form" class="admin-form">
+                <h2>Add New Feed Item</h2>
+                <div class="form-group">
+                    <label for="title">Title:</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="content">Content:</label>
+                    <textarea id="content" name="content" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Item</button>
+            </form>
+
+            <button id="logout-button" class="btn btn-secondary" style="margin-top: 2rem;">Log Out</button>
+        </section>
+    </main>
+
+    <script type="module" src="supabase-client.js"></script>
+    <script type="module" src="admin.js"></script>
+</body>
+</html>

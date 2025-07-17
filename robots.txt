@@ -1,0 +1,23 @@
+# ===================================================================
+# robots.txt for sk-news.netlify.app
+#
+# This file tells search engine crawlers, like Googlebot,
+# how to crawl and index the pages on this website.
+# ===================================================================
+
+# 'User-agent: *' means this section applies to ALL crawlers (Google, Bing, etc.).
+User-agent: *
+
+# 'Disallow:' with nothing after it means there are no pages or
+# directories that are off-limits. This is the key instruction
+# to allow full indexing of the entire site.
+Disallow:
+
+# 'Allow: /' is technically redundant if 'Disallow:' is empty,
+# but it explicitly signals that everything is allowed, which is good practice.
+Allow: /
+
+# Sitemap directive: This is a very important line.
+# It tells crawlers the direct path to your sitemap, helping them
+# discover all your URLs efficiently.
+Sitemap: https://sk-news.netlify.app/sitemap.xml

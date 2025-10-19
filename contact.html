@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
     <script src='https://cdn.jotfor.ms/agent/embedjs/01955ca9772271df8b07b04d0cf624510bf5/embed.js?skipWelcome=1&maximizable=1'></script>
+    <script type="module" src="supabase-client.js"></script>
 </head>
 <body class="contact-page-bg">
 
@@ -38,13 +39,12 @@
                 <h1>Get in Touch</h1>
                 <p>We're here for your questions, technical assistance, or collaboration opportunities. Reach out via the form or the details below.</p>
                 <ul class="contact-details">
-                    <li><a href="tel:+16673908823"><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C9.47 21 3 14.53 3 7c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>(667) 390-8823</a></li>
-                    <li><a href="mailto:info.skjmedia@gmail.com"><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>info.skjmedia@gmail.com</a></li>
+                    <li><a href="tel:+12164516698"><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C9.47 21 3 14.53 3 7c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>(216) 451-6698</a></li>
+                    <li><a href="mailto:help.sknews@gmail.com"><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>help.sknews@gmail.com</a></li>
                 </ul>
             </div>
-            <div class="netlify-form-wrapper">
-                <form name="contact" method="POST" data-netlify="true" class="contact-form">
-                    <input type="hidden" name="form-name" value="contact">
+            <div class="form-wrapper">
+                <form id="contact-form" class="contact-form">
                     <div class="form-group">
                         <label for="name">Your Name:</label>
                         <input type="text" name="name" id="name" required />
@@ -59,9 +59,41 @@
                     </div>
                     <button type="submit" class="btn btn-primary">Send Message</button>
                 </form>
+                <p id="form-status"></p>
             </div>
         </div>
     </main>
+
+    <script type="module">
+        import { supabase } from './supabase-client.js';
+
+        const form = document.getElementById('contact-form');
+        const formStatus = document.getElementById('form-status');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const name = form.name.value;
+            const email = form.email.value;
+            const message = form.message.value;
+
+            const { data, error } = await supabase
+                .from('contacts')
+                .insert([
+                    { name, email, message }
+                ]);
+
+            if (error) {
+                formStatus.textContent = 'Error sending message. Please try again.';
+                formStatus.style.color = 'red';
+                console.error('Error inserting data:', error);
+            } else {
+                formStatus.textContent = 'Message sent successfully!';
+                formStatus.style.color = 'green';
+                form.reset();
+            }
+        });
+    </script>
 
 </body>
 </html>

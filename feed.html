@@ -44,6 +44,17 @@
         .hamburger.is-active span:nth-child(3) {
             transform: translateY(-8px) rotate(-45deg);
         }
+
+        /* Modal Transitions */
+        #article-modal.hidden {
+            display: none;
+        }
+        #article-modal {
+            transition: opacity 0.3s ease;
+        }
+        #modal-panel {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
     </style>
 
     <link rel="canonical" href="https://sknews.pages.dev/feed.html" />   
@@ -51,7 +62,7 @@
 </head>
 <body class="bg-gray-900 text-gray-200">
 
-    <header class="fixed top-0 left-0 right-0 z-50 bg-gray-900/80 backdrop-blur-sm border-b border-gray-800 transition-all duration-300">
+    <header class="fixed top-0 left-0 right-0 z-40 bg-gray-900/80 backdrop-blur-sm border-b border-gray-800 transition-all duration-300">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
                 <a href="index.html" class="text-2xl font-bold text-teal-400 hover:text-teal-300 transition-colors">SK News</a>
@@ -90,7 +101,7 @@
     </header>
 
     <main class="pt-20"> <!-- Padding top to offset the fixed header -->
-        <section class="page-hero bg-gray-800 py-20 sm:py-24">
+        <section class="bg-gray-800 py-20 sm:py-24">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center animate-on-scroll">
                 <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight">Live Feed</h1>
                 <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">The latest headlines and updates, posted in real-time.</p>
@@ -113,6 +124,25 @@
             </div>
         </div>
     </footer>
+    
+    <!-- MODAL STRUCTURE -->
+    <div id="article-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
+        <!-- Modal Panel -->
+        <div id="modal-panel" class="bg-gray-800 border border-gray-700 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-4 sm:p-6 border-b border-gray-700 flex-shrink-0">
+                <h3 id="modal-title" class="text-xl sm:text-2xl font-bold text-white">Article Title</h3>
+                <button id="modal-close-btn" class="text-gray-400 hover:text-white transition-colors" aria-label="Close modal">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <!-- Modal Content -->
+            <div id="modal-content" class="p-6 sm:p-8 overflow-y-auto text-gray-300 leading-relaxed space-y-4">
+                <p>Article content will be loaded here.</p>
+            </div>
+        </div>
+    </div>
+
 
     <script type="module" src="supabase-client.js"></script>
     <script type="module" src="feed.js"></script>

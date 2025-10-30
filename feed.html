@@ -13,48 +13,18 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Custom CSS for Animations -->
+    <!-- Custom CSS -->
     <style>
-        /* Apply the Poppins font family */
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
-
-        /* Scroll-in Animation */
-        .animate-on-scroll {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-        }
-        .animate-on-scroll.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Hamburger Menu Animation */
-        .hamburger span {
-            transition: all 0.3s ease-in-out;
-        }
-        .hamburger.is-active span:nth-child(1) {
-            transform: translateY(8px) rotate(45deg);
-        }
-        .hamburger.is-active span:nth-child(2) {
-            opacity: 0;
-        }
-        .hamburger.is-active span:nth-child(3) {
-            transform: translateY(-8px) rotate(-45deg);
-        }
-
-        /* Modal Transitions */
-        #article-modal.hidden {
-            display: none;
-        }
-        #article-modal {
-            transition: opacity 0.3s ease;
-        }
-        #modal-panel {
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
+        body { font-family: 'Poppins', sans-serif; }
+        .animate-on-scroll { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease-out, transform 0.5s ease-out; }
+        .animate-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
+        .hamburger span { transition: all 0.3s ease-in-out; }
+        .hamburger.is-active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .hamburger.is-active span:nth-child(2) { opacity: 0; }
+        .hamburger.is-active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+        #article-modal.hidden { display: none; }
+        #article-modal { transition: opacity 0.3s ease; }
+        #modal-panel { transition: transform 0.3s ease, opacity 0.3s ease; }
     </style>
 
     <link rel="canonical" href="https://sknews.pages.dev/feed.html" />   
@@ -63,10 +33,10 @@
 <body class="bg-gray-900 text-gray-200">
 
     <header class="fixed top-0 left-0 right-0 z-40 bg-gray-900/80 backdrop-blur-sm border-b border-gray-800 transition-all duration-300">
+        <!-- Header content remains the same -->
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
                 <a href="index.html" class="text-2xl font-bold text-teal-400 hover:text-teal-300 transition-colors">SK News</a>
-                
                 <nav class="hidden md:flex space-x-8" id="main-nav">
                     <a href="index.html" class="text-gray-300 hover:text-teal-400 transition-colors">Home</a>
                     <a href="news.html" class="text-gray-300 hover:text-teal-400 transition-colors">News</a>
@@ -77,17 +47,13 @@
                     <a href="advertise.html" class="text-gray-300 hover:text-teal-400 transition-colors">Advertise</a>
                     <a href="contact.html" class="text-gray-300 hover:text-teal-400 transition-colors">Contact</a>
                 </nav>
-
                 <button class="md:hidden hamburger flex flex-col justify-center items-center h-8 w-8 space-y-1.5" id="hamburger-menu" aria-label="Open Menu">
-                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
-                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
-                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
+                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span><span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span><span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
                 </button>
             </div>
         </div>
-        <!-- Mobile Menu (initially hidden) -->
         <div id="mobile-menu" class="hidden md:hidden bg-gray-900/95 backdrop-blur-sm">
-             <nav class="flex flex-col items-center space-y-4 py-6">
+            <nav class="flex flex-col items-center space-y-4 py-6">
                 <a href="index.html" class="text-gray-300 hover:text-teal-400 transition-colors">Home</a>
                 <a href="news.html" class="text-gray-300 hover:text-teal-400 transition-colors">News</a>
                 <a href="chats.html" class="text-gray-300 hover:text-teal-400 transition-colors">Chats</a>
@@ -100,7 +66,7 @@
         </div>
     </header>
 
-    <main class="pt-20"> <!-- Padding top to offset the fixed header -->
+    <main class="pt-20">
         <section class="bg-gray-800 py-20 sm:py-24">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center animate-on-scroll">
                 <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight">Live Feed</h1>
@@ -108,50 +74,56 @@
             </div>
         </section>
 
-        <section class="feed-section py-16 sm:py-20">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-8 max-w-4xl" id="feed-container">
-                <!-- Feed items will be dynamically inserted here by feed.js -->
-                <p class="text-center text-gray-400">Loading feed...</p>
+        <section class="py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Main Layout Grid: Content + Sidebar -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+                    
+                    <!-- Main Content Area -->
+                    <div class="lg:col-span-2">
+                        <!-- Featured Article Container -->
+                        <div id="featured-article-container" class="mb-12"></div>
+                        
+                        <!-- Grid for remaining articles -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="feed-container">
+                             <!-- Feed items will be dynamically inserted here by feed.js -->
+                            <p class="text-center text-gray-400 md:col-span-2">Loading feed...</p>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Area -->
+                    <aside class="lg:col-span-1">
+                        <div class="sticky top-28 space-y-8">
+                            <!-- Advertisement Widget -->
+                            <div class="bg-gray-800/50 border border-gray-700/50 rounded-lg p-6">
+                                <h3 class="text-lg font-bold text-white mb-4">Sponsored</h3>
+                                <div class="bg-gray-700 rounded-md aspect-square flex items-center justify-center">
+                                    <p class="text-gray-500">Advertisement</p>
+                                </div>
+                            </div>
+                            <!-- You can add more widgets here (e.g., popular posts, categories) -->
+                        </div>
+                    </aside>
+
+                </div>
             </div>
         </section>
     </main>
     
     <footer class="mt-16 border-t border-gray-800 bg-gray-900">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col sm:flex-row items-center justify-between py-6 text-sm text-gray-500">
-                <p>© 2025 SK News. All Rights Reserved.</p>
-                <a href="terms.html" class="mt-2 sm:mt-0 hover:text-teal-400 transition-colors">Terms & Conditions</a>
-            </div>
-        </div>
+        <!-- Footer content remains the same -->
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8"><div class="flex flex-col sm:flex-row items-center justify-between py-6 text-sm text-gray-500"><p>© 2025 SK News. All Rights Reserved.</p><a href="terms.html" class="mt-2 sm:mt-0 hover:text-teal-400 transition-colors">Terms & Conditions</a></div></div>
     </footer>
     
-    <!-- MODAL STRUCTURE -->
-    <div id="article-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
-        <!-- Modal Panel -->
-        <div id="modal-panel" class="bg-gray-800 border border-gray-700 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
-            <!-- Modal Header -->
-            <div class="flex items-center justify-between p-4 sm:p-6 border-b border-gray-700 flex-shrink-0">
-                <h3 id="modal-title" class="text-xl sm:text-2xl font-bold text-white">Article Title</h3>
-                <button id="modal-close-btn" class="text-gray-400 hover:text-white transition-colors" aria-label="Close modal">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <!-- Modal Content -->
-            <div id="modal-content" class="p-6 sm:p-8 overflow-y-auto text-gray-300 leading-relaxed space-y-4">
-                <p>Article content will be loaded here.</p>
-            </div>
-        </div>
-    </div>
-
+    <!-- Modal structure remains the same -->
+    <div id="article-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden" role="dialog" aria-modal="true"><div id="modal-panel" class="bg-gray-800 border border-gray-700 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden"><div class="flex items-center justify-between p-4 sm:p-6 border-b border-gray-700 flex-shrink-0"><h3 id="modal-title" class="text-xl sm:text-2xl font-bold text-white">Article Title</h3><button id="modal-close-btn" class="text-gray-400 hover:text-white transition-colors" aria-label="Close modal"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><div id="modal-content" class="p-6 sm:p-8 overflow-y-auto text-gray-300 leading-relaxed space-y-4"><p>Article content will be loaded here.</p></div></div></div>
 
     <script type="module" src="supabase-client.js"></script>
     <script type="module" src="feed.js"></script>
     
-    <!-- Basic JS for hamburger menu toggle -->
     <script>
         const hamburgerBtn = document.getElementById('hamburger-menu');
         const mobileMenu = document.getElementById('mobile-menu');
-
         hamburgerBtn.addEventListener('click', () => {
             hamburgerBtn.classList.toggle('is-active');
             mobileMenu.classList.toggle('hidden');

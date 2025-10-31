@@ -12,9 +12,19 @@ const modalContent = document.getElementById('modal-content');
 const modalCloseBtn = document.getElementById('modal-close-btn');
 
 // --- MODAL LOGIC ---
-function openModal(title, content) {
+// ---> MODIFIED: The function now accepts senderName and timestamp.
+function openModal(title, content, senderName, timestamp) {
     modalTitle.textContent = title;
-    modalContent.innerHTML = content.replace(/\n/g, '<p class="mt-4"></p>'); // Preserve paragraphs
+
+    // ---> MODIFIED: Create a meta block with sender and date, then add the content.
+    const metaHTML = `
+        <div class="mb-6 pb-4 border-b border-gray-600 text-sm text-gray-400">
+            Posted by <strong class="font-semibold text-teal-400">${senderName || 'SK News'}</strong> on ${timestamp}
+        </div>
+    `;
+    const formattedContent = content.replace(/\n/g, '<p class="mt-4"></p>');
+    modalContent.innerHTML = metaHTML + formattedContent; // Prepend meta info to the content
+
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
@@ -89,8 +99,9 @@ async function loadFeed() {
             <p class="text-gray-400 leading-relaxed line-clamp-4">${featuredItem.content}</p>
             <div class="text-xs text-gray-500 mt-4">${displayTimestamp}</div>
         `;
-        // Add click listener to the entire card
-        featuredElement.addEventListener('click', () => openModal(featuredItem.title, featuredItem.content));
+
+        // ---> MODIFIED: Pass the sender name and timestamp to the modal.
+        featuredElement.addEventListener('click', () => openModal(featuredItem.title, featuredItem.content, featuredItem.sender_name, displayTimestamp));
         featuredContainer.appendChild(featuredElement);
     }
 
@@ -106,8 +117,9 @@ async function loadFeed() {
             <p class="text-gray-400 leading-relaxed line-clamp-3 mb-4">${item.content}</p>
             <div class="text-xs text-gray-500">${displayTimestamp}</div>
         `;
-        // Add click listener to the entire card
-        feedElement.addEventListener('click', () => openModal(item.title, item.content));
+
+        // ---> MODIFIED: Pass the sender name and timestamp to the modal.
+        feedElement.addEventListener('click', () => openModal(item.title, item.content, item.sender_name, displayTimestamp));
         feedContainer.appendChild(feedElement);
     });
 

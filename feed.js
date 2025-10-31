@@ -12,18 +12,28 @@ const modalContent = document.getElementById('modal-content');
 const modalCloseBtn = document.getElementById('modal-close-btn');
 
 // --- MODAL LOGIC ---
-// ---> MODIFIED: The function now accepts senderName and timestamp.
 function openModal(title, content, senderName, timestamp) {
     modalTitle.textContent = title;
 
-    // ---> MODIFIED: Create a meta block with sender and date, then add the content.
-    const metaHTML = `
+    // ---> CHANGE: Split the metadata. Sender info goes at the top.
+    const senderMetaHTML = `
         <div class="mb-6 pb-4 border-b border-gray-600 text-sm text-gray-400">
-            Posted by <strong class="font-semibold text-teal-400">${senderName || 'SK News'}</strong> on ${timestamp}
+            Posted by <strong class="font-semibold text-teal-400">${senderName || 'SK News'}</strong>
         </div>
     `;
+
+    // The main content remains the same
     const formattedContent = content.replace(/\n/g, '<p class="mt-4"></p>');
-    modalContent.innerHTML = metaHTML + formattedContent; // Prepend meta info to the content
+
+    // ---> CHANGE: Create a new footer for the timestamp.
+    const timestampFooterHTML = `
+        <div class="mt-8 pt-4 border-t border-gray-600 text-sm text-gray-500 text-right">
+            Posted on ${timestamp}
+        </div>
+    `;
+
+    // ---> CHANGE: Reassemble the HTML in the new order.
+    modalContent.innerHTML = senderMetaHTML + formattedContent + timestampFooterHTML;
 
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
@@ -83,10 +93,8 @@ async function loadFeed() {
     featuredContainer.innerHTML = '';
     feedContainer.innerHTML = '';
 
-    // Separate the first item to be featured
     const featuredItem = feedItems.shift(); 
     
-    // Create and display the featured article
     if (featuredItem) {
         const featuredElement = document.createElement('div');
         featuredElement.className = 'group cursor-pointer bg-gradient-to-br from-gray-800 to-gray-800/50 border border-teal-500/30 rounded-lg shadow-2xl p-6 sm:p-8 animate-on-scroll transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-teal-500/20';
@@ -99,13 +107,10 @@ async function loadFeed() {
             <p class="text-gray-400 leading-relaxed line-clamp-4">${featuredItem.content}</p>
             <div class="text-xs text-gray-500 mt-4">${displayTimestamp}</div>
         `;
-
-        // ---> MODIFIED: Pass the sender name and timestamp to the modal.
         featuredElement.addEventListener('click', () => openModal(featuredItem.title, featuredItem.content, featuredItem.sender_name, displayTimestamp));
         featuredContainer.appendChild(featuredElement);
     }
 
-    // Create and display the rest of the articles in a grid
     feedItems.forEach(item => {
         const feedElement = document.createElement('div');
         feedElement.className = 'group cursor-pointer bg-gray-800/50 border border-gray-700/50 rounded-lg shadow-lg p-6 animate-on-scroll transition-all duration-300 ease-in-out hover:scale-[1.03] hover:shadow-2xl hover:shadow-teal-500/20';
@@ -117,18 +122,14 @@ async function loadFeed() {
             <p class="text-gray-400 leading-relaxed line-clamp-3 mb-4">${item.content}</p>
             <div class="text-xs text-gray-500">${displayTimestamp}</div>
         `;
-
-        // ---> MODIFIED: Pass the sender name and timestamp to the modal.
         feedElement.addEventListener('click', () => openModal(item.title, item.content, item.sender_name, displayTimestamp));
         feedContainer.appendChild(feedElement);
     });
 
-    // Re-run the Intersection Observer for all newly added elements
     setupScrollAnimations();
 }
 
-// Run on page load
 document.addEventListener('DOMContentLoaded', () => {
-    setupScrollAnimations(); // For static elements like the hero
+    setupScrollAnimations();
     loadFeed();
 });

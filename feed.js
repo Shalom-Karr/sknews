@@ -15,25 +15,20 @@ const modalCloseBtn = document.getElementById('modal-close-btn');
 function openModal(title, content, senderName, timestamp) {
     modalTitle.textContent = title;
 
-    // ---> CHANGE: Split the metadata. Sender info goes at the top.
-    const senderMetaHTML = `
-        <div class="mb-6 pb-4 border-b border-gray-600 text-sm text-gray-400">
-            Posted by <strong class="font-semibold text-teal-400">${senderName || 'SK News'}</strong>
-        </div>
-    `;
-
-    // The main content remains the same
+    // The main content of the article.
     const formattedContent = content.replace(/\n/g, '<p class="mt-4"></p>');
 
-    // ---> CHANGE: Create a new footer for the timestamp.
-    const timestampFooterHTML = `
-        <div class="mt-8 pt-4 border-t border-gray-600 text-sm text-gray-500 text-right">
-            Posted on ${timestamp}
+    // ---> CHANGE: Create a single footer element using Flexbox.
+    // 'flex justify-between' pushes the two spans to the left and right.
+    const footerHTML = `
+        <div class="mt-8 pt-4 border-t border-gray-600 flex justify-between items-center text-sm text-gray-500">
+            <span>Posted by <strong class="font-semibold text-teal-400">${senderName || 'SK News'}</strong></span>
+            <span>${timestamp}</span>
         </div>
     `;
 
-    // ---> CHANGE: Reassemble the HTML in the new order.
-    modalContent.innerHTML = senderMetaHTML + formattedContent + timestampFooterHTML;
+    // ---> CHANGE: Combine the content and the new footer.
+    modalContent.innerHTML = formattedContent + footerHTML;
 
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';

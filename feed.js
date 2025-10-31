@@ -1,5 +1,5 @@
 // feed.js
-// Fetches feed items, displays them with a skeleton loader, handles real-time updates, and manages modal interaction.
+// Fetches feed items with a skeleton loader and uses POLLING for live updates.
 
 import { supabase } from './supabase-client.js';
 
@@ -11,10 +11,10 @@ const modalTitle = document.getElementById('modal-title');
 const modalContent = document.getElementById('modal-content');
 const modalCloseBtn = document.getElementById('modal-close-btn');
 
-// ---> NEW: State variable to keep track of the latest item for real-time updates.
-let currentFeedItems = [];
+// ---> NEW: State variable to track the timestamp of the latest post for polling.
+let latestPostTimestamp = null;
 
-// --- MODAL LOGIC (Unchanged) ---
+// --- MODAL & UTILITY FUNCTIONS (Unchanged) ---
 function openModal(title, content, senderName, timestamp) {
     modalTitle.textContent = title;
     const formattedContent = content.replace(/\n/g, '<p class="mt-4"></p>');
@@ -38,8 +38,6 @@ modalCloseBtn.addEventListener('click', closeModal);
 modal.addEventListener('click', (event) => { if (event.target === modal) closeModal(); });
 document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
 
-
-// --- UTILITY FUNCTIONS (Unchanged) ---
 function formatTimestamp(isoString) {
     if (!isoString) return 'Date not available';
     const date = new Date(isoString);
@@ -62,154 +60,122 @@ function setupScrollAnimations() {
     scrollElements.forEach(el => observer.observe(el));
 }
 
-
-// ---> NEW: Function to display skeleton loaders
 function displaySkeletonLoader() {
-    // Skeleton for the featured article
-    const featuredSkeleton = `
-        <div class="bg-gray-800/80 border border-gray-700/50 rounded-lg shadow-2xl p-6 sm:p-8 animate-pulse">
-            <div class="h-4 bg-gray-700 rounded w-1/4 mb-4"></div>
-            <div class="h-8 bg-gray-700 rounded w-3/4 mb-4"></div>
-            <div class="h-5 bg-gray-700 rounded w-full mb-2"></div>
-            <div class="h-5 bg-gray-700 rounded w-5/6 mb-2"></div>
-            <div class="h-5 bg-gray-700 rounded w-1/2 mb-4"></div>
-            <div class="h-3 bg-gray-700 rounded w-1/3 mt-4"></div>
-        </div>
-    `;
+    const featuredSkeleton = `<div class="bg-gray-800/80 border border-gray-700/50 rounded-lg shadow-2xl p-6 sm:p-8 animate-pulse"><div class="h-4 bg-gray-700 rounded w-1/4 mb-4"></div><div class="h-8 bg-gray-700 rounded w-3/4 mb-4"></div><div class="h-5 bg-gray-700 rounded w-full mb-2"></div><div class="h-5 bg-gray-700 rounded w-5/6 mb-2"></div><div class="h-5 bg-gray-700 rounded w-1/2 mb-4"></div><div class="h-3 bg-gray-700 rounded w-1/3 mt-4"></div></div>`;
     featuredContainer.innerHTML = featuredSkeleton;
-
-    // Skeletons for the grid articles
     let gridSkeleton = '';
     for (let i = 0; i < 4; i++) {
-        gridSkeleton += `
-            <div class="bg-gray-800/50 border border-gray-700/50 rounded-lg shadow-lg p-6 animate-pulse">
-                <div class="h-6 bg-gray-700 rounded w-5/6 mb-3"></div>
-                <div class="h-4 bg-gray-700 rounded w-full mb-2"></div>
-                <div class="h-4 bg-gray-700 rounded w-full mb-4"></div>
-                <div class="h-3 bg-gray-700 rounded w-1/2"></div>
-            </div>
-        `;
+        gridSkeleton += `<div class="bg-gray-800/50 border border-gray-700/50 rounded-lg shadow-lg p-6 animate-pulse"><div class="h-6 bg-gray-700 rounded w-5/6 mb-3"></div><div class="h-4 bg-gray-700 rounded w-full mb-2"></div><div class="h-4 bg-gray-700 rounded w-full mb-4"></div><div class="h-3 bg-gray-700 rounded w-1/2"></div></div>`;
     }
     feedContainer.innerHTML = gridSkeleton;
 }
 
-// ---> REFACTORED: Creates a single feed item element (featured or regular)
 function createFeedElement(item, isFeatured) {
     const element = document.createElement('div');
     const displayTimestamp = formatTimestamp(item.created_at || item.timestamp);
-
     if (isFeatured) {
         element.className = 'group cursor-pointer bg-gradient-to-br from-gray-800 to-gray-800/50 border border-teal-500/30 rounded-lg shadow-2xl p-6 sm:p-8 animate-on-scroll transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-teal-500/20';
-        element.innerHTML = `
-            <div class="text-sm font-semibold text-teal-400 mb-3">LATEST UPDATE</div>
-            <h3 class="text-2xl sm:text-3xl font-bold text-white mb-4 group-hover:text-teal-300 transition-colors">${item.title}</h3>
-            <p class="text-gray-400 leading-relaxed line-clamp-4">${item.content}</p>
-            <div class="text-xs text-gray-500 mt-4">${displayTimestamp}</div>
-        `;
+        element.innerHTML = `<div class="text-sm font-semibold text-teal-400 mb-3">LATEST UPDATE</div><h3 class="text-2xl sm:text-3xl font-bold text-white mb-4 group-hover:text-teal-300 transition-colors">${item.title}</h3><p class="text-gray-400 leading-relaxed line-clamp-4">${item.content}</p><div class="text-xs text-gray-500 mt-4">${displayTimestamp}</div>`;
     } else {
         element.className = 'group cursor-pointer bg-gray-800/50 border border-gray-700/50 rounded-lg shadow-lg p-6 animate-on-scroll transition-all duration-300 ease-in-out hover:scale-[1.03] hover:shadow-2xl hover:shadow-teal-500/20';
-        element.innerHTML = `
-            <h4 class="text-xl font-bold text-white mb-2 group-hover:text-teal-300 transition-colors">${item.title}</h4>
-            <p class="text-gray-400 leading-relaxed line-clamp-3 mb-4">${item.content}</p>
-            <div class="text-xs text-gray-500">${displayTimestamp}</div>
-        `;
+        element.innerHTML = `<h4 class="text-xl font-bold text-white mb-2 group-hover:text-teal-300 transition-colors">${item.title}</h4><p class="text-gray-400 leading-relaxed line-clamp-3 mb-4">${item.content}</p><div class="text-xs text-gray-500">${displayTimestamp}</div>`;
     }
-
     element.addEventListener('click', () => openModal(item.title, item.content, item.sender_name, displayTimestamp));
     return element;
 }
 
 // --- CORE FEED LOGIC ---
 async function loadFeed() {
-    const { data, error } = await supabase
-        .from('feed')
-        .select('*')
-        .order('created_at', { ascending: false });
+    const { data, error } = await supabase.from('feed').select('*').order('created_at', { ascending: false });
 
     if (error) {
         console.error('Error fetching feed:', error);
-        featuredContainer.innerHTML = ''; // Clear skeleton
+        featuredContainer.innerHTML = '';
         feedContainer.innerHTML = `<p class="text-center text-red-400 md:col-span-2">Could not load the feed. Please try again later.</p>`;
         return;
     }
-    
-    currentFeedItems = data; // Store the fetched items
-
-    if (currentFeedItems.length === 0) {
-        featuredContainer.innerHTML = ''; // Clear skeleton
+    if (data.length === 0) {
+        featuredContainer.innerHTML = '';
         feedContainer.innerHTML = `<p class="text-center text-gray-400 md:col-span-2">No updates yet. Check back soon!</p>`;
         return;
     }
 
-    // Clear skeletons
+    // ---> MODIFIED: Store the timestamp of the very newest post.
+    latestPostTimestamp = data[0].created_at;
+
     featuredContainer.innerHTML = '';
     feedContainer.innerHTML = '';
 
-    // Create and display the featured article
-    const featuredItem = currentFeedItems.shift(); 
+    const featuredItem = data.shift();
     if (featuredItem) {
         const featuredElement = createFeedElement(featuredItem, true);
         featuredContainer.appendChild(featuredElement);
     }
 
-    // Create and display the rest of the articles
-    currentFeedItems.forEach(item => {
+    data.forEach(item => {
         const feedElement = createFeedElement(item, false);
         feedContainer.appendChild(feedElement);
     });
     
-    // Put the featured item back at the start of the array for state consistency
-    if (featuredItem) {
-        currentFeedItems.unshift(featuredItem);
-    }
-
-    // Set up animations for the newly loaded elements
     setupScrollAnimations();
 }
 
-// ---> NEW: Function to handle real-time updates from Supabase
-function subscribeToLiveUpdates() {
-    supabase
-      .channel('public:feed')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'feed' }, payload => {
-        console.log('New live update received!', payload.new);
-        
-        const newItem = payload.new;
-        const oldFeaturedItem = currentFeedItems.length > 0 ? currentFeedItems[0] : null;
+// ---> NEW: Function to check for new posts using polling.
+async function checkForNewPosts() {
+    if (!latestPostTimestamp) return; // Don't check if initial load hasn't happened
 
-        // 1. Create the new featured article element
-        const newFeaturedElement = createFeedElement(newItem, true);
+    const { data: newItems, error } = await supabase
+        .from('feed')
+        .select('*')
+        .gt('created_at', latestPostTimestamp) // Fetch only posts NEWER than our latest one
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error("Error polling for new posts:", error);
+        return;
+    }
+
+    if (newItems && newItems.length > 0) {
+        console.log(`Found ${newItems.length} new post(s)!`);
+        latestPostTimestamp = newItems[0].created_at; // Update to the newest timestamp
+
+        // Logic to prepend new items and demote the old featured one
+        const oldFeaturedElement = featuredContainer.querySelector('div');
         
-        // 2. Clear the old featured article
+        // Make the newest item the new featured article
+        const newFeaturedItem = newItems.shift();
+        const newFeaturedElement = createFeedElement(newFeaturedItem, true);
         featuredContainer.innerHTML = '';
         featuredContainer.appendChild(newFeaturedElement);
         
-        // 3. If there was an old featured article, demote it to a regular grid item
-        if (oldFeaturedItem) {
-            const demotedElement = createFeedElement(oldFeaturedItem, false);
-            feedContainer.prepend(demotedElement); // Add it to the top of the grid
-        }
-
-        // 4. Update the global state
-        currentFeedItems.unshift(newItem);
-        
-        // 5. Animate the new element's appearance
-        newFeaturedElement.classList.add('is-visible'); // Bypass scroll animation
+        // Animate its appearance
+        newFeaturedElement.classList.add('is-visible');
         newFeaturedElement.style.opacity = '0';
-        newFeaturedElement.style.transform = 'translateY(-15px)';
-        setTimeout(() => {
-            newFeaturedElement.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
-            newFeaturedElement.style.opacity = '1';
-            newFeaturedElement.style.transform = 'translateY(0)';
-        }, 50); // Short delay to ensure transition applies
+        setTimeout(() => { newFeaturedElement.style.transition = 'opacity 0.5s'; newFeaturedElement.style.opacity = '1'; }, 50);
 
-      })
-      .subscribe();
+        // Demote the old featured article to a regular grid item
+        if (oldFeaturedElement) {
+             const title = oldFeaturedElement.querySelector('h3').textContent;
+             const content = oldFeaturedElement.querySelector('p').textContent;
+             // We need to rebuild the item object to create a standard card
+             const demotedItem = { title, content, created_at: null, sender_name: null }; // Timestamps/sender might be lost here, but it's a visual demotion
+             const demotedElement = createFeedElement(demotedItem, false);
+             feedContainer.prepend(demotedElement);
+        }
+        
+        // Add any other new items (if more than one came in) to the top of the grid
+        newItems.forEach(item => {
+            const el = createFeedElement(item, false);
+            feedContainer.prepend(el);
+        });
+    }
 }
 
-// ---> UPDATED: Run functions on page load in order
+
+// --- RUN ON PAGE LOAD ---
 document.addEventListener('DOMContentLoaded', () => {
-    displaySkeletonLoader(); // 1. Show placeholders immediately
-    loadFeed();              // 2. Fetch and display initial data
-    subscribeToLiveUpdates();// 3. Listen for future real-time updates
+    displaySkeletonLoader();
+    loadFeed();
+    // ---> NEW: Start polling for new posts every 15 seconds.
+    setInterval(checkForNewPosts, 15000); // 15000 milliseconds = 15 seconds
 });

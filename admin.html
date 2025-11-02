@@ -1,58 +1,163 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - SK News</title>
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+   
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom Style for consistency -->
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .loading-message {
+            padding: 1.5rem;
+            text-align: center;
+            color: #9ca3af; /* gray-400 */
+        }
+        .filter-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3e%3cpath d='M9.293 12.95l.707.707L15 9.707l-1.414-1.414L10 12.293l-3.586-3.586L5 9.707l4.293 3.243z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+        /* Style for active filters */
+        .filter-select:not([value=""]):not(:placeholder-shown), 
+        input[type="date"]:not([value=""]):not(:placeholder-shown) {
+            background-color: #0d94884d; /* teal-600/30 */
+            border-color: #2dd4bf; /* teal-400 */
+        }
+    </style>
+
     <link rel="canonical" href="https://sknews.pages.dev/admin.html" />   
 </head>
-<body>
+<body class="bg-gray-900 text-gray-200 min-h-screen pt-12">
 
-    <main class="admin-container">
+    <header class="fixed top-0 left-0 right-0 z-40 bg-gray-900/90 border-b border-gray-800 h-12 flex items-center">
+        <div class="container mx-auto px-4">
+            <a href="index.html" class="text-xl font-bold text-teal-400 hover:text-teal-300 transition-colors">SK News Admin</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto max-w-5xl px-4 py-8 mt-4">
+        
         <!-- Login Section - Shown by default -->
-        <section id="login-section">
-            <h1>Admin Login</h1>
-            <form id="login-form" class="admin-form">
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
+        <section id="login-section" class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-xl max-w-md mx-auto">
+            <h1 class="text-3xl font-bold text-teal-400 mb-6 text-center">Admin Login</h1>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-300 mb-1">Email:</label>
+                    <input type="email" id="email" name="email" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
                 </div>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password:</label>
+                    <input type="password" id="password" name="password" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
                 </div>
-                <button type="submit" class="btn btn-primary">Log In</button>
+                <button type="submit" class="w-full px-4 py-2 bg-teal-600 text-white font-semibold rounded-md hover:bg-teal-700 transition-colors">Log In</button>
             </form>
         </section>
 
         <!-- Admin Section - Hidden by default, shown after login -->
-        <section id="admin-section" style="display: none;">
-            <h1>Admin Panel</h1>
-            <p>Welcome, <span id="user-email"></span>!</p>
+        <section id="admin-section" class="space-y-12" style="display: none;">
+            <div class="flex justify-between items-center border-b border-gray-700 pb-4">
+                <h1 class="text-4xl font-bold bg-gradient-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent">
+                    Admin Panel
+                </h1>
+                <div class="flex items-center space-x-4">
+                    <p class="text-gray-400 text-sm">Welcome, <span id="user-email" class="font-semibold text-teal-400"></span>!</p>
+                    <button id="logout-button" class="px-3 py-1 bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 transition-colors text-sm">Log Out</button>
+                </div>
+            </div>
             
-            <form id="add-feed-form" class="admin-form">
-                <h2>Add New Feed Item</h2>
-                <div class="form-group">
-                    <label for="title">Title:</label>
-                    <input type="text" id="title" name="title" required>
-                </div>
-                <div class="form-group">
-                    <label for="content">Content:</label>
-                    <textarea id="content" name="content" rows="4" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Add Item</button>
-            </form>
+            <!-- Add New Feed Item Form -->
+            <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-xl">
+                <h2 class="text-2xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">Add New Feed Item</h2>
+                <form id="add-feed-form" class="space-y-4">
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-300 mb-1">Title:</label>
+                        <input type="text" id="title" name="title" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
+                    </div>
+                    <div>
+                        <label for="content" class="block text-sm font-medium text-gray-300 mb-1">Content:</label>
+                        <textarea id="content" name="content" rows="4" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white"></textarea>
+                    </div>
+                    <button type="submit" class="px-4 py-2 bg-teal-600 text-white font-semibold rounded-md hover:bg-teal-700 transition-colors">Add Item</button>
+                </form>
+            </div>
 
-            <button id="logout-button" class="btn btn-secondary" style="margin-top: 2rem;">Log Out</button>
+            <!-- Poster Configuration Management -->
+            <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-xl">
+                <h2 class="text-2xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">Poster Configuration</h2>
+                
+                <!-- Add Poster Form -->
+                <form id="add-poster-form" class="flex space-x-4 mb-6">
+                    <input type="text" id="new-poster-name" placeholder="New Poster Name" required class="flex-grow px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
+                    <input type="number" id="new-poster-order" placeholder="Order (e.g., 10)" required class="w-24 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
+                    <button type="submit" class="px-4 py-2 bg-purple-600 text-white font-semibold rounded-md hover:bg-purple-700 transition-colors">Add Poster</button>
+                </form>
+
+                <!-- Poster List -->
+                <div id="poster-list-section" class="space-y-3">
+                    <p class="loading-message">Loading poster list...</p>
+                    <!-- Dynamic posters go here -->
+                </div>
+            </div>
+
+
+            <!-- Existing Feed List -->
+            <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-xl">
+                <h2 class="text-2xl font-semibold text-white mb-6 border-b border-gray-700 pb-2">Existing Feed Items</h2>
+                
+                <!-- FILTER AND SEARCH BAR CONTAINER -->
+                <div class="space-y-4 mb-6">
+                    <!-- Filters -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="md:col-span-1">
+                            <label for="poster-filter" class="block text-sm font-medium text-gray-400 mb-1">Filter by Poster:</label>
+                            <select id="poster-filter" class="filter-select w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
+                                <option value="">All Posters</option>
+                                <!-- Poster options will be dynamically inserted here -->
+                            </select>
+                        </div>
+                        
+                        <!-- Start Date Filter -->
+                        <div class="md:col-span-1">
+                            <label for="start-date-filter" class="block text-sm font-medium text-gray-400 mb-1">Start Date:</label>
+                            <input type="date" id="start-date-filter" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
+                        </div>
+
+                        <!-- End Date Filter -->
+                        <div class="md:col-span-1">
+                            <label for="end-date-filter" class="block text-sm font-medium text-gray-400 mb-1">End Date:</label>
+                            <input type="date" id="end-date-filter" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
+                        </div>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="md:col-span-1">
+                        <input type="text" id="admin-search-input" placeholder="Search items by title or content..." 
+                               class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
+                    </div>
+                </div>
+                <!-- END FILTER AND SEARCH BAR CONTAINER -->
+                
+                <div id="feed-list-section" class="space-y-4">
+                    <p class="loading-message">Loading articles...</p>
+                </div>
+            </div>
+
         </section>
     </main>
 
     <script type="module" src="supabase-client.js"></script>
     <script type="module" src="admin.js"></script>
 </body>
-
 </html>

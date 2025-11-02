@@ -3,40 +3,58 @@
 
 import { supabase } from './supabase-client.js';
 
+// --- DEBOUNCE UTILITY ---
+const debounce = (func, delay) => {
+    let timeout;
+    return function(...args) {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), delay);
+    };
+};
+// --- END DEBOUNCE UTILITY ---
+
+
 // DOM Element References
 const featuredContainer = document.getElementById('featured-article-container');
 const feedContainer = document.getElementById('feed-container');
 const modal = document.getElementById('article-modal');
 const modalTitle = document.getElementById('modal-title');
-const modalContent = document.getElementById('modal-content');
-const modalCloseBtn = document.getElementById('modal-close-btn');
+const modalContent = document.getElementById('modal-content'); 
+const modalContentContainer = document.getElementById('modal-content-container'); 
+const modalCloseBtn = document.getElementById('modal-close-btn'); 
+const searchInput = document.getElementById('feed-search-input'); 
+const feedStartDate = document.getElementById('feed-start-date'); 
+const feedEndDate = document.getElementById('feed-end-date');     
+const newPostsIndicator = document.getElementById('new-posts-indicator'); 
 
-// ---> NEW: State variable to track the timestamp of the latest post for polling.
+// Navigation References
+const modalPrevBtn = document.getElementById('modal-prev-btn');
+const modalNextBtn = document.getElementById('modal-next-btn');
+const articleCounter = document.getElementById('article-counter'); 
+
+// Custom Dropdown References
+const posterDropdownBtn = document.getElementById('poster-dropdown-btn');
+const posterSelectedText = document.getElementById('poster-selected-text');
+const posterDropdownOptions = document.getElementById('poster-dropdown-options');
+let currentPosterFilterValue = ''; // Replaces the value property of the native select
+
+// State variables
 let latestPostTimestamp = null;
+let currentSearchTerm = ''; 
+let filtersActive = false; 
+let currentFeedData = []; 
+let currentArticleIndex = -1; 
 
-// --- MODAL & UTILITY FUNCTIONS (Unchanged) ---
-function openModal(title, content, senderName, timestamp) {
-    modalTitle.textContent = title;
-    const formattedContent = content.replace(/\n/g, '<p class="mt-4"></p>');
-    const footerHTML = `
-        <div class="mt-8 pt-4 border-t border-gray-600 flex justify-between items-center text-sm text-gray-500">
-            <span>Posted by <strong class="font-semibold text-teal-400">${senderName || 'SK News'}</strong></span>
-            <span>${timestamp}</span>
-        </div>
-    `;
-    modalContent.innerHTML = formattedContent + footerHTML;
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+
+// --- UTILITY FUNCTIONS ---
+
+function highlightText(text, term) {
+    if (!term) return text;
+    const regex = new RegExp(`(${term})`, 'gi');
+    const highlightStyle = 'background-color: #fcd34d; color: #1f2937; padding: 2px 0; border-radius: 2px;';
+    return text.replace(regex, `<span style="${highlightStyle}">$1</span>`);
 }
-
-function closeModal() {
-    modal.classList.add('hidden');
-    document.body.style.overflow = '';
-}
-
-modalCloseBtn.addEventListener('click', closeModal);
-modal.addEventListener('click', (event) => { if (event.target === modal) closeModal(); });
-document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
 
 function formatTimestamp(isoString) {
     if (!isoString) return 'Date not available';
@@ -45,6 +63,70 @@ function formatTimestamp(isoString) {
     return date.toLocaleDateString('en-US', {
         year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
     });
+}
+
+/**
+ * Fetches the ordered list of posters from the 'poster_config' table (publicly accessible).
+ * Populates the custom dropdown list.
+ */
+async function getUniqueSenders() {
+    
+    const { data: posters, error } = await supabase
+        .from('poster_config')
+        .select('sender_name')
+        .order('display_order', { ascending: true }); // ORDERED BY ADMIN CONFIG
+
+    if (error) {
+        console.error("Error fetching poster config:", error);
+        posterDropdownOptions.innerHTML = '<li class="p-3 text-red-400">Error loading posters.</li>';
+        return;
+    }
+    
+    // Clear old options and add 'All Posters'
+    posterDropdownOptions.innerHTML = '';
+    
+    const allPostersItem = createDropdownItem("All Posters", "");
+    posterDropdownOptions.appendChild(allPostersItem);
+
+    posters.forEach(poster => {
+        const item = createDropdownItem(poster.sender_name, poster.sender_name);
+        posterDropdownOptions.appendChild(item);
+    });
+}
+
+/**
+ * Creates a single list item for the custom dropdown.
+ */
+function createDropdownItem(text, value) {
+    const li = document.createElement('li');
+    li.className = 'p-3 cursor-pointer text-gray-200 hover:bg-gray-700 transition-colors';
+    li.textContent = text;
+    li.dataset.value = value;
+    
+    li.addEventListener('click', () => {
+        currentPosterFilterValue = value; // Set the global filter state
+        posterSelectedText.textContent = text; // Update the button text
+        posterDropdownOptions.classList.add('hidden'); // Close the dropdown
+        posterDropdownBtn.classList.remove('open'); // Rotate arrow back
+        
+        // Visually mark the button as active if a filter is selected
+        if (value) {
+            posterDropdownBtn.classList.add('bg-teal-900/50', 'border-teal-700');
+        } else {
+            posterDropdownBtn.classList.remove('bg-teal-900/50', 'border-teal-700');
+        }
+        
+        handleFilterChange(); // Trigger feed reload
+    });
+    return li;
+}
+
+/**
+ * Toggle the visibility of the custom dropdown options.
+ */
+function togglePosterDropdown() {
+    posterDropdownOptions.classList.toggle('hidden');
+    posterDropdownBtn.classList.toggle('open');
 }
 
 function setupScrollAnimations() {
@@ -70,23 +152,128 @@ function displaySkeletonLoader() {
     feedContainer.innerHTML = gridSkeleton;
 }
 
-function createFeedElement(item, isFeatured) {
+function createFeedElement(item, isFeatured, index) {
     const element = document.createElement('div');
     const displayTimestamp = formatTimestamp(item.created_at || item.timestamp);
+    
+    const highlightedTitle = highlightText(item.title, currentSearchTerm);
+    const highlightedContent = highlightText(item.content, currentSearchTerm);
+
     if (isFeatured) {
-        element.className = 'group cursor-pointer bg-gradient-to-br from-gray-800 to-gray-800/50 border border-teal-500/30 rounded-lg shadow-2xl p-6 sm:p-8 animate-on-scroll transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-teal-500/20';
-        element.innerHTML = `<div class="text-sm font-semibold text-teal-400 mb-3">LATEST UPDATE</div><h3 class="text-2xl sm:text-3xl font-bold text-white mb-4 group-hover:text-teal-300 transition-colors">${item.title}</h3><p class="text-gray-400 leading-relaxed line-clamp-4">${item.content}</p><div class="text-xs text-gray-500 mt-4">${displayTimestamp}</div>`;
+        element.className = 'group cursor-pointer bg-gradient-to-br from-gray-800 to-gray-900 border border-teal-500/50 rounded-lg shadow-2xl p-6 sm:p-8 animate-on-scroll transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-teal-500/50 hover:ring-2 hover:ring-teal-500/50';
+        element.innerHTML = `<div class="text-sm font-semibold text-teal-400 mb-3">LATEST UPDATE</div><h3 class="text-3xl sm:text-4xl font-bold text-white mb-4 group-hover:text-teal-300 transition-colors">${highlightedTitle}</h3><p class="text-gray-400 leading-relaxed line-clamp-4">${highlightedContent}</p><div class="text-xs text-gray-500 mt-4">${item.sender_name || 'SK News'} | ${displayTimestamp}</div>`;
     } else {
-        element.className = 'group cursor-pointer bg-gray-800/50 border border-gray-700/50 rounded-lg shadow-lg p-6 animate-on-scroll transition-all duration-300 ease-in-out hover:scale-[1.03] hover:shadow-2xl hover:shadow-teal-500/20';
-        element.innerHTML = `<h4 class="text-xl font-bold text-white mb-2 group-hover:text-teal-300 transition-colors">${item.title}</h4><p class="text-gray-400 leading-relaxed line-clamp-3 mb-4">${item.content}</p><div class="text-xs text-gray-500">${displayTimestamp}</div>`;
+        element.className = 'group cursor-pointer bg-gray-800/50 border border-gray-700/50 rounded-lg shadow-lg p-6 animate-on-scroll transition-all duration-300 ease-in-out hover:scale-[1.03] hover:shadow-2xl hover:shadow-teal-500/20 hover:ring-2 hover:ring-teal-500/20';
+        element.innerHTML = `<h4 class="text-xl font-bold text-white mb-2 group-hover:text-teal-300 transition-colors">${highlightedTitle}</h4><p class="text-gray-400 leading-relaxed line-clamp-3 mb-4">${highlightedContent}</p><div class="text-xs text-gray-500">${item.sender_name || 'SK News'} | ${displayTimestamp}</div>`;
     }
-    element.addEventListener('click', () => openModal(item.title, item.content, item.sender_name, displayTimestamp));
+    element.addEventListener('click', () => openModal(index));
     return element;
 }
 
+
+// --- MODAL CONTROL FUNCTIONS ---
+
+function openModal(index) {
+    if (index < 0 || index >= currentFeedData.length) return;
+
+    const item = currentFeedData[index];
+    currentArticleIndex = index;
+    const displayTimestamp = formatTimestamp(item.created_at || item.timestamp);
+    const totalArticles = currentFeedData.length;
+
+    modalTitle.textContent = item.title;
+    articleCounter.textContent = `Article ${index + 1} of ${totalArticles}`;
+    
+    const contentHtml = item.content.replace(/\n/g, '<p class="mt-4"></p>');
+    
+    // Insert content
+    modalContent.innerHTML = contentHtml;
+    modalContentContainer.scrollTop = 0; // Reset scroll position
+    
+    // Clear existing footer before adding the new one
+    const existingFooter = modalContentContainer.querySelector('#modal-footer');
+    if (existingFooter) {
+        existingFooter.remove();
+    }
+    
+    const footerHTML = `
+        <div id="modal-footer" class="sticky bottom-0 z-10 bg-gray-800 border-t border-gray-700/80 p-4 sm:p-6 text-sm text-gray-400 shadow-xl shadow-gray-900/50">
+            <div class="flex justify-between items-center max-w-full">
+                <span>Posted by <strong class="font-semibold text-teal-400">${item.sender_name || 'SK News'}</strong></span>
+                <span>${displayTimestamp}</span>
+            </div>
+        </div>
+    `;
+    
+    modalContentContainer.insertAdjacentHTML('beforeend', footerHTML);
+    
+    // Update navigation button visibility/state
+    if (index === 0) {
+        modalPrevBtn.classList.add('nav-btn-disabled');
+    } else {
+        modalPrevBtn.classList.remove('nav-btn-disabled');
+    }
+    
+    if (index === totalArticles - 1) {
+        modalNextBtn.classList.add('nav-btn-disabled');
+    } else {
+        modalNextBtn.classList.remove('nav-btn-disabled');
+    }
+
+    // Apply animation classes
+    modal.classList.remove('hidden', 'modal-opening');
+    modal.classList.add('modal-opened');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    modal.classList.remove('modal-opened');
+    modal.classList.add('modal-opening'); 
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('modal-opening');
+        document.body.style.overflow = '';
+        currentArticleIndex = -1; 
+    }, 300);
+}
+
+function navigateToArticle(direction) {
+    const newIndex = currentArticleIndex + direction;
+    if (newIndex >= 0 && newIndex < currentFeedData.length) {
+        openModal(newIndex);
+    }
+}
+
+
 // --- CORE FEED LOGIC ---
 async function loadFeed() {
-    const { data, error } = await supabase.from('feed').select('*').order('created_at', { ascending: false });
+    const searchTerm = searchInput.value.trim();
+    const startDateValue = feedStartDate.value;
+    const endDateValue = feedEndDate.value;
+    const posterValue = currentPosterFilterValue; // Use custom state variable
+
+    currentSearchTerm = searchTerm;
+    filtersActive = searchTerm !== '' || startDateValue !== '' || endDateValue !== '' || posterValue !== '';
+
+    let query = supabase.from('feed').select('*').order('created_at', { ascending: false });
+
+    // Apply filters...
+    if (searchTerm) {
+        const searchPattern = `%${searchTerm}%`;
+        query = query.or(`title.ilike.${searchPattern},content.ilike.${searchPattern}`);
+    }
+    if (posterValue) {
+        query = query.eq('sender_name', posterValue);
+    }
+    if (startDateValue) {
+        query = query.gte('created_at', startDateValue);
+    }
+    if (endDateValue) {
+        query = query.lte('created_at', endDateValue + 'T23:59:59'); 
+    }
+
+    const { data, error } = await query;
 
     if (error) {
         console.error('Error fetching feed:', error);
@@ -94,40 +281,50 @@ async function loadFeed() {
         feedContainer.innerHTML = `<p class="text-center text-red-400 md:col-span-2">Could not load the feed. Please try again later.</p>`;
         return;
     }
-    if (data.length === 0) {
-        featuredContainer.innerHTML = '';
-        feedContainer.innerHTML = `<p class="text-center text-gray-400 md:col-span-2">No updates yet. Check back soon!</p>`;
-        return;
-    }
-
-    // ---> MODIFIED: Store the timestamp of the very newest post.
-    latestPostTimestamp = data[0].created_at;
+    
+    currentFeedData = data || [];
 
     featuredContainer.innerHTML = '';
     feedContainer.innerHTML = '';
+    newPostsIndicator.classList.add('hidden'); 
 
-    const featuredItem = data.shift();
-    if (featuredItem) {
-        const featuredElement = createFeedElement(featuredItem, true);
-        featuredContainer.appendChild(featuredElement);
+    if (currentFeedData.length === 0) {
+        feedContainer.innerHTML = `<p class="text-center text-gray-400 md:col-span-2">${filtersActive ? 'No results found for your filters.' : 'No updates yet. Check back soon!'}</p>`;
+        return;
     }
 
-    data.forEach(item => {
-        const feedElement = createFeedElement(item, false);
+    if (!filtersActive) {
+        latestPostTimestamp = currentFeedData[0].created_at;
+    }
+
+    let itemsToRender = [...currentFeedData];
+    let itemIndexOffset = 0;
+    
+    if (!filtersActive) {
+        const featuredItem = itemsToRender.shift();
+        if (featuredItem) {
+            const featuredElement = createFeedElement(featuredItem, true, 0); 
+            featuredContainer.appendChild(featuredElement);
+            itemIndexOffset = 1;
+        }
+    }
+
+    itemsToRender.forEach((item, i) => {
+        const finalIndex = i + itemIndexOffset;
+        const feedElement = createFeedElement(item, false, finalIndex);
         feedContainer.appendChild(feedElement);
     });
     
     setupScrollAnimations();
 }
 
-// ---> NEW: Function to check for new posts using polling.
 async function checkForNewPosts() {
-    if (!latestPostTimestamp) return; // Don't check if initial load hasn't happened
+    if (!latestPostTimestamp || filtersActive) return; 
 
     const { data: newItems, error } = await supabase
         .from('feed')
         .select('*')
-        .gt('created_at', latestPostTimestamp) // Fetch only posts NEWER than our latest one
+        .gt('created_at', latestPostTimestamp) 
         .order('created_at', { ascending: false });
 
     if (error) {
@@ -137,45 +334,63 @@ async function checkForNewPosts() {
 
     if (newItems && newItems.length > 0) {
         console.log(`Found ${newItems.length} new post(s)!`);
-        latestPostTimestamp = newItems[0].created_at; // Update to the newest timestamp
+        newPostsIndicator.classList.remove('hidden');
+        latestPostTimestamp = newItems[0].created_at; 
+    }
+}
 
-        // Logic to prepend new items and demote the old featured one
-        const oldFeaturedElement = featuredContainer.querySelector('div');
-        
-        // Make the newest item the new featured article
-        const newFeaturedItem = newItems.shift();
-        const newFeaturedElement = createFeedElement(newFeaturedItem, true);
-        featuredContainer.innerHTML = '';
-        featuredContainer.appendChild(newFeaturedElement);
-        
-        // Animate its appearance
-        newFeaturedElement.classList.add('is-visible');
-        newFeaturedElement.style.opacity = '0';
-        setTimeout(() => { newFeaturedElement.style.transition = 'opacity 0.5s'; newFeaturedElement.style.opacity = '1'; }, 50);
-
-        // Demote the old featured article to a regular grid item
-        if (oldFeaturedElement) {
-             const title = oldFeaturedElement.querySelector('h3').textContent;
-             const content = oldFeaturedElement.querySelector('p').textContent;
-             // We need to rebuild the item object to create a standard card
-             const demotedItem = { title, content, created_at: null, sender_name: null }; // Timestamps/sender might be lost here, but it's a visual demotion
-             const demotedElement = createFeedElement(demotedItem, false);
-             feedContainer.prepend(demotedElement);
-        }
-        
-        // Add any other new items (if more than one came in) to the top of the grid
-        newItems.forEach(item => {
-            const el = createFeedElement(item, false);
-            feedContainer.prepend(el);
-        });
+function handleFilterChange() {
+    const term = searchInput.value.trim();
+    
+    if (term.length >= 3 || term.length === 0 || feedStartDate.value || feedEndDate.value || currentPosterFilterValue) {
+        loadFeed();
     }
 }
 
 
-// --- RUN ON PAGE LOAD ---
+// --- RUN ON PAGE LOAD AND LISTENERS ---
 document.addEventListener('DOMContentLoaded', () => {
     displaySkeletonLoader();
+    getUniqueSenders(); 
     loadFeed();
-    // ---> NEW: Start polling for new posts every 15 seconds.
-    setInterval(checkForNewPosts, 15000); // 15000 milliseconds = 15 seconds
+    setInterval(checkForNewPosts, 15000); 
+    
+    // Custom Dropdown Listener
+    posterDropdownBtn.addEventListener('click', togglePosterDropdown);
+    
+    // Close dropdown if user clicks outside of it
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.relative') && !posterDropdownOptions.classList.contains('hidden')) {
+            posterDropdownOptions.classList.add('hidden');
+            posterDropdownBtn.classList.remove('open');
+        }
+    });
+
+    // Filter Listeners
+    searchInput.addEventListener('input', debounce(handleFilterChange, 300));
+    feedStartDate.addEventListener('change', handleFilterChange);
+    feedEndDate.addEventListener('change', handleFilterChange);
+
+    // Modal Listeners
+    modalCloseBtn.addEventListener('click', closeModal);
+
+    // Navigation Listeners
+    modalPrevBtn.addEventListener('click', () => navigateToArticle(-1));
+    modalNextBtn.addEventListener('click', () => navigateToArticle(1));
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (!modal.classList.contains('hidden')) {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault(); 
+                navigateToArticle(-1);
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault(); 
+                navigateToArticle(1);
+            }
+        }
+    });
+
+    // Indicator Listener
+    newPostsIndicator.addEventListener('click', loadFeed);
 });

@@ -74,9 +74,11 @@
         </section>
     </main>
 
-    <div id="chat-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
-        <div id="modal-panel" class="bg-gray-800 border border-teal-600/50 rounded-xl shadow-2xl w-full max-w-lg">
-            <div class="p-6 text-center">
+    <!-- Modal Structure -->
+    <div id="chat-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden transition-opacity duration-300">
+        <div id="modal-panel" class="bg-gray-800 border border-teal-600/50 rounded-xl shadow-2xl w-full max-w-lg transform scale-95 transition-transform duration-300">
+            <div class="p-8 text-center">
+                <img id="modal-logo" src="" alt="Chat Logo" class="w-24 h-24 mx-auto rounded-full mb-4">
                 <h2 id="modal-title" class="text-3xl font-bold text-white"></h2>
                 <p id="modal-description" class="mt-2 text-gray-400"></p>
                 <div class="mt-6 space-y-4">
@@ -92,7 +94,11 @@
                     <p class="text-gray-300">Join directly on GroupMe:</p>
                     <a id="modal-groupme-link" href="#" target="_blank" class="inline-block px-8 py-3 bg-gray-600 text-white font-semibold rounded-md hover:bg-gray-700 transition-colors">Join via GroupMe Link</a>
                 </div>
-                <button id="modal-close-btn" class="mt-8 text-gray-400 hover:text-white transition-colors">Close</button>
+                <button id="modal-close-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
         </div>
     </div>

@@ -217,10 +217,12 @@ function openModal(index) {
     const displayTimestamp = formatTimestamp(item.created_at || item.timestamp);
     const totalArticles = currentFeedData.length;
 
-    modalTitle.textContent = item.title;
+    modalTitle.innerHTML = highlightText(item.title, currentSearchTerm); // Use innerHTML for highlighting
     articleCounter.textContent = `Article ${index + 1} of ${totalArticles}`;
 
-    const contentHtml = item.content.replace(/\n/g, '<p class="mt-4"></p>');
+    // Highlight content before processing for display
+    const highlightedContent = highlightText(item.content, currentSearchTerm);
+    const contentHtml = highlightedContent.replace(/\n/g, '<p class="mt-4"></p>');
 
     // Insert content
     modalContent.innerHTML = contentHtml;

@@ -348,8 +348,31 @@ function handleFilterChange() {
 }
 
 
+/**
+ * Sets the default start and end dates on the filter inputs.
+ * Start date: 2 days ago.
+ * End date: Today.
+ */
+function setDefaultDates() {
+    const today = new Date();
+    const twoDaysAgo = new Date();
+    twoDaysAgo.setDate(today.getDate() - 2);
+
+    // Format to YYYY-MM-DD for the input[type="date"] value
+    const formatDate = (date) => {
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    };
+
+    feedStartDate.value = formatDate(twoDaysAgo);
+    feedEndDate.value = formatDate(today);
+}
+
 // --- RUN ON PAGE LOAD AND LISTENERS ---
 document.addEventListener('DOMContentLoaded', () => {
+    setDefaultDates();
     displaySkeletonLoader();
     getUniqueSenders(); 
     loadFeed();

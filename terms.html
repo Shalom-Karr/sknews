@@ -1,88 +1,111 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terms and Conditions - SK News</title>
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="canonical" href="https://sknews.pages.dev/terms.html" />    
-    <script src="script.js" defer></script>
-    <script src='https://cdn.jotfor.ms/agent/embedjs/01955ca9772271df8b07b04d0cf624510bf5/embed.js?skipWelcome=1&maximizable=1'></script>
-</head>
-<body>
 
-    <header class="main-header scrolled">
-        <div class="container">
-            <a href="index.html" class="logo">SK News</a>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="news.html">News</a></li>
-                    <li><a href="chats.html">Chats</a></li>
-                    <li><a href="sites.html">Sites</a></li>
-                    <li><a href="join.html">Join</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="advertise.html">Advertise</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                </ul>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <header class="fixed top-0 left-0 right-0 z-40 bg-gray-900/80 backdrop-blur-sm border-b border-gray-800 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <a href="index.html" class="text-2xl font-bold text-teal-400 hover:text-teal-300 transition-colors">SK News</a>
+                <nav class="hidden md:flex space-x-8" id="main-nav">
+                    <a href="index.html" class="text-gray-300 hover:text-teal-400 transition-colors">Home</a>
+                    <a href="news.html" class="text-gray-300 hover:text-teal-400 transition-colors">News</a>
+                    <a href="chats.html" class="text-gray-300 hover:text-teal-400 transition-colors">Chats</a>
+                    <a href="sites.html" class="text-gray-300 hover:text-teal-400 transition-colors">Sites</a>
+                    <a href="join.html" class="text-gray-300 hover:text-teal-400 transition-colors">Join</a>
+                    <a href="about.html" class="text-gray-300 hover:text-teal-400 transition-colors">About</a>
+                    <a href="advertise.html" class="text-gray-300 hover:text-teal-400 transition-colors">Advertise</a>
+                    <a href="contact.html" class="text-gray-300 hover:text-teal-400 transition-colors">Contact</a>
+                </nav>
+                <button class="md:hidden hamburger flex flex-col justify-center items-center h-8 w-8 space-y-1.5" id="hamburger-menu" aria-label="Open Menu">
+                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
+                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
+                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-900/95 backdrop-blur-sm">
+            <nav class="flex flex-col items-center space-y-4 py-6">
+                <a href="index.html" class="text-gray-300 hover:text-teal-400 transition-colors">Home</a>
+                <a href="news.html" class="text-gray-300 hover:text-teal-400 transition-colors">News</a>
+                <a href="chats.html" class="text-gray-300 hover:text-teal-400 transition-colors">Chats</a>
+                <a href="sites.html" class="text-gray-300 hover:text-teal-400 transition-colors">Sites</a>
+                <a href="join.html" class="text-gray-300 hover:text-teal-400 transition-colors">Join</a>
+                <a href="about.html" class="text-gray-300 hover:text-teal-400 transition-colors">About</a>
+                <a href="advertise.html" class="text-gray-300 hover:text-teal-400 transition-colors">Advertise</a>
+                <a href="contact.html" class="text-gray-300 hover:text-teal-400 transition-colors">Contact</a>
             </nav>
-            <button class="hamburger" id="hamburger-menu" aria-label="Open Menu"><span></span><span></span><span></span></button>
         </div>
     </header>
 
-    <main>
-        <section class="page-hero">
-            <div class="container animate-on-scroll">
-                <h1>Terms and Conditions</h1>
-                <p>Please read these terms carefully before using our chat and text services.</p>
-            </div>
-        </section>
+    <main class="pt-28 sm:pt-32">
+        <section class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-4xl font-bold text-center bg-gradient-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent">Terms and Conditions</h1>
+                <p class="mt-4 text-lg text-gray-400 text-center">Please read these terms carefully before using our chat and text services.</p>
 
-        <section class="legal-content">
-            <div class="container">
-                <h2 class="animate-on-scroll">Terms for Joining SK News Services</h2>
-
-                <div class="animate-on-scroll">
-                    <h3>Acceptance of Terms</h3>
-                    <p>By accessing or using our text and chat platforms, you agree to comply with and be bound by these terms and conditions. If you do not agree, please do not use these platforms.</p>
+                <div id="terms-content" class="mt-12 prose prose-invert max-w-none prose-p:text-gray-300 prose-headings:text-teal-400">
+                    <!-- Content will be loaded here from Supabase -->
+                    <p class="text-center">Loading terms...</p>
                 </div>
-
-                <div class="animate-on-scroll">
-                    <h3>User Conduct</h3>
-                    <p>Users must engage respectfully, refraining from harassment, hate speech, spamming, or any form of disruptive behavior. Profanity and advertising are not allowed unless explicitly permitted. Content shared should be appropriate and lawful.</p>
-                </div>
-                
-                <div class="animate-on-scroll">
-                    <h3>Termination</h3>
-                    <p>SK News reserves the right to suspend or terminate your access to any of our services at any time, for any reason, including violations of these terms, with or without notice. Such termination is at our sole discretion, and no explanation is required.</p>
-                </div>
-                
-                <div class="animate-on-scroll">
-                    <h3>Amendments</h3>
-                    <p>These terms may be updated periodically. Continued use of the platform after changes are posted constitutes your acceptance of the revised terms.</p>
-                </div>
-
-                <div class="animate-on-scroll">
-                    <h3>Contact Information</h3>
-                    <p>For any questions or concerns regarding these terms, please <a href="contact.html">contact us</a>.</p>
-                </div>
-
             </div>
         </section>
     </main>
-    
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <p>© 2025 SK News. All Rights Reserved.</p>
-                <nav class="footer-nav"><a href="terms.html">Terms & Conditions</a></nav>
-            </div>
-        </div>
+
+    <footer class="mt-24 border-t border-gray-800 bg-gray-900">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8"><div class="flex flex-col sm:flex-row items-center justify-between py-6 text-sm text-gray-500"><p>© 2025 SK News. All Rights Reserved.</p><a href="terms.html" class="mt-2 sm:mt-0 hover:text-teal-400 transition-colors">Terms & Conditions</a></div></div>
     </footer>
 
-</body>
+    <script type="module">
+        import { supabase } from './supabase-client.js';
 
+        async function loadTerms() {
+            const contentContainer = document.getElementById('terms-content');
+            const { data, error } = await supabase
+                .from('news_admin')
+                .select('content')
+                .eq('page', 'terms')
+                .eq('element_id', 'terms-content')
+                .single();
+
+            if (error || !data) {
+                console.error('Error fetching terms:', error);
+                contentContainer.innerHTML = '<p>Could not load the terms and conditions at this time. Please try again later.</p>';
+            } else {
+                // Basic markdown to HTML conversion
+                let htmlContent = data.content;
+                // Simple conversion for headings, lists, etc.
+                htmlContent = htmlContent.replace(/^### (.*$)/gim, '<h3 class="text-xl font-semibold text-teal-400 mt-6 mb-2">$1</h3>');
+                htmlContent = htmlContent.replace(/\\n/g, '<br>');
+                contentContainer.innerHTML = htmlContent;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadTerms);
+    </script>
+    <script>
+        const hamburgerBtn = document.getElementById('hamburger-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+        hamburgerBtn.addEventListener('click', () => {
+            hamburgerBtn.classList.toggle('is-active');
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
 </html>

@@ -49,6 +49,37 @@ let currentArticleIndex = -1;
 
 // --- UTILITY FUNCTIONS ---
 
+/**
+ * Converts a YYYY-MM-DD date string into a timezone-aware ISO string for Supabase.
+ * @param {string} dateString - The date in YYYY-MM-DD format.
+ * @param {'start' | 'end'} position - Whether to get the start or end of the day.
+ * @returns {string | null}
+ */
+function getEstIsoString(dateString, position = 'start') {
+    if (!dateString) return null;
+
+    // Create a date object from the input string. It will be interpreted as UTC.
+    const date = new Date(`${dateString}T00:00:00Z`);
+
+    // Get the America/New_York equivalent of this UTC date.
+    const estFormatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    });
+
+    // We can use the formatted date to determine if DST is in effect.
+    // This is a trick to get the correct offset.
+    const estDate = new Date(estFormatter.format(date));
+    const isDst = estDate.getTimezoneOffset() < new Date(date.getFullYear(), 0, 1).getTimezoneOffset();
+
+    const offset = isDst ? '-04:00' : '-05:00';
+    const time = position === 'start' ? '00:00:00' : '23:59:59';
+
+    return `${dateString}T${time}${offset}`;
+}
+
 function highlightText(text, term) {
     if (!term) return text;
     const regex = new RegExp(`(${term})`, 'gi');
@@ -285,10 +316,10 @@ async function loadFeed() {
         feedQuery = feedQuery.eq('sender_name', posterValue);
     }
     if (startDateValue) {
-        feedQuery = feedQuery.gte('created_at', startDateValue);
+        feedQuery = feedQuery.gte('created_at', getEstIsoString(startDateValue, 'start'));
     }
     if (endDateValue) {
-        feedQuery = feedQuery.lte('created_at', endDateValue + 'T23:59:59');
+        feedQuery = feedQuery.lte('created_at', getEstIsoString(endDateValue, 'end'));
     }
 
     // --- Step 2: Execute queries ---
@@ -397,9 +428,18 @@ function handleFilterChange() {
  * End date: Today.
  */
 function setDefaultDates() {
-    const today = new Date();
-    const tomorrow = new Date();
-    tomorrow.setDate(today.getDate() + 1);
+    // Get the current date in the US Eastern timezone by applying a static offset.
+    // This is a simplification and doesn't account for EDT/EST shifts.
+    const now = new Date();
+    const estOffset = -5 * 60; // UTC-5 for EST
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const estNow = new Date(utc + (estOffset * 60000));
+
+    const yesterday = new Date(estNow);
+    yesterday.setDate(estNow.getDate() - 1);
+
+    const tomorrow = new Date(estNow);
+    tomorrow.setDate(estNow.getDate() + 1);
 
     // Format to YYYY-MM-DD for the input[type="date"] value
     const formatDate = (date) => {
@@ -409,7 +449,7 @@ function setDefaultDates() {
         return `${yyyy}-${mm}-${dd}`;
     };
 
-    feedStartDate.value = formatDate(today);
+    feedStartDate.value = formatDate(yesterday);
     feedEndDate.value = formatDate(tomorrow);
 }
 

@@ -26,7 +26,7 @@ const logoutButton = document.getElementById('logout-button');
 const addFeedForm = document.getElementById('add-feed-form');
 const userEmailSpan = document.getElementById('user-email');
 const feedListSection = document.getElementById('feed-list-section');
-const adminSearchInput = document.getElementById('admin-search-input'); 
+const adminSearchInput = document.getElementById('admin-search-input');
 
 // Filter elements references
 const posterFilter = document.getElementById('poster-filter');
@@ -64,7 +64,7 @@ function highlightText(text, term) {
  */
 async function loadPosterConfig() {
     posterListSection.innerHTML = '<p class="loading-message">Loading poster list...</p>';
-    
+
     const { data: posters, error } = await supabase
         .from('poster_config')
         .select('*')
@@ -80,7 +80,7 @@ async function loadPosterConfig() {
     posters.forEach(poster => {
         posterListSection.appendChild(createPosterElement(poster));
     });
-    
+
     // After loading config, update the filter dropdown list
     updatePosterFilterDropdown(posters);
 }
@@ -94,12 +94,12 @@ function createPosterElement(poster) {
     element.innerHTML = `
         <div class="flex items-center space-x-4 flex-grow">
             <span class="text-sm font-medium text-gray-400">Order:</span>
-            <input type="number" data-id="${poster.id}" data-field="order" value="${poster.display_order}" 
+            <input type="number" data-id="${poster.id}" data-field="order" value="${poster.display_order}"
                    class="w-16 px-2 py-1 bg-gray-600 rounded text-white text-center text-sm focus:border-teal-400">
-            
+
             <span class="text-sm font-semibold text-white flex-grow">${poster.sender_name}</span>
         </div>
-        <button data-id="${poster.id}" data-name="${poster.sender_name}" data-action="delete-poster" 
+        <button data-id="${poster.id}" data-name="${poster.sender_name}" data-action="delete-poster"
                 class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors">Delete</button>
     `;
 
@@ -124,7 +124,7 @@ async function updatePosterOrder(posterId, newOrder) {
     } else {
         // Reload list to reflect the new order immediately
         loadPosterConfig();
-        applyFilters(); 
+        applyFilters();
     }
 }
 
@@ -154,7 +154,7 @@ async function handleAddPoster(event) {
         nameInput.value = '';
         orderInput.value = '';
         loadPosterConfig();
-        applyFilters(); 
+        applyFilters();
     }
 }
 
@@ -179,7 +179,7 @@ async function handleDeletePoster(event) {
     } else {
         alert('Poster configuration deleted.');
         loadPosterConfig();
-        applyFilters(); 
+        applyFilters();
     }
 }
 
@@ -207,27 +207,22 @@ async function loadFeedItems(searchTerm = '', posterFilterValue = '', startDateV
 
     let query = supabase
         .from('feed')
-        .select('id, title, content, created_at, sender_name')
+        .select('*') // Select all columns to get pinning info
         .order('created_at', { ascending: false });
-    
-    // 1. Apply Search Filter (Title or Content)
+
+    // Apply filters...
     if (searchTerm) {
         const searchPattern = `%${searchTerm}%`;
         query = query.or(`title.ilike.${searchPattern},content.ilike.${searchPattern}`);
     }
-
-    // 2. Apply Poster Filter (Sender Name)
     if (posterFilterValue) {
         query = query.eq('sender_name', posterFilterValue);
     }
-    
-    // 3. Apply Date Range Filters
     if (startDateValue) {
         query = query.gte('created_at', startDateValue);
     }
-    
     if (endDateValue) {
-        query = query.lte('created_at', endDateValue + 'T23:59:59'); 
+        query = query.lte('created_at', endDateValue + 'T23:59:59');
     }
 
     const { data: items, error } = await query;
@@ -243,10 +238,8 @@ async function loadFeedItems(searchTerm = '', posterFilterValue = '', startDateV
         return;
     }
 
-    feedListSection.innerHTML = ''; 
-
-    const currentSearchTerm = adminSearchInput.value.trim(); 
-
+    feedListSection.innerHTML = '';
+    const currentSearchTerm = adminSearchInput.value.trim();
     items.forEach(item => {
         const itemElement = createFeedItemElement(item, currentSearchTerm);
         feedListSection.appendChild(itemElement);
@@ -259,17 +252,23 @@ async function loadFeedItems(searchTerm = '', posterFilterValue = '', startDateV
 function createFeedItemElement(item, searchTerm) {
     const element = document.createElement('div');
     element.id = `item-${item.id}`;
-    element.className = 'p-4 border border-gray-700 rounded-md bg-gray-700/50 transition-shadow duration-200 hover:shadow-lg hover:shadow-teal-500/10';
-    
+    const isPinned = item.is_pinned && item.pinned_until && new Date(item.pinned_until) > new Date();
+    const pinClass = isPinned ? 'border-teal-400 shadow-lg shadow-teal-500/10' : 'border-gray-700';
+
+    element.className = `p-4 border ${pinClass} rounded-md bg-gray-700/50 transition-all duration-300`;
+
     const highlightedTitle = highlightText(item.title, searchTerm);
     const highlightedContent = highlightText(item.content, searchTerm);
 
     element.innerHTML = `
         <div class="flex justify-between items-start">
             <div class="flex-grow">
-                <h4 class="text-xl font-semibold text-white mb-2" data-field="title">${highlightedTitle}</h4>
+                <div class="flex items-center mb-2">
+                    ${isPinned ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-teal-400 mr-2 flex-shrink-0"><path fill-rule="evenodd" d="M10.868 2.884c.321.242.593.553.794.904l.025.043a4.735 4.735 0 01.326 1.403v3.812a4.734 4.734 0 01-.326 1.403l-.025.043a2.73 2.73 0 01-.794.904l-1.01.758a.75.75 0 00-.332 1.417V17.5a.75.75 0 01-1.5 0v-5.234a.75.75 0 00-.332-1.417l-1.01-.758a2.73 2.73 0 01-.794-.904l-.025-.043a4.735 4.735 0 01-.326-1.403V5.274c0-.551.09-1.08.268-1.562l.058-.158a2.73 2.73 0 01.794-.904l1.01-.758a.75.75 0 00.332-1.417V.75a.75.75 0 011.5 0v1.717a.75.75 0 00.332 1.417l1.01.758z" clip-rule="evenodd"></path></svg>` : ''}
+                    <h4 class="text-xl font-semibold text-white" data-field="title">${highlightedTitle}</h4>
+                </div>
                 <p class="text-sm text-gray-400 mb-3">
-                    <span class="text-teal-400">${item.sender_name || 'System/Manual'}</span> | 
+                    <span class="text-teal-400">${item.sender_name || 'System/Manual'}</span> |
                     ${formatTimestampAdmin(item.created_at)}
                 </p>
                 <div class="text-gray-300 whitespace-pre-wrap mb-4" data-field="content">${highlightedContent}</div>
@@ -279,14 +278,36 @@ function createFeedItemElement(item, searchTerm) {
                 <button data-id="${item.id}" data-action="delete" class="btn-control bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-colors">Delete</button>
             </div>
         </div>
+        <!-- Pinning Controls -->
+        <div class="mt-4 pt-4 border-t border-gray-600/50">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <label for="pin-until-${item.id}" class="text-sm font-medium text-gray-300">Pin Until:</label>
+                    <input type="datetime-local" id="pin-until-${item.id}" class="w-auto px-2 py-1 bg-gray-600 border border-gray-500 rounded-md text-white text-sm focus:ring-teal-500 focus:border-teal-500"
+                           value="${item.pinned_until ? new Date(new Date(item.pinned_until).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().slice(0, 16) : ''}">
+                </div>
+                <div class="flex space-x-2">
+                    <button data-id="${item.id}" data-action="pin" class="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white rounded-md text-xs font-semibold transition-colors">
+                        ${isPinned ? 'Update Pin' : 'Pin Article'}
+                    </button>
+                    ${isPinned ? `<button data-id="${item.id}" data-action="unpin" class="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white rounded-md text-xs font-semibold transition-colors">Unpin</button>` : ''}
+                </div>
+            </div>
+        </div>
     `;
 
-    element.querySelector('[data-action="edit"]').addEventListener('click', (e) => handleEdit(item.id, element));
-    element.querySelector('[data-action="delete"]').addEventListener('click', (e) => handleDelete(item.id));
+    // Attach event listeners
+    element.querySelector('[data-action="edit"]').addEventListener('click', () => handleEdit(item.id, element));
+    element.querySelector('[data-action="delete"]').addEventListener('click', () => handleDelete(item.id));
+    element.querySelector('[data-action="pin"]').addEventListener('click', () => handlePin(item.id));
+
+    const unpinButton = element.querySelector('[data-action="unpin"]');
+    if (unpinButton) {
+        unpinButton.addEventListener('click', () => handleUnpin(item.id));
+    }
 
     return element;
 }
-
 
 // Handler that combines all filters and uses current values
 function applyFilters() {
@@ -302,7 +323,7 @@ async function handleEdit(itemId, itemElement) {
     const titleElement = itemElement.querySelector('[data-field="title"]');
     const contentElement = itemElement.querySelector('[data-field="content"]');
     const controlsContainer = itemElement.querySelector('.flex-shrink-0');
-    
+
     const titleText = titleElement.textContent;
     const contentText = contentElement.textContent;
 
@@ -316,7 +337,7 @@ async function handleEdit(itemId, itemElement) {
     `;
 
     controlsContainer.querySelector('[data-action="save"]').addEventListener('click', () => handleSave(itemId));
-    controlsContainer.querySelector('[data-action="cancel"]').addEventListener('click', applyFilters); 
+    controlsContainer.querySelector('[data-action="cancel"]').addEventListener('click', applyFilters);
 }
 
 async function handleSave(itemId) {
@@ -337,7 +358,7 @@ async function handleSave(itemId) {
         alert(`Error updating item: ${error.message}`);
     } else {
         alert('Item updated successfully!');
-        applyFilters(); 
+        applyFilters();
     }
 }
 
@@ -355,13 +376,50 @@ async function handleDelete(itemId) {
         alert(`Error deleting item: ${error.message}`);
     } else {
         alert('Item deleted successfully!');
-        applyFilters(); 
+        applyFilters();
     }
 }
 
+async function handlePin(itemId) {
+    const pinUntilValue = document.getElementById(`pin-until-${itemId}`).value;
+    if (!pinUntilValue) {
+        alert('Please select an expiration date for the pin.');
+        return;
+    }
+
+    const pinned_until = new Date(pinUntilValue).toISOString();
+
+    const { error } = await supabase
+        .from('feed')
+        .update({ is_pinned: true, pinned_until })
+        .eq('id', itemId);
+
+    if (error) {
+        alert(`Error pinning article: ${error.message}`);
+    } else {
+        alert('Article pinned successfully!');
+        applyFilters();
+    }
+}
+
+async function handleUnpin(itemId) {
+    const { error } = await supabase
+        .from('feed')
+        .update({ is_pinned: false, pinned_until: null })
+        .eq('id', itemId);
+
+    if (error) {
+        alert(`Error unpinning article: ${error.message}`);
+    } else {
+        alert('Article unpinned successfully!');
+        applyFilters();
+    }
+}
+
+
 async function handleLogin(event) {
-    event.preventDefault(); 
-    
+    event.preventDefault();
+
     const email = loginForm.email.value;
     const password = loginForm.password.value;
 
@@ -370,14 +428,14 @@ async function handleLogin(event) {
     if (error) {
         alert(`Login failed: ${error.message}`);
     } else {
-        loginForm.reset(); 
-        checkUser(); 
+        loginForm.reset();
+        checkUser();
     }
 }
 
 async function handleLogout() {
     await supabase.auth.signOut();
-    checkUser(); 
+    checkUser();
 }
 
 async function handleAddFeedItem(event) {
@@ -388,18 +446,18 @@ async function handleAddFeedItem(event) {
 
     const { data: { user } } = await supabase.auth.getUser();
     const senderName = user ? `Admin` : 'Admin';
-    
+
     const { error } = await supabase
         .from('feed')
         .insert([{ title, content, sender_name: senderName }]);
-    
+
     if (error) {
         alert(`Error adding feed item: ${error.message}`);
     } else {
         alert('Feed item added successfully!');
         addFeedForm.reset();
         loadPosterConfig(); // Reload config in case a new sender name was added
-        loadFeedItems(); 
+        loadFeedItems();
     }
 }
 
@@ -410,15 +468,15 @@ async function checkUser() {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (user) {
-        loginSection.style.display = 'none'; 
-        adminSection.style.display = 'block'; 
-        userEmailSpan.textContent = user.email; 
-        
-        await loadPosterConfig(); 
-        loadFeedItems(); 
+        loginSection.style.display = 'none';
+        adminSection.style.display = 'block';
+        userEmailSpan.textContent = user.email;
+
+        await loadPosterConfig();
+        loadFeedItems();
     } else {
-        loginSection.style.display = 'block'; 
-        adminSection.style.display = 'none'; 
+        loginSection.style.display = 'block';
+        adminSection.style.display = 'none';
         feedListSection.innerHTML = '<p class="loading-message">Please log in to manage items.</p>';
     }
 }
@@ -431,7 +489,7 @@ document.addEventListener('DOMContentLoaded', checkUser);
 loginForm.addEventListener('submit', handleLogin);
 logoutButton.addEventListener('click', handleLogout);
 addFeedForm.addEventListener('submit', handleAddFeedItem);
-addPosterForm.addEventListener('submit', handleAddPoster); 
+addPosterForm.addEventListener('submit', handleAddPoster);
 
 // Filter Listeners (using debounced search)
 adminSearchInput.addEventListener('input', debounce(() => {

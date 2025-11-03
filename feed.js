@@ -20,18 +20,18 @@ const featuredContainer = document.getElementById('featured-article-container');
 const feedContainer = document.getElementById('feed-container');
 const modal = document.getElementById('article-modal');
 const modalTitle = document.getElementById('modal-title');
-const modalContent = document.getElementById('modal-content'); 
-const modalContentContainer = document.getElementById('modal-content-container'); 
-const modalCloseBtn = document.getElementById('modal-close-btn'); 
-const searchInput = document.getElementById('feed-search-input'); 
-const feedStartDate = document.getElementById('feed-start-date'); 
-const feedEndDate = document.getElementById('feed-end-date');     
-const newPostsIndicator = document.getElementById('new-posts-indicator'); 
+const modalContent = document.getElementById('modal-content');
+const modalContentContainer = document.getElementById('modal-content-container');
+const modalCloseBtn = document.getElementById('modal-close-btn');
+const searchInput = document.getElementById('feed-search-input');
+const feedStartDate = document.getElementById('feed-start-date');
+const feedEndDate = document.getElementById('feed-end-date');
+const newPostsIndicator = document.getElementById('new-posts-indicator');
 
 // Navigation References
 const modalPrevBtn = document.getElementById('modal-prev-btn');
 const modalNextBtn = document.getElementById('modal-next-btn');
-const articleCounter = document.getElementById('article-counter'); 
+const articleCounter = document.getElementById('article-counter');
 
 // Custom Dropdown References
 const posterDropdownBtn = document.getElementById('poster-dropdown-btn');
@@ -41,10 +41,10 @@ let currentPosterFilterValue = ''; // Replaces the value property of the native 
 
 // State variables
 let latestPostTimestamp = null;
-let currentSearchTerm = ''; 
-let filtersActive = false; 
-let currentFeedData = []; 
-let currentArticleIndex = -1; 
+let currentSearchTerm = '';
+let filtersActive = false;
+let currentFeedData = [];
+let currentArticleIndex = -1;
 
 
 // --- UTILITY FUNCTIONS ---
@@ -70,7 +70,7 @@ function formatTimestamp(isoString) {
  * Populates the custom dropdown list.
  */
 async function getUniqueSenders() {
-    
+
     const { data: posters, error } = await supabase
         .from('poster_config')
         .select('sender_name')
@@ -81,10 +81,10 @@ async function getUniqueSenders() {
         posterDropdownOptions.innerHTML = '<li class="p-3 text-red-400">Error loading posters.</li>';
         return;
     }
-    
+
     // Clear old options and add 'All Posters'
     posterDropdownOptions.innerHTML = '';
-    
+
     const allPostersItem = createDropdownItem("All Posters", "");
     posterDropdownOptions.appendChild(allPostersItem);
 
@@ -102,20 +102,20 @@ function createDropdownItem(text, value) {
     li.className = 'p-3 cursor-pointer text-gray-200 hover:bg-gray-700 transition-colors';
     li.textContent = text;
     li.dataset.value = value;
-    
+
     li.addEventListener('click', () => {
         currentPosterFilterValue = value; // Set the global filter state
         posterSelectedText.textContent = text; // Update the button text
         posterDropdownOptions.classList.add('hidden'); // Close the dropdown
         posterDropdownBtn.classList.remove('open'); // Rotate arrow back
-        
+
         // Visually mark the button as active if a filter is selected
         if (value) {
             posterDropdownBtn.classList.add('bg-teal-900/50', 'border-teal-700');
         } else {
             posterDropdownBtn.classList.remove('bg-teal-900/50', 'border-teal-700');
         }
-        
+
         handleFilterChange(); // Trigger feed reload
     });
     return li;
@@ -155,13 +155,18 @@ function displaySkeletonLoader() {
 function createFeedElement(item, isFeatured, index) {
     const element = document.createElement('div');
     const displayTimestamp = formatTimestamp(item.created_at || item.timestamp);
-    
+
     const highlightedTitle = highlightText(item.title, currentSearchTerm);
     const highlightedContent = highlightText(item.content, currentSearchTerm);
+    const isPinned = item.is_pinned && new Date(item.pinned_until) > new Date();
 
     if (isFeatured) {
-        element.className = 'group cursor-pointer bg-gradient-to-br from-gray-800 to-gray-900 border border-teal-500/50 rounded-lg shadow-2xl p-6 sm:p-8 animate-on-scroll transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-teal-500/50 hover:ring-2 hover:ring-teal-500/50';
-        element.innerHTML = `<div class="text-sm font-semibold text-teal-400 mb-3">LATEST UPDATE</div><h3 class="text-3xl sm:text-4xl font-bold text-white mb-4 group-hover:text-teal-300 transition-colors">${highlightedTitle}</h3><p class="text-gray-400 leading-relaxed line-clamp-4">${highlightedContent}</p><div class="text-xs text-gray-500 mt-4">${item.sender_name || 'SK News'} | ${displayTimestamp}</div>`;
+        const featuredLabel = isPinned
+            ? '<div class="flex items-center text-sm font-semibold text-yellow-400 mb-3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mr-2"><path fill-rule="evenodd" d="M10.868 2.884c.321.242.593.553.794.904l.025.043a4.735 4.735 0 01.326 1.403v3.812a4.734 4.734 0 01-.326 1.403l-.025.043a2.73 2.73 0 01-.794.904l-1.01.758a.75.75 0 00-.332 1.417V17.5a.75.75 0 01-1.5 0v-5.234a.75.75 0 00-.332-1.417l-1.01-.758a2.73 2.73 0 01-.794-.904l-.025-.043a4.735 4.735 0 01-.326-1.403V5.274c0-.551.09-1.08.268-1.562l.058-.158a2.73 2.73 0 01.794-.904l1.01-.758a.75.75 0 00.332-1.417V.75a.75.75 0 011.5 0v1.717a.75.75 0 00.332 1.417l1.01.758z" clip-rule="evenodd"></path></svg>PINNED POST</div>'
+            : '<div class="text-sm font-semibold text-teal-400 mb-3">LATEST UPDATE</div>';
+
+        element.className = `group cursor-pointer bg-gradient-to-br from-gray-800 to-gray-900 border rounded-lg shadow-2xl p-6 sm:p-8 animate-on-scroll transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-teal-500/50 hover:ring-2 ${isPinned ? 'border-yellow-500/50 hover:ring-yellow-500/50' : 'border-teal-500/50 hover:ring-teal-500/50'}`;
+        element.innerHTML = `${featuredLabel}<h3 class="text-3xl sm:text-4xl font-bold text-white mb-4 group-hover:text-teal-300 transition-colors">${highlightedTitle}</h3><p class="text-gray-400 leading-relaxed line-clamp-4">${highlightedContent}</p><div class="text-xs text-gray-500 mt-4">${item.sender_name || 'SK News'} | ${displayTimestamp}</div>`;
     } else {
         element.className = 'group cursor-pointer bg-gray-800/50 border border-gray-700/50 rounded-lg shadow-lg p-6 animate-on-scroll transition-all duration-300 ease-in-out hover:scale-[1.03] hover:shadow-2xl hover:shadow-teal-500/20 hover:ring-2 hover:ring-teal-500/20';
         element.innerHTML = `<h4 class="text-xl font-bold text-white mb-2 group-hover:text-teal-300 transition-colors">${highlightedTitle}</h4><p class="text-gray-400 leading-relaxed line-clamp-3 mb-4">${highlightedContent}</p><div class="text-xs text-gray-500">${item.sender_name || 'SK News'} | ${displayTimestamp}</div>`;
@@ -183,19 +188,19 @@ function openModal(index) {
 
     modalTitle.textContent = item.title;
     articleCounter.textContent = `Article ${index + 1} of ${totalArticles}`;
-    
+
     const contentHtml = item.content.replace(/\n/g, '<p class="mt-4"></p>');
-    
+
     // Insert content
     modalContent.innerHTML = contentHtml;
     modalContentContainer.scrollTop = 0; // Reset scroll position
-    
+
     // Clear existing footer before adding the new one
     const existingFooter = modalContentContainer.querySelector('#modal-footer');
     if (existingFooter) {
         existingFooter.remove();
     }
-    
+
     const footerHTML = `
         <div id="modal-footer" class="sticky bottom-0 z-10 bg-gray-800 border-t border-gray-700/80 p-4 sm:p-6 text-sm text-gray-400 shadow-xl shadow-gray-900/50">
             <div class="flex justify-between items-center max-w-full">
@@ -204,16 +209,16 @@ function openModal(index) {
             </div>
         </div>
     `;
-    
+
     modalContentContainer.insertAdjacentHTML('beforeend', footerHTML);
-    
+
     // Update navigation button visibility/state
     if (index === 0) {
         modalPrevBtn.classList.add('nav-btn-disabled');
     } else {
         modalPrevBtn.classList.remove('nav-btn-disabled');
     }
-    
+
     if (index === totalArticles - 1) {
         modalNextBtn.classList.add('nav-btn-disabled');
     } else {
@@ -228,13 +233,13 @@ function openModal(index) {
 
 function closeModal() {
     modal.classList.remove('modal-opened');
-    modal.classList.add('modal-opening'); 
-    
+    modal.classList.add('modal-opening');
+
     setTimeout(() => {
         modal.classList.add('hidden');
         modal.classList.remove('modal-opening');
         document.body.style.overflow = '';
-        currentArticleIndex = -1; 
+        currentArticleIndex = -1;
     }, 300);
 }
 
@@ -251,80 +256,118 @@ async function loadFeed() {
     const searchTerm = searchInput.value.trim();
     const startDateValue = feedStartDate.value;
     const endDateValue = feedEndDate.value;
-    const posterValue = currentPosterFilterValue; // Use custom state variable
+    const posterValue = currentPosterFilterValue;
 
     currentSearchTerm = searchTerm;
     filtersActive = searchTerm !== '' || startDateValue !== '' || endDateValue !== '' || posterValue !== '';
 
-    let query = supabase.from('feed').select('*').order('created_at', { ascending: false });
+    // --- Step 1: Define queries ---
+    const pinnedArticleQuery = supabase
+        .from('feed')
+        .select('*')
+        .eq('is_pinned', true)
+        .gt('pinned_until', new Date().toISOString())
+        .order('created_at', { ascending: false })
+        .limit(1);
 
-    // Apply filters...
+    const latestArticleQuery = supabase
+        .from('feed')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+    let feedQuery = supabase.from('feed').select('*').order('created_at', { ascending: false });
     if (searchTerm) {
         const searchPattern = `%${searchTerm}%`;
-        query = query.or(`title.ilike.${searchPattern},content.ilike.${searchPattern}`);
+        feedQuery = feedQuery.or(`title.ilike.${searchPattern},content.ilike.${searchPattern}`);
     }
     if (posterValue) {
-        query = query.eq('sender_name', posterValue);
+        feedQuery = feedQuery.eq('sender_name', posterValue);
     }
     if (startDateValue) {
-        query = query.gte('created_at', startDateValue);
+        feedQuery = feedQuery.gte('created_at', startDateValue);
     }
     if (endDateValue) {
-        query = query.lte('created_at', endDateValue + 'T23:59:59'); 
+        feedQuery = feedQuery.lte('created_at', endDateValue + 'T23:59:59');
     }
 
-    const { data, error } = await query;
+    // --- Step 2: Execute queries ---
+    const [pinnedResult, latestResult, feedResult] = await Promise.all([
+        pinnedArticleQuery,
+        latestArticleQuery,
+        feedQuery
+    ]);
 
-    if (error) {
-        console.error('Error fetching feed:', error);
+    // --- Step 3: Handle errors ---
+    if (pinnedResult.error || latestResult.error || feedResult.error) {
+        console.error('Error fetching data:', { pinnedError: pinnedResult.error, latestError: latestResult.error, feedError: feedResult.error });
         featuredContainer.innerHTML = '';
-        feedContainer.innerHTML = `<p class="text-center text-red-400 md:col-span-2">Could not load the feed. Please try again later.</p>`;
+        feedContainer.innerHTML = '<p class="text-center text-red-400 md:col-span-2">Could not load the feed. Please try again.</p>';
         return;
     }
-    
-    currentFeedData = data || [];
 
+    // --- Step 4: Determine featured article and prepare grid ---
+    const pinnedArticle = pinnedResult.data?.[0];
+    const latestArticle = latestResult.data?.[0];
+    const featuredArticle = pinnedArticle || latestArticle;
+
+    const filteredArticles = feedResult.data || [];
+
+    // --- Step 5: Combine data for modal navigation ---
+    const finalData = [];
+    const articleIds = new Set();
+    if (featuredArticle) {
+        finalData.push(featuredArticle);
+        articleIds.add(featuredArticle.id);
+    }
+    filteredArticles.forEach(item => {
+        if (!articleIds.has(item.id)) {
+            finalData.push(item);
+            articleIds.add(item.id);
+        }
+    });
+    currentFeedData = finalData;
+
+    // --- Step 6: Render UI ---
     featuredContainer.innerHTML = '';
     feedContainer.innerHTML = '';
-    newPostsIndicator.classList.add('hidden'); 
+    newPostsIndicator.classList.add('hidden');
 
-    if (currentFeedData.length === 0) {
-        feedContainer.innerHTML = `<p class="text-center text-gray-400 md:col-span-2">${filtersActive ? 'No results found for your filters.' : 'No updates yet. Check back soon!'}</p>`;
+    if (featuredArticle) {
+        const featuredIndex = currentFeedData.findIndex(item => item.id === featuredArticle.id);
+        const featuredElement = createFeedElement(featuredArticle, true, featuredIndex);
+        featuredContainer.appendChild(featuredElement);
+    } else {
+        feedContainer.innerHTML = '<p class="text-center text-gray-400 md:col-span-2">No updates yet. Check back soon!</p>';
         return;
     }
 
-    if (!filtersActive) {
-        latestPostTimestamp = currentFeedData[0].created_at;
+    const gridItems = filteredArticles.filter(item => item.id !== featuredArticle.id);
+    if (gridItems.length > 0) {
+        gridItems.forEach(item => {
+            const gridIndex = currentFeedData.findIndex(dataItem => dataItem.id === item.id);
+            const feedElement = createFeedElement(item, false, gridIndex);
+            feedContainer.appendChild(feedElement);
+        });
+    } else if (filtersActive) {
+        feedContainer.innerHTML = '<p class="text-center text-gray-400 md:col-span-2">No other articles match your current filters.</p>';
     }
 
-    let itemsToRender = [...currentFeedData];
-    let itemIndexOffset = 0;
-    
-    if (!filtersActive) {
-        const featuredItem = itemsToRender.shift();
-        if (featuredItem) {
-            const featuredElement = createFeedElement(featuredItem, true, 0); 
-            featuredContainer.appendChild(featuredElement);
-            itemIndexOffset = 1;
-        }
+    // --- Step 7: Final Touches ---
+    if (!filtersActive && latestArticle) {
+        latestPostTimestamp = latestArticle.created_at;
     }
-
-    itemsToRender.forEach((item, i) => {
-        const finalIndex = i + itemIndexOffset;
-        const feedElement = createFeedElement(item, false, finalIndex);
-        feedContainer.appendChild(feedElement);
-    });
-    
     setupScrollAnimations();
 }
 
+
 async function checkForNewPosts() {
-    if (!latestPostTimestamp || filtersActive) return; 
+    if (!latestPostTimestamp || filtersActive) return;
 
     const { data: newItems, error } = await supabase
         .from('feed')
         .select('*')
-        .gt('created_at', latestPostTimestamp) 
+        .gt('created_at', latestPostTimestamp)
         .order('created_at', { ascending: false });
 
     if (error) {
@@ -335,13 +378,13 @@ async function checkForNewPosts() {
     if (newItems && newItems.length > 0) {
         console.log(`Found ${newItems.length} new post(s)!`);
         newPostsIndicator.classList.remove('hidden');
-        latestPostTimestamp = newItems[0].created_at; 
+        latestPostTimestamp = newItems[0].created_at;
     }
 }
 
 function handleFilterChange() {
     const term = searchInput.value.trim();
-    
+
     if (term.length >= 3 || term.length === 0 || feedStartDate.value || feedEndDate.value || currentPosterFilterValue) {
         loadFeed();
     }
@@ -355,8 +398,8 @@ function handleFilterChange() {
  */
 function setDefaultDates() {
     const today = new Date();
-    const twoDaysAgo = new Date();
-    twoDaysAgo.setDate(today.getDate() - 2);
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
 
     // Format to YYYY-MM-DD for the input[type="date"] value
     const formatDate = (date) => {
@@ -366,21 +409,21 @@ function setDefaultDates() {
         return `${yyyy}-${mm}-${dd}`;
     };
 
-    feedStartDate.value = formatDate(twoDaysAgo);
-    feedEndDate.value = formatDate(today);
+    feedStartDate.value = formatDate(today);
+    feedEndDate.value = formatDate(tomorrow);
 }
 
 // --- RUN ON PAGE LOAD AND LISTENERS ---
 document.addEventListener('DOMContentLoaded', () => {
     setDefaultDates();
     displaySkeletonLoader();
-    getUniqueSenders(); 
+    getUniqueSenders();
     loadFeed();
-    setInterval(checkForNewPosts, 15000); 
-    
+    setInterval(checkForNewPosts, 15000);
+
     // Custom Dropdown Listener
     posterDropdownBtn.addEventListener('click', togglePosterDropdown);
-    
+
     // Close dropdown if user clicks outside of it
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.relative') && !posterDropdownOptions.classList.contains('hidden')) {
@@ -400,15 +443,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Navigation Listeners
     modalPrevBtn.addEventListener('click', () => navigateToArticle(-1));
     modalNextBtn.addEventListener('click', () => navigateToArticle(1));
-    
+
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
         if (!modal.classList.contains('hidden')) {
             if (e.key === 'ArrowLeft') {
-                e.preventDefault(); 
+                e.preventDefault();
                 navigateToArticle(-1);
             } else if (e.key === 'ArrowRight') {
-                e.preventDefault(); 
+                e.preventDefault();
                 navigateToArticle(1);
             }
         }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Sites - SK News</title>
+    <title>Page Not Found - SK News</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,7 +47,7 @@
                 <a href="feed.html" class="text-gray-300 hover:text-teal-400 transition-colors">Live</a>
                 <a href="news.html" class="text-gray-300 hover:text-teal-400 transition-colors">News</a>
                 <a href="chats.html" class="text-gray-300 hover:text-teal-400 transition-colors">Chats</a>
-                <a href="sites.html" class="text-gray-300 hover:text-teal-400 transition-colors">Sites</a>
+                <a href="sites.html" class="text-gray-300 hover:text-teal-400 transition-.colors">Sites</a>
                 <a href="join.html" class="text-gray-300 hover:text-teal-400 transition-colors">Join</a>
                 <a href="about.html" class="text-gray-300 hover:text-teal-400 transition-colors">About</a>
                 <a href="advertise.html" class="text-gray-300 hover:text-teal-400 transition-colors">Advertise</a>
@@ -57,18 +57,11 @@
     </header>
 
     <main class="pt-20">
-        <section class="py-20 text-center bg-gray-800/50">
+        <section class="py-20 text-center">
             <div class="container mx-auto px-4">
-                <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent">Our Other Projects</h1>
-                <p class="mt-4 text-lg text-gray-300 max-w-3xl mx-auto">Explore other websites and applications developed by our team.</p>
-            </div>
-        </section>
-
-        <section class="py-20">
-            <div class="container mx-auto px-4">
-                <div id="sites-grid" class="grid md:grid-cols-2 gap-8">
-                    <!-- Site links will be loaded here dynamically -->
-                </div>
+                <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent">404 - Page Not Found</h1>
+                <p class="mt-4 text-lg text-gray-300 max-w-3xl mx-auto">The page you are looking for does not exist. It might have been moved or deleted.</p>
+                <a href="index.html" class="mt-8 inline-block px-8 py-3 bg-teal-600 text-white font-semibold rounded-md hover:bg-teal-700 transition-colors">Return to Homepage</a>
             </div>
         </section>
     </main>
@@ -77,7 +70,6 @@
         <div class="container mx-auto px-4 sm:px-6 lg:px-8"><div class="flex flex-col sm:flex-row items-center justify-between py-6 text-sm text-gray-500"><p>© 2025 SK News. All Rights Reserved.</p><a href="terms.html" class="mt-2 sm:mt-0 hover:text-teal-400 transition-colors">Terms & Conditions</a></div></div>
     </footer>
 
-    <script src="supabase-client.js"></script>
     <script>
         const hamburgerBtn = document.getElementById('hamburger-menu');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -85,35 +77,6 @@
             hamburgerBtn.classList.toggle('is-active');
             mobileMenu.classList.toggle('hidden');
         });
-
-        async function loadSites() {
-            const { data: sites, error } = await supabase
-                .from('sites')
-                .select('*')
-                .order('id');
-
-            if (error) {
-                console.error('Error fetching sites:', error);
-                const sitesGrid = document.getElementById('sites-grid');
-                sitesGrid.innerHTML = `<p class="text-center text-red-400 col-span-2">Could not load sites. Please try again later.</p>`;
-                return;
-            }
-
-            const sitesGrid = document.getElementById('sites-grid');
-            if (sites.length === 0) {
-                sitesGrid.innerHTML = `<p class="text-center text-gray-400 col-span-2">No sites to display.</p>`;
-                return;
-            }
-
-            sitesGrid.innerHTML = sites.map(site => `
-                <a href="${site.url}" target="_blank" class="block p-8 bg-gray-800/50 border border-gray-700 rounded-lg hover:bg-gray-800 transition-colors">
-                    <h3 class="text-2xl font-semibold text-white">${site.title}</h3>
-                    <p class="mt-2 text-gray-400">${site.description}</p>
-                </a>
-            `).join('');
-        }
-
-        loadSites();
     </script>
 </body>
 </html>

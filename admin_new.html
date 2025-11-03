@@ -98,21 +98,49 @@
                         <input type="text" id="chat-description" name="description" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
                     </div>
                     <div>
-                        <label for="chat-image" class="block text-sm font-medium text-gray-300 mb-1">Image URL:</label>
-                        <input type="text" id="chat-image" name="image" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
+                        <label for="chat-image-url" class="block text-sm font-medium text-gray-300 mb-1">Image URL:</label>
+                        <input type="text" id="chat-image-url" name="image_url" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
                     </div>
                     <div>
-                        <label for="chat-phone" class="block text-sm font-medium text-gray-300 mb-1">Phone Number:</label>
-                        <input type="text" id="chat-phone" name="phone" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
+                        <label for="chat-logo-url" class="block text-sm font-medium text-gray-300 mb-1">Logo URL:</label>
+                        <input type="text" id="chat-logo-url" name="logo_url" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
                     </div>
                     <div>
-                        <label for="chat-groupme" class="block text-sm font-medium text-gray-300 mb-1">GroupMe Link:</label>
-                        <input type="text" id="chat-groupme" name="groupme" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
+                        <label for="chat-phone-number" class="block text-sm font-medium text-gray-300 mb-1">Phone Number:</label>
+                        <input type="text" id="chat-phone-number" name="phone_number" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
+                    </div>
+                    <div>
+                        <label for="chat-groupme-link" class="block text-sm font-medium text-gray-300 mb-1">GroupMe Link:</label>
+                        <input type="text" id="chat-groupme-link" name="groupme_link" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
                     </div>
                     <button type="submit" class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors">Save Chat</button>
                 </form>
                 <div id="chat-list" class="mt-8">
                     <!-- Chat list will be populated here -->
+                </div>
+            </div>
+
+            <!-- Sites Management Section -->
+            <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-xl">
+                <h2 class="text-2xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">Manage Sites</h2>
+                <form id="site-form" class="space-y-4">
+                    <input type="hidden" id="site-id" name="id">
+                    <div>
+                        <label for="site-title" class="block text-sm font-medium text-gray-300 mb-1">Site Title:</label>
+                        <input type="text" id="site-title" name="title" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
+                    </div>
+                    <div>
+                        <label for="site-url" class="block text-sm font-medium text-gray-300 mb-1">URL:</label>
+                        <input type="url" id="site-url" name="url" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
+                    </div>
+                    <div>
+                        <label for="site-description" class="block text-sm font-medium text-gray-300 mb-1">Description:</label>
+                        <textarea id="site-description" name="description" rows="3" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white"></textarea>
+                    </div>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors">Save Site</button>
+                </form>
+                <div id="site-list" class="mt-8">
+                    <!-- Site list will be populated here -->
                 </div>
             </div>
 

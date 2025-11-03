@@ -1,71 +1,122 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Join SK News</title>
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="canonical" href="https://sknews.pages.dev/join.html" />    
-    <script src="script.js" defer></script>
-    <script src='https://cdn.jotfor.ms/agent/embedjs/01955ca9772271df8b07b04d0cf624510bf5/embed.js?skipWelcome=1&maximizable=1'></script>
-</head>
-<body>
 
-    <header class="main-header scrolled">
-        <div class="container">
-            <a href="index.html" class="logo">SK News</a>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="news.html">News</a></li>
-                    <li><a href="chats.html">Chats</a></li>
-                    <li><a href="sites.html">Sites</a></li>
-                    <li><a href="join.html" class="active">Join</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="advertise.html">Advertise</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                </ul>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <header class="fixed top-0 left-0 right-0 z-40 bg-gray-900/80 backdrop-blur-sm border-b border-gray-800 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <a href="index.html" class="text-2xl font-bold text-teal-400 hover:text-teal-300 transition-colors">SK News</a>
+                <nav class="hidden md:flex space-x-8" id="main-nav">
+                    <a href="index.html" class="text-gray-300 hover:text-teal-400 transition-colors">Home</a>
+                    <a href="news.html" class="text-gray-300 hover:text-teal-400 transition-colors">News</a>
+                    <a href="chats.html" class="text-gray-300 hover:text-teal-400 transition-colors">Chats</a>
+                    <a href="sites.html" class="text-gray-300 hover:text-teal-400 transition-colors">Sites</a>
+                    <a href="join.html" class="text-gray-300 hover:text-teal-400 transition-colors">Join</a>
+                    <a href="about.html" class="text-gray-300 hover:text-teal-400 transition-colors">About</a>
+                    <a href="advertise.html" class="text-gray-300 hover:text-teal-400 transition-colors">Advertise</a>
+                    <a href="contact.html" class="text-gray-300 hover:text-teal-400 transition-colors">Contact</a>
+                </nav>
+                <button class="md:hidden hamburger flex flex-col justify-center items-center h-8 w-8 space-y-1.5" id="hamburger-menu" aria-label="Open Menu">
+                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
+                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
+                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-900/95 backdrop-blur-sm">
+            <nav class="flex flex-col items-center space-y-4 py-6">
+                <a href="index.html" class="text-gray-300 hover:text-teal-400 transition-colors">Home</a>
+                <a href="news.html" class="text-gray-300 hover:text-teal-400 transition-colors">News</a>
+                <a href="chats.html" class="text-gray-300 hover:text-teal-400 transition-colors">Chats</a>
+                <a href="sites.html" class="text-gray-300 hover:text-teal-400 transition-colors">Join</a>
+                <a href="about.html" class="text-gray-300 hover:text-teal-400 transition-colors">About</a>
+                <a href="advertise.html" class="text-gray-300 hover:text-teal-400 transition-colors">Advertise</a>
+                <a href="contact.html" class="text-gray-300 hover:text-teal-400 transition-colors">Contact</a>
             </nav>
-            <button class="hamburger" id="hamburger-menu" aria-label="Open Menu"><span></span><span></span><span></span></button>
         </div>
     </header>
 
-    <main>
-        <section class="page-hero">
-            <div class="container animate-on-scroll">
-                <h1>Join SK News</h1>
-                <p>Sign up for our primary news service to get full, reliable news updates sent directly to your phone.</p>
-            </div>
-        </section>
+    <main class="pt-28 sm:pt-32">
+        <section class="text-center">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h1 id="join-title" class="text-4xl font-bold bg-gradient-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent">Join SK News</h1>
+                <p id="join-description" class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">Sign up for our primary news service to get full, reliable news updates sent directly to your phone.</p>
 
-        <section class="chat-join-section">
-            <div class="container">
-                <img src="img/news-banner.jpg" alt="SK News" class="chat-join-image animate-on-scroll">
-                <h2 class="animate-on-scroll">How to Join</h2>
-                <div class="join-info animate-on-scroll">
-                    <h4>Text the word <span>JOIN</span> to this number:</h4>
-                    <p class="phone-number">(973) 433-5859</p>
-                    <a href="sms:+19734335859?&body=JOIN" class="btn btn-primary">Click to Text</a>
-                    <div class="join-divider">OR</div>
-                    <h4>Join directly on GroupMe:</h4>
-                    <a href="https://groupme.com/join_group/103734305/fWaFZWJJ" target="_blank" class="btn btn-secondary">Join via GroupMe Link</a>
+                <div class="mt-12 max-w-lg mx-auto bg-gray-800/50 border border-gray-700 rounded-lg p-8">
+                    <img src="img/news-banner.jpg" alt="SK News" class="rounded-lg shadow-lg mb-8">
+                    <h2 class="text-2xl font-semibold text-white">How to Join</h2>
+                    <div class="mt-6 space-y-4">
+                        <p class="text-gray-300">Text the word <strong class="text-teal-400">JOIN</strong> to this number:</p>
+                        <p class="text-4xl font-bold text-white tracking-wider">(973) 433-5859</p>
+                        <a href="sms:+19734335859?&body=JOIN" class="inline-block px-8 py-3 bg-teal-600 text-white font-semibold rounded-md hover:bg-teal-700 transition-colors">Click to Text</a>
+
+                        <div class="relative flex items-center justify-center my-6">
+                            <div class="absolute inset-0 flex items-center">
+                                <div class="w-full border-t border-gray-600"></div>
+                            </div>
+                            <div class="relative px-4 bg-gray-800 text-gray-400">OR</div>
+                        </div>
+
+                        <p class="text-gray-300">Join directly on GroupMe:</p>
+                        <a href="https://groupme.com/join_group/103734305/fWaFZWJJ" target="_blank" class="inline-block px-8 py-3 bg-gray-600 text-white font-semibold rounded-md hover:bg-gray-700 transition-colors">Join via GroupMe Link</a>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <p>© 2025 SK News. All Rights Reserved.</p>
-                <nav class="footer-nav"><a href="terms.html">Terms & Conditions</a></nav>
-            </div>
-        </div>
+    <footer class="mt-24 border-t border-gray-800 bg-gray-900">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8"><div class="flex flex-col sm:flex-row items-center justify-between py-6 text-sm text-gray-500"><p>© 2025 SK News. All Rights Reserved.</p><a href="terms.html" class="mt-2 sm:mt-0 hover:text-teal-400 transition-colors">Terms & Conditions</a></div></div>
     </footer>
 
-</body>
+    <script type="module">
+        import { supabase } from './supabase-client.js';
 
+        async function loadJoinContent() {
+            const titleElement = document.getElementById('join-title');
+            const descriptionElement = document.getElementById('join-description');
+
+            const { data, error } = await supabase
+                .from('news_admin')
+                .select('element_id, content')
+                .eq('page', 'join');
+
+            if (error) {
+                console.error('Error fetching join page content:', error);
+                return;
+            }
+
+            const contentMap = new Map(data.map(item => [item.element_id, item.content]));
+            titleElement.textContent = contentMap.get('join-title') || 'Join SK News';
+            descriptionElement.textContent = contentMap.get('join-description') || 'Sign up for our primary news service to get full, reliable news updates sent directly to your phone.';
+        }
+
+        document.addEventListener('DOMContentLoaded', loadJoinContent);
+    </script>
+    <script>
+        const hamburgerBtn = document.getElementById('hamburger-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+        hamburgerBtn.addEventListener('click', () => {
+            hamburgerBtn.classList.toggle('is-active');
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
 </html>

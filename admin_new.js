@@ -224,6 +224,39 @@ async function checkUser() {
     }
 }
 
+// --- New Chat Modal ---
+
+const newChatModal = document.getElementById('new-chat-modal');
+const newChatButton = document.getElementById('new-chat-button');
+const cancelNewChatButton = document.getElementById('cancel-new-chat');
+const newChatForm = document.getElementById('new-chat-form');
+
+newChatButton.addEventListener('click', () => {
+    newChatModal.style.display = 'flex';
+});
+
+cancelNewChatButton.addEventListener('click', () => {
+    newChatModal.style.display = 'none';
+    newChatForm.reset();
+});
+
+newChatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(newChatForm);
+    const newChatData = Object.fromEntries(formData.entries());
+
+    const { error } = await supabase.from('chats').insert([newChatData]);
+
+    if (error) {
+        alert('Error creating new chat: ' + error.message);
+    } else {
+        alert('New chat created successfully!');
+        newChatForm.reset();
+        newChatModal.style.display = 'none';
+        loadChats();
+    }
+});
+
 // --- Initial Event Listeners ---
 
 document.addEventListener('DOMContentLoaded', checkUser);

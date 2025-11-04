@@ -42,6 +42,7 @@ function setupModalTriggers() {
     const modalPhone = document.getElementById('modal-phone');
     const modalSmsLink = document.getElementById('modal-sms-link');
     const modalGroupmeLink = document.getElementById('modal-groupme-link');
+    const modalKeyword = document.getElementById('modal-keyword');
     const closeModalBtn = document.getElementById('modal-close-btn');
 
     document.querySelectorAll('.chat-item-container').forEach(item => {
@@ -52,7 +53,8 @@ function setupModalTriggers() {
             modalTitle.textContent = chat.name;
             modalDescription.textContent = chat.description;
             modalPhone.textContent = chat.phone_number;
-            modalSmsLink.href = `sms:${chat.phone_number}?&body=JOIN`;
+            modalKeyword.textContent = chat.keyword || 'JOIN'; // Default to 'JOIN' if no keyword is set
+            modalSmsLink.href = `sms:${chat.phone_number}?&body=${chat.keyword || 'JOIN'}`;
             modalGroupmeLink.href = chat.groupme_link;
 
             modal.classList.remove('hidden');

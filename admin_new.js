@@ -123,6 +123,7 @@ chatList.addEventListener('click', async (e) => {
             document.getElementById('chat-logo-url').value = chat.logo_url;
             document.getElementById('chat-phone-number').value = chat.phone_number;
             document.getElementById('chat-groupme-link').value = chat.groupme_link;
+            document.getElementById('chat-keyword').value = chat.keyword;
         }
     } else if (e.target.matches('.delete-chat-btn')) {
         if (confirm('Are you sure you want to delete this chat?')) {

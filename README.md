@@ -2,7 +2,7 @@
 
 ![SK News](https://sk-news.netlify.app/img/news-banner.jpg)
 
-**Live Demo:** [**sk-news.netlify.app**](https://sk-news.netlify.app/)
+**Live Demo:** [**SKNews.pages.dev**](https://SKNews.pages.deV/)
 
 ## About The Project
 

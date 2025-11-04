@@ -3,134 +3,62 @@
 
   <!-- Main Pages -->
   <url>
-    <loc>https://sknews.pages.dev/index.html</loc>
-    <lastmod>2025-10-19</lastmod>
+    <loc>https://SKNews.pages.dev/index.html</loc>
+    <lastmod>2025-11-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://sknews.pages.dev/news.html</loc>
-    <lastmod>2025-10-19</lastmod>
+    <loc>https://SKNews.pages.dev/feed.html</loc>
+    <lastmod>2025-11-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://sknews.pages.dev/feed.html</loc>
-    <lastmod>2025-10-19</lastmod>
+    <loc>https://SKNews.pages.dev/news.html</loc>
+    <lastmod>2025-11-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://sknews.pages.dev/chats.html</loc>
-    <lastmod>2025-10-19</lastmod>
+    <loc>https://SKNews.pages.dev/chats.html</loc>
+    <lastmod>2025-11-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://sknews.pages.dev/sites.html</loc>
-    <lastmod>2025-10-19</lastmod>
+    <loc>https://SKNews.pages.dev/sites.html</loc>
+    <lastmod>2025-11-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://sknews.pages.dev/about.html</loc>
-    <lastmod>2025-10-19</lastmod>
+    <loc>https://SKNews.pages.dev/join.html</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://SKNews.pages.dev/about.html</loc>
+    <lastmod>2025-11-03</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
-  <url>
-    <loc>https://sknews.pages.dev/contact.html</loc>
-    <lastmod>2025-10-19</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <!-- News Service Pages -->
-  <url>
-    <loc>https://sknews.pages.dev/join.html</loc>
-    <lastmod>2025-10-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://sknews.pages.dev/headlines.html</loc>
-    <lastmod>2025-10-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Chat Pages -->
-  <url>
-    <loc>https://sknews.pages.dev/sports.html</loc>
-    <lastmod>2025-10-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://sknews.pages.dev/deals.html</loc>
-    <lastmod>2025-10-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://sknews.pages.dev/jokes.html</loc>
-    <lastmod>2025-10-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://sknews.pages.dev/halacha.html</loc>
-    <lastmod>2025-10-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://sknews.pages.dev/tech.html</loc>
-    <lastmod>2025-10-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://sknews.pages.dev/ai.html</loc>
-    <lastmod>2025-10-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://sknews.pages.dev/stocks.html</loc>
-    <lastmod>2025-10-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://sknews.pages.dev/cars.html</loc>
-    <lastmod>2025-10-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://sknews.pages.dev/musicians.html</loc>
-    <lastmod>2025-10-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://sknews.pages.dev/chat.html</loc>
-    <lastmod>2025-10-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  
-  <!-- Utility Pages -->
-  <url>
-    <loc>https://sknews.pages.dev/advertise.html</loc>
-    <lastmod>2025-10-19</lastmod>
+    <url>
+    <loc>https://SKNews.pages.dev/advertise.html</loc>
+    <lastmod>2025-11-03</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://sknews.pages.dev/terms.html</loc>
-    <lastmod>2025-10-19</lastmod>
+    <loc>https://SKNews.pages.dev/contact.html</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://SKNews.pages.dev/terms.html</loc>
+    <lastmod>2025-11-03</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
   </url>

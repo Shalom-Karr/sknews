@@ -4,6 +4,268 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Feed - SK News</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+   
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "f3dacb26e75d41c29c14ac75f4731516"}'></script>
+
+    <!-- Custom CSS -->
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .animate-on-scroll { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease-out, transform 0.5s ease-out; }
+        .animate-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
+        .hamburger span { transition: all 0.3s ease-in-out; }
+        .hamburger.is-active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .hamburger.is-active span:nth-child(2) { opacity: 0; }
+        .hamburger.is-active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+        
+        #article-modal.hidden { display: none; }
+        #modal-panel { transition: transform 0.3s ease, opacity 0.3s ease; }
+        .modal-opening #modal-panel { transform: scale(0.95); opacity: 0; }
+        .modal-opened #modal-panel { transform: scale(1); opacity: 1; }
+
+        /* Custom dropdown button styling */
+        .filter-select {
+            color: #E5E7EB; 
+        }
+        .filter-select svg {
+            transition: transform 0.2s ease;
+        }
+        .filter-select.open svg {
+            transform: rotate(180deg);
+        }
+        
+        .filter-select:not([data-value=""]) {
+             background-color: #0d94884d; 
+             border-color: #2dd4bf; 
+        }
+        input[type="date"]:not([value=""]):not(:placeholder-shown) {
+            background-color: #0d94884d; 
+            border-color: #2dd4bf; 
+        }
+
+        /* Modal Specific Styles */
+        #modal-content-container {
+            overflow-y: auto;
+            flex-grow: 1; 
+        }
+        
+        /* Custom Scrollbar Styling */
+        #modal-content-container::-webkit-scrollbar {
+            width: 8px;
+            background-color: #1f2937; 
+        }
+        #modal-content-container::-webkit-scrollbar-thumb {
+            background-color: #4b5563; 
+            border-radius: 4px;
+        }
+
+        .nav-btn-disabled {
+            opacity: 0.3;
+            pointer-events: none;
+            cursor: default;
+        }
+    </style>
+
+    <link rel="canonical" href="https://SKNews.pages.dev/feed.html" />
+    <script src='https://cdn.jotfor.ms/agent/embedjs/01955ca9772271df8b07b04d0cf624510bf5/embed.js?skipWelcome=1&maximizable=1'></script>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <header class="fixed top-0 left-0 right-0 z-40 bg-gray-900/80 backdrop-blur-sm border-b border-gray-800 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <a href="index.html" class="text-2xl font-bold text-teal-400 hover:text-teal-300 transition-colors">SK News</a>
+                <nav class="hidden md:flex space-x-8" id="main-nav">
+                    <a href="index.html" class="text-gray-300 hover:text-teal-400 transition-colors">Home</a>
+                    <a href="news.html" class="text-gray-300 hover:text-teal-400 transition-colors">News</a>
+                    <a href="chats.html" class="text-gray-300 hover:text-teal-400 transition-colors">Chats</a>
+                    <a href="sites.html" class="text-gray-300 hover:text-teal-400 transition-colors">Sites</a>
+                    <a href="join.html" class="text-gray-300 hover:text-teal-400 transition-colors">Join</a>
+                    <a href="about.html" class="text-gray-300 hover:text-teal-400 transition-colors">About</a>
+                    <a href="advertise.html" class="text-gray-300 hover:text-teal-400 transition-colors">Advertise</a>
+                    <a href="contact.html" class="text-gray-300 hover:text-teal-400 transition-colors">Contact</a>
+                </nav>
+                <button class="md:hidden hamburger flex flex-col justify-center items-center h-8 w-8 space-y-1.5" id="hamburger-menu" aria-label="Open Menu">
+                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
+                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
+                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-900/95 backdrop-blur-sm">
+            <nav class="flex flex-col items-center space-y-4 py-6">
+                <a href="index.html" class="text-gray-300 hover:text-teal-400 transition-colors">Home</a>
+                <a href="news.html" class="text-gray-300 hover:text-teal-400 transition-colors">News</a>
+                <a href="chats.html" class="text-gray-300 hover:text-teal-400 transition-colors">Chats</a>
+                <a href="sites.html" class="text-gray-300 hover:text-teal-400 transition-colors">Sites</a>
+                <a href="join.html" class="text-gray-300 hover:text-teal-400 transition-colors">Join</a>
+                <a href="about.html" class="text-gray-300 hover:text-teal-400 transition-colors">About</a>
+                <a href="advertise.html" class="text-gray-300 hover:text-teal-400 transition-colors">Advertise</a>
+                <a href="contact.html" class="text-gray-300 hover:text-teal-400 transition-colors">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="pt-28 sm:pt-32">
+        <section class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+                
+                <!-- Main Content Area -->
+                <div class="lg:col-span-2">
+                    <div class="mb-8 animate-on-scroll">
+                        <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent">Latest Updates</h1>
+                        <p class="mt-2 text-md text-gray-400">Headlines and breaking news, posted in real-time.</p>
+                    </div>
+
+                    <!-- FILTER AND SEARCH CONTAINER (FIXED: Added relative z-30 here) -->
+                    <div class="mb-12 animate-on-scroll space-y-4 relative z-30" style="transition-delay: 100ms;">
+                        <!-- Search Bar -->
+                        <div>
+                            <input type="text" id="feed-search-input" placeholder="Search headlines and content..." 
+                                class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 
+                                       focus:ring-teal-500 focus:border-teal-500 transition-shadow duration-200 shadow-md shadow-inner">
+                        </div>
+
+                        <!-- Date and Poster Filters -->
+                        <div class="grid grid-cols-3 gap-4">
+                            <!-- Poster Filter (CUSTOM DROPDOWN - Z-50 APPLIED HERE) -->
+                            <div class="relative z-50"> 
+                                <label for="feed-poster-filter" class="block text-xs font-medium text-gray-400 mb-1">Posted By:</label>
+                                
+                                <button id="poster-dropdown-btn" 
+                                        class="filter-select w-full px-3 py-2 bg-gray-700 border border-gray-700 rounded-lg text-gray-200 focus:ring-teal-500 focus:border-teal-500 text-left transition-colors flex justify-between items-center"
+                                        data-value="">
+                                    <span id="poster-selected-text">All Posters</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+
+                                <ul id="poster-dropdown-options" 
+                                    class="absolute z-50 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl max-h-60 overflow-y-auto hidden">
+                                    <!-- Options populated by JS -->
+                                </ul>
+                            </div>
+
+                            <!-- From Date Filter -->
+                            <div>
+                                <label for="feed-start-date" class="block text-xs font-medium text-gray-400 mb-1">From Date:</label>
+                                <input type="date" id="feed-start-date" 
+                                    class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-teal-500 focus:border-teal-500">
+                            </div>
+                            <!-- To Date Filter -->
+                            <div>
+                                <label for="feed-end-date" class="block text-xs font-medium text-gray-400 mb-1">To Date:</label>
+                                <input type="date" id="feed-end-date" 
+                                    class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-teal-500 focus:border-teal-500">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END FILTER AND SEARCH CONTAINER -->
+
+                    <div id="featured-article-container" class="mb-12"></div>
+                    
+                    <!-- NEW POSTS INDICATOR -->
+                    <div id="new-posts-indicator" class="hidden mb-4 p-3 bg-teal-900/50 border border-teal-700 text-teal-200 rounded-lg cursor-pointer text-center font-medium transition-opacity duration-300">
+                        New updates available! Click to refresh.
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="feed-container">
+                        <p class="text-center text-gray-400 md:col-span-2">Loading feed...</p>
+                    </div>
+                </div>
+
+                <!-- Sidebar Area -->
+                <aside class="lg:col-span-1">
+                    <div class="sticky top-28 space-y-8">
+                        <!-- Advertisement Widget -->
+                        <div class="bg-gray-800/50 border border-gray-700/50 rounded-lg p-6 animate-on-scroll" style="transition-delay: 200ms;">
+                            <h3 class="text-lg font-bold text-white mb-4">Sponsored</h3>
+                            <div class="bg-gray-700 rounded-md aspect-square flex items-center justify-center p-4">
+                                <div class="text-center">
+                                    <p class="text-gray-400 text-sm">Contact Shalom Karr to place an Ad</p>
+                                    <a href="tel:2164516698" class="block mt-2 text-lg font-semibold text-teal-400 hover:text-teal-300 transition-colors">
+                                        216-451-6698
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+            </div>
+        </section>
+    </main>
+    
+    <footer class="mt-24 border-t border-gray-800 bg-gray-900">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8"><div class="flex flex-col sm:flex-row items-center justify-between py-6 text-sm text-gray-500"><p>© 2025 SK News. All Rights Reserved.</p><a href="terms.html" class="mt-2 sm:mt-0 hover:text-teal-400 transition-colors">Terms & Conditions</a></div></div>
+    </footer>
+    
+    <!-- MODAL STRUCTURE -->
+    <div id="article-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden modal-opening" 
+         role="dialog" aria-modal="true">
+        
+        <!-- Navigation Button: Previous Article -->
+        <button id="modal-prev-btn" class="absolute left-4 z-50 p-3 bg-gray-800/70 text-teal-400 rounded-full shadow-lg transition-colors hover:bg-gray-700/90 hidden sm:flex items-center justify-center w-12 h-12 hover:scale-105" title="Previous Article (Left Arrow)" aria-label="Previous Article">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+
+        <div id="modal-panel" class="bg-gray-800 border border-teal-600/50 rounded-xl shadow-2xl shadow-teal-900/50 w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden">
+            
+            <!-- Modal Header (Sticky Top) -->
+            <div id="modal-header-content" class="sticky top-0 z-10 bg-gray-800 flex items-center justify-between p-4 sm:p-6 border-b border-gray-700 flex-shrink-0">
+                <h3 id="modal-title" class="text-xl sm:text-2xl font-bold text-white flex-grow">Article Title</h3>
+                
+                <div class="flex items-center space-x-4">
+                    <span id="article-counter" class="text-sm text-gray-400 hidden sm:inline"></span>
+                    <button id="modal-close-btn" class="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-700/50" 
+                            aria-label="Close modal" title="Close (Escape)">
+                        <svg class="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Content Scroll Container -->
+            <div id="modal-content-container" class="overflow-y-auto flex-grow">
+                <div id="modal-content" class="p-6 sm:p-8 text-gray-300 leading-relaxed space-y-4">
+                    <p>Article content will be loaded here.</p>
+                </div>
+                <!-- Modal Footer (Injected by JS below modal-content div) -->
+            </div>
+
+        </div>
+
+        <!-- Navigation Button: Next Article -->
+        <button id="modal-next-btn" class="absolute right-4 z-50 p-3 bg-gray-800/70 text-teal-400 rounded-full shadow-lg transition-colors hover:bg-gray-700/90 hidden sm:flex items-center justify-center w-12 h-12 hover:scale-105" title="Next Article (Right Arrow)" aria-label="Next Article">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </button>
+    </div>
+    <!-- END MODAL STRUCTURE -->
+
+    <!-- JS files -->
+    <script type="module" src="supabase-client.js"></script>
+    <script type="module" src="feed.js"></script>
+    
+    <script>
+        const hamburgerBtn = document.getElementById('hamburger-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+        hamburgerBtn.addEventListener('click', () => {
+            hamburgerBtn.classList.toggle('is-active');
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Feed - SK News</title>
 
     <!-- Primary Meta Tags -->
     <meta name="description" content="The live feed from SK News, with real-time updates and breaking news for the Yeshiva community.">

@@ -472,59 +472,65 @@ async function loadSponsoredAd() {
     if (error || !data || !data.title) {
         console.error('Error fetching sponsored ad or no ad configured:', error);
         sponsoredAdContainer.innerHTML = `
-            <h3 class="text-lg font-bold text-white mb-4">Sponsored</h3>
-            <div class="bg-gray-700 rounded-md aspect-square flex items-center justify-center p-4">
-                <div class="text-center">
-                    <p class="text-gray-400 text-sm">Contact Shalom Karr to place an Ad</p>
-                    <a href="tel:2164516698" class="block mt-2 text-lg font-semibold text-teal-400 hover:text-teal-300 transition-colors">
-                        216-451-6698
-                    </a>
+            <div class="p-6">
+                <h3 class="text-lg font-bold text-white mb-4">Sponsored</h3>
+                <div class="bg-gray-700 rounded-md aspect-square flex items-center justify-center p-4">
+                    <div class="text-center">
+                        <p class="text-gray-400 text-sm">Contact Shalom Karr to place an Ad</p>
+                        <a href="tel:2164516698" class="block mt-2 text-lg font-semibold text-teal-400 hover:text-teal-300 transition-colors">
+                            216-451-6698
+                        </a>
+                    </div>
                 </div>
             </div>
         `;
     } else {
-        // Handle multi-line title in the ad box itself
-        const adBoxTitle = data.title ? data.title.replace(/\n/g, '<br>') : '';
-        const altText = data.title ? data.title.replace(/\n/g, ' ') : '';
+        // The title can contain HTML, so we render it as such.
+        const adBoxTitle = data.title || '';
+
+        // *** FIX: Sanitize the title to create plain text for the alt attribute ***
+        // This removes all HTML tags to prevent breaking the <img> tag.
+        const altText = (data.title || '')
+            .replace(/<[^>]*>/g, ' ') // Replace all HTML tags with a space
+            .replace(/\s+/g, ' ').trim(); // Collapse multiple spaces into one
 
         sponsoredAdContainer.innerHTML = `
-            <div id="sponsored-ad-box"
-                class="bg-gray-800 border border-gray-700/80 rounded-lg overflow-hidden cursor-pointer group transition-all duration-300 ease-in-out hover:border-teal-500/50 hover:shadow-xl hover:shadow-teal-900/40">
-
-                <div class="p-4 border-b border-gray-700/80">
-                    <h3 class="text-lg font-bold text-white text-center tracking-wide">${adBoxTitle}</h3>
-                </div>
-
-                ${data.image_url ? `
-                <div class="aspect-video overflow-hidden bg-gray-700">
-                    <img src="${data.image_url}" alt="${altText}"
-                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
-                </div>
-                ` : ''}
-
-                ${data.description ? `
-                <div class="p-4 bg-gray-800/50">
-                    <p class="text-gray-300 text-sm text-center leading-relaxed">${data.description}</p>
-                </div>
-                ` : ''}
+            <div class="p-4 border-b border-gray-700/80">
+                <h3 class="text-lg font-bold text-white text-center tracking-wide">${adBoxTitle}</h3>
             </div>
+
+            ${data.image_url ? `
+            <div class="aspect-video overflow-hidden bg-gray-700">
+                <img src="${data.image_url}" alt="${altText}"
+                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+            </div>
+            ` : ''}
+
+            ${data.description ? `
+            <div class="p-4 bg-gray-800/50">
+                <p class="text-gray-300 text-sm text-center leading-relaxed">${data.description}</p>
+            </div>
+            ` : ''}
         `;
-        document.getElementById('sponsored-ad-box').addEventListener('click', (e) => {
+
+        sponsoredAdContainer.classList.add('cursor-pointer');
+        sponsoredAdContainer.addEventListener('click', (e) => {
             e.preventDefault();
-            openSponsoredAdModal(data)
+            openSponsoredAdModal(data);
         });
     }
 }
 
 function openSponsoredAdModal(data) {
-    // Support multi-line titles and ensure centering is handled by CSS
-    sponsoredAdModalTitle.innerHTML = data.title ? data.title.replace(/\n/g, '<br>') : '';
+    // The title can contain HTML, so use innerHTML.
+    sponsoredAdModalTitle.innerHTML = data.title || '';
 
     const buttonText = data.button_text || 'Learn More';
-    const altText = data.title ? data.title.replace(/\n/g, ' ') : ''; // Sanitize alt text
+    // Sanitize the title for the alt text here as well.
+    const altText = (data.title || '')
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/\s+/g, ' ').trim();
 
-    // --- New Structure ---
-    // Using a flex container to better control layout.
     sponsoredAdModalContent.innerHTML = `
         <div class="flex flex-col items-center justify-center p-4">
             ${data.image_url ? `

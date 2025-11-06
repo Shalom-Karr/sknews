@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - SK News</title>
     <meta name="description" content="Manage the SK News feed, add new items, and configure posters through the admin panel.">
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-   
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -31,7 +31,7 @@
             padding-right: 2.5rem;
         }
         /* Style for active filters */
-        .filter-select:not([value=""]):not(:placeholder-shown), 
+        .filter-select:not([value=""]):not(:placeholder-shown),
         input[type="date"]:not([value=""]):not(:placeholder-shown) {
             background-color: #0d94884d; /* teal-600/30 */
             border-color: #2dd4bf; /* teal-400 */
@@ -50,7 +50,7 @@
     </header>
 
     <main class="container mx-auto max-w-5xl px-4 py-8 mt-4">
-        
+
         <!-- Login Section - Shown by default -->
         <section id="login-section" class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-xl max-w-md mx-auto">
             <h1 class="text-3xl font-bold text-teal-400 mb-6 text-center">Admin Login</h1>
@@ -78,7 +78,7 @@
                     <button id="logout-button" class="px-3 py-1 bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 transition-colors text-sm">Log Out</button>
                 </div>
             </div>
-            
+
             <!-- Add New Feed Item Form -->
             <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-xl">
                 <h2 class="text-2xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">Add New Feed Item</h2>
@@ -98,7 +98,7 @@
             <!-- Poster Configuration Management -->
             <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-xl">
                 <h2 class="text-2xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">Poster Configuration</h2>
-                
+
                 <!-- Add Poster Form -->
                 <form id="add-poster-form" class="flex space-x-4 mb-6">
                     <input type="text" id="new-poster-name" placeholder="New Poster Name" required class="flex-grow px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
@@ -113,11 +113,35 @@
                 </div>
             </div>
 
+            <!-- Sponsored Ad Management -->
+            <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-xl">
+                <h2 class="text-2xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">Manage Sponsored Ad</h2>
+                <form id="sponsored-ad-form" class="space-y-4">
+                    <div>
+                        <label for="sponsored-title" class="block text-sm font-medium text-gray-300 mb-1">Title:</label>
+                        <input type="text" id="sponsored-title" name="sponsored-title" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
+                    </div>
+                    <div>
+                        <label for="sponsored-description" class="block text-sm font-medium text-gray-300 mb-1">Description:</label>
+                        <textarea id="sponsored-description" name="sponsored-description" rows="4" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white"></textarea>
+                    </div>
+                    <div>
+                        <label for="sponsored-image-url" class="block text-sm font-medium text-gray-300 mb-1">Image URL:</label>
+                        <input type="text" id="sponsored-image-url" name="sponsored-image-url" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
+                    </div>
+                    <div>
+                        <label for="sponsored-link-url" class="block text-sm font-medium text-gray-300 mb-1">Link URL:</label>
+                        <input type="text" id="sponsored-link-url" name="sponsored-link-url" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
+                    </div>
+                    <button type="submit" class="px-4 py-2 bg-teal-600 text-white font-semibold rounded-md hover:bg-teal-700 transition-colors">Update Ad</button>
+                </form>
+            </div>
+
 
             <!-- Existing Feed List -->
             <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-xl">
                 <h2 class="text-2xl font-semibold text-white mb-6 border-b border-gray-700 pb-2">Existing Feed Items</h2>
-                
+
                 <!-- FILTER AND SEARCH BAR CONTAINER -->
                 <div class="space-y-4 mb-6">
                     <!-- Filters -->
@@ -129,7 +153,7 @@
                                 <!-- Poster options will be dynamically inserted here -->
                             </select>
                         </div>
-                        
+
                         <!-- Start Date Filter -->
                         <div class="md:col-span-1">
                             <label for="start-date-filter" class="block text-sm font-medium text-gray-400 mb-1">Start Date:</label>
@@ -145,12 +169,12 @@
 
                     <!-- Search -->
                     <div class="md:col-span-1">
-                        <input type="text" id="admin-search-input" placeholder="Search items by title or content..." 
+                        <input type="text" id="admin-search-input" placeholder="Search items by title or content..."
                                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-teal-500 focus:border-teal-500 text-white">
                     </div>
                 </div>
                 <!-- END FILTER AND SEARCH BAR CONTAINER -->
-                
+
                 <div id="feed-list-section" class="space-y-4">
                     <p class="loading-message">Loading articles...</p>
                 </div>

@@ -485,14 +485,28 @@ async function loadSponsoredAd() {
     } else {
         // Handle multi-line title in the ad box itself
         const adBoxTitle = data.title ? data.title.replace(/\n/g, '<br>') : '';
+        const altText = data.title ? data.title.replace(/\n/g, ' ') : '';
 
         sponsoredAdContainer.innerHTML = `
-            <h3 class="text-lg font-bold text-white mb-4 text-center">${adBoxTitle}</h3>
-            <div class="bg-gray-700 rounded-md aspect-square flex items-center justify-center p-4 cursor-pointer hover:bg-gray-600/50 transition-colors" id="sponsored-ad-box">
-                <div class="text-center">
-                    ${data.image_url ? `<img src="${data.image_url}" alt="${data.title}" class="max-h-32 mx-auto mb-4 rounded">` : ''}
-                    <p class="text-gray-400 text-sm">${data.description || ''}</p>
+            <div id="sponsored-ad-box"
+                class="bg-gray-800 border border-gray-700/80 rounded-lg overflow-hidden cursor-pointer group transition-all duration-300 ease-in-out hover:border-teal-500/50 hover:shadow-xl hover:shadow-teal-900/40">
+
+                <div class="p-4 border-b border-gray-700/80">
+                    <h3 class="text-lg font-bold text-white text-center tracking-wide">${adBoxTitle}</h3>
                 </div>
+
+                ${data.image_url ? `
+                <div class="aspect-video overflow-hidden bg-gray-700">
+                    <img src="${data.image_url}" alt="${altText}"
+                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                </div>
+                ` : ''}
+
+                ${data.description ? `
+                <div class="p-4 bg-gray-800/50">
+                    <p class="text-gray-300 text-sm text-center leading-relaxed">${data.description}</p>
+                </div>
+                ` : ''}
             </div>
         `;
         document.getElementById('sponsored-ad-box').addEventListener('click', (e) => {
@@ -507,27 +521,32 @@ function openSponsoredAdModal(data) {
     sponsoredAdModalTitle.innerHTML = data.title ? data.title.replace(/\n/g, '<br>') : '';
 
     const buttonText = data.button_text || 'Learn More';
-    // Sanitize alt text by removing newlines
-    const altText = data.title ? data.title.replace(/\n/g, ' ') : '';
+    const altText = data.title ? data.title.replace(/\n/g, ' ') : ''; // Sanitize alt text
 
-    // Updated image classes for full-width
-    const imageHtml = data.image_url
-        ? `<a href="${data.link_url}" target="_blank" rel="noopener noreferrer">
-             <img src="${data.image_url}" alt="${altText}" class="w-full max-h-[70vh] object-contain mb-4 rounded-lg cursor-pointer hover:opacity-90 transition-opacity">
-           </a>`
-        : '';
-
-    const buttonHtml = data.link_url
-        ? `<a href="${data.link_url}" target="_blank" rel="noopener noreferrer" class="mt-6 inline-block px-10 py-3 bg-teal-600 text-white font-semibold rounded-md hover:bg-teal-700 transition-colors shadow-lg">
-             ${buttonText}
-           </a>`
-        : '';
-
+    // --- New Structure ---
+    // Using a flex container to better control layout.
     sponsoredAdModalContent.innerHTML = `
-        ${imageHtml}
-        <p class="text-gray-300 text-center px-4">${data.description || ''}</p>
-        <div class="text-center w-full">
-            ${buttonHtml}
+        <div class="flex flex-col items-center justify-center p-4">
+            ${data.image_url ? `
+                <a href="${data.link_url}" target="_blank" rel="noopener noreferrer" class="block w-full max-w-md mb-6">
+                    <img src="${data.image_url}" alt="${altText}"
+                         class="w-full h-auto object-cover rounded-lg shadow-lg hover:opacity-90 transition-opacity">
+                </a>
+            ` : ''}
+
+            ${data.description ? `
+                <p class="text-gray-300 text-lg text-center leading-relaxed max-w-prose mb-6">
+                    ${data.description}
+                </p>
+            ` : ''}
+
+            ${data.link_url ? `
+                <a href="${data.link_url}" target="_blank" rel="noopener noreferrer"
+                   class="inline-block px-12 py-3 bg-teal-600 text-white font-bold text-lg rounded-lg
+                          hover:bg-teal-500 transition-colors shadow-lg transform hover:scale-105">
+                    ${buttonText}
+                </a>
+            ` : ''}
         </div>
     `;
 

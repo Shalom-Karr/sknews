@@ -483,25 +483,52 @@ async function loadSponsoredAd() {
             </div>
         `;
     } else {
+        // Handle multi-line title in the ad box itself
+        const adBoxTitle = data.title ? data.title.replace(/\n/g, '<br>') : '';
+
         sponsoredAdContainer.innerHTML = `
-            <h3 class="text-lg font-bold text-white mb-4">${data.title}</h3>
-            <div class="bg-gray-700 rounded-md aspect-square flex items-center justify-center p-4 cursor-pointer" id="sponsored-ad-box">
+            <h3 class="text-lg font-bold text-white mb-4 text-center">${adBoxTitle}</h3>
+            <div class="bg-gray-700 rounded-md aspect-square flex items-center justify-center p-4 cursor-pointer hover:bg-gray-600/50 transition-colors" id="sponsored-ad-box">
                 <div class="text-center">
                     ${data.image_url ? `<img src="${data.image_url}" alt="${data.title}" class="max-h-32 mx-auto mb-4 rounded">` : ''}
-                    <p class="text-gray-400 text-sm">${data.description}</p>
+                    <p class="text-gray-400 text-sm">${data.description || ''}</p>
                 </div>
             </div>
         `;
-        document.getElementById('sponsored-ad-box').addEventListener('click', () => openSponsoredAdModal(data));
+        document.getElementById('sponsored-ad-box').addEventListener('click', (e) => {
+            e.preventDefault();
+            openSponsoredAdModal(data)
+        });
     }
 }
 
 function openSponsoredAdModal(data) {
-    sponsoredAdModalTitle.textContent = data.title;
+    // Support multi-line titles and ensure centering is handled by CSS
+    sponsoredAdModalTitle.innerHTML = data.title ? data.title.replace(/\n/g, '<br>') : '';
+
+    const buttonText = data.button_text || 'Learn More';
+    // Sanitize alt text by removing newlines
+    const altText = data.title ? data.title.replace(/\n/g, ' ') : '';
+
+    // Updated image classes for full-width
+    const imageHtml = data.image_url
+        ? `<a href="${data.link_url}" target="_blank" rel="noopener noreferrer">
+             <img src="${data.image_url}" alt="${altText}" class="w-full max-h-[70vh] object-contain mb-4 rounded-lg cursor-pointer hover:opacity-90 transition-opacity">
+           </a>`
+        : '';
+
+    const buttonHtml = data.link_url
+        ? `<a href="${data.link_url}" target="_blank" rel="noopener noreferrer" class="mt-6 inline-block px-10 py-3 bg-teal-600 text-white font-semibold rounded-md hover:bg-teal-700 transition-colors shadow-lg">
+             ${buttonText}
+           </a>`
+        : '';
+
     sponsoredAdModalContent.innerHTML = `
-        ${data.image_url ? `<img src="${data.image_url}" alt="${data.title}" class="max-h-64 mx-auto mb-4 rounded">` : ''}
-        <p>${data.description}</p>
-        ${data.link_url ? `<a href="${data.link_url}" target="_blank" class="mt-4 inline-block px-8 py-3 bg-teal-600 text-white font-semibold rounded-md hover:bg-teal-700 transition-colors">Learn More</a>` : ''}
+        ${imageHtml}
+        <p class="text-gray-300 text-center px-4">${data.description || ''}</p>
+        <div class="text-center w-full">
+            ${buttonHtml}
+        </div>
     `;
 
     sponsoredAdModal.classList.remove('hidden', 'modal-opening');

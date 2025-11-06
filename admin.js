@@ -43,6 +43,7 @@ const sponsoredTitle = document.getElementById('sponsored-title');
 const sponsoredDescription = document.getElementById('sponsored-description');
 const sponsoredImageUrl = document.getElementById('sponsored-image-url');
 const sponsoredLinkUrl = document.getElementById('sponsored-link-url');
+const sponsoredButtonText = document.getElementById('sponsored-button-text');
 
 
 // --- Utility Functions ---
@@ -484,6 +485,7 @@ async function loadSponsoredAd() {
         sponsoredDescription.value = data.description || '';
         sponsoredImageUrl.value = data.image_url || '';
         sponsoredLinkUrl.value = data.link_url || '';
+        sponsoredButtonText.value = data.button_text || '';
     }
 }
 
@@ -496,7 +498,8 @@ async function handleUpdateSponsoredAd(event) {
             title: sponsoredTitle.value,
             description: sponsoredDescription.value,
             image_url: sponsoredImageUrl.value,
-            link_url: sponsoredLinkUrl.value
+            link_url: sponsoredLinkUrl.value,
+            button_text: sponsoredButtonText.value
         })
         .eq('id', 1);
 

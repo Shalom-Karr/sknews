@@ -37,6 +37,13 @@ const endDateFilter = document.getElementById('end-date-filter');
 const addPosterForm = document.getElementById('add-poster-form');
 const posterListSection = document.getElementById('poster-list-section');
 
+// Sponsored Ad Management References
+const sponsoredAdForm = document.getElementById('sponsored-ad-form');
+const sponsoredTitle = document.getElementById('sponsored-title');
+const sponsoredDescription = document.getElementById('sponsored-description');
+const sponsoredImageUrl = document.getElementById('sponsored-image-url');
+const sponsoredLinkUrl = document.getElementById('sponsored-link-url');
+
 
 // --- Utility Functions ---
 
@@ -461,6 +468,46 @@ async function handleAddFeedItem(event) {
     }
 }
 
+// --- SPONSORED AD FUNCTIONS ---
+
+async function loadSponsoredAd() {
+    const { data, error } = await supabase
+        .from('sponsored_ad')
+        .select('*')
+        .limit(1)
+        .single();
+
+    if (error) {
+        console.error('Error fetching sponsored ad:', error);
+    } else if (data) {
+        sponsoredTitle.value = data.title || '';
+        sponsoredDescription.value = data.description || '';
+        sponsoredImageUrl.value = data.image_url || '';
+        sponsoredLinkUrl.value = data.link_url || '';
+    }
+}
+
+async function handleUpdateSponsoredAd(event) {
+    event.preventDefault();
+
+    const { error } = await supabase
+        .from('sponsored_ad')
+        .update({
+            title: sponsoredTitle.value,
+            description: sponsoredDescription.value,
+            image_url: sponsoredImageUrl.value,
+            link_url: sponsoredLinkUrl.value
+        })
+        .eq('id', 1);
+
+    if (error) {
+        alert(`Error updating sponsored ad: ${error.message}`);
+    } else {
+        alert('Sponsored ad updated successfully!');
+    }
+}
+
+
 /**
  * Checks the current user's authentication state and updates the UI accordingly.
  */
@@ -474,6 +521,7 @@ async function checkUser() {
 
         await loadPosterConfig();
         loadFeedItems();
+        loadSponsoredAd();
     } else {
         loginSection.style.display = 'block';
         adminSection.style.display = 'none';
@@ -490,6 +538,7 @@ loginForm.addEventListener('submit', handleLogin);
 logoutButton.addEventListener('click', handleLogout);
 addFeedForm.addEventListener('submit', handleAddFeedItem);
 addPosterForm.addEventListener('submit', handleAddPoster);
+sponsoredAdForm.addEventListener('submit', handleUpdateSponsoredAd);
 
 // Filter Listeners (using debounced search)
 adminSearchInput.addEventListener('input', debounce(() => {

@@ -27,6 +27,12 @@ const searchInput = document.getElementById('feed-search-input');
 const feedStartDate = document.getElementById('feed-start-date');
 const feedEndDate = document.getElementById('feed-end-date');
 const newPostsIndicator = document.getElementById('new-posts-indicator');
+const sponsoredAdContainer = document.getElementById('sponsored-ad-container');
+const sponsoredAdModal = document.getElementById('sponsored-ad-modal');
+const sponsoredAdModalContent = document.getElementById('sponsored-ad-modal-content');
+const sponsoredAdModalCloseBtn = document.getElementById('sponsored-ad-modal-close-btn');
+const sponsoredAdModalTitle = document.getElementById('sponsored-ad-modal-title');
+
 
 // Navigation References
 const modalPrevBtn = document.getElementById('modal-prev-btn');
@@ -455,12 +461,73 @@ function setDefaultDates() {
     feedEndDate.value = formatDate(tomorrow);
 }
 
+// --- SPONSORED AD ---
+async function loadSponsoredAd() {
+    const { data, error } = await supabase
+        .from('sponsored_ad')
+        .select('*')
+        .limit(1)
+        .single();
+
+    if (error || !data || !data.title) {
+        console.error('Error fetching sponsored ad or no ad configured:', error);
+        sponsoredAdContainer.innerHTML = `
+            <h3 class="text-lg font-bold text-white mb-4">Sponsored</h3>
+            <div class="bg-gray-700 rounded-md aspect-square flex items-center justify-center p-4">
+                <div class="text-center">
+                    <p class="text-gray-400 text-sm">Contact Shalom Karr to place an Ad</p>
+                    <a href="tel:2164516698" class="block mt-2 text-lg font-semibold text-teal-400 hover:text-teal-300 transition-colors">
+                        216-451-6698
+                    </a>
+                </div>
+            </div>
+        `;
+    } else {
+        sponsoredAdContainer.innerHTML = `
+            <h3 class="text-lg font-bold text-white mb-4">${data.title}</h3>
+            <div class="bg-gray-700 rounded-md aspect-square flex items-center justify-center p-4 cursor-pointer" id="sponsored-ad-box">
+                <div class="text-center">
+                    ${data.image_url ? `<img src="${data.image_url}" alt="${data.title}" class="max-h-32 mx-auto mb-4 rounded">` : ''}
+                    <p class="text-gray-400 text-sm">${data.description}</p>
+                </div>
+            </div>
+        `;
+        document.getElementById('sponsored-ad-box').addEventListener('click', () => openSponsoredAdModal(data));
+    }
+}
+
+function openSponsoredAdModal(data) {
+    sponsoredAdModalTitle.textContent = data.title;
+    sponsoredAdModalContent.innerHTML = `
+        ${data.image_url ? `<img src="${data.image_url}" alt="${data.title}" class="max-h-64 mx-auto mb-4 rounded">` : ''}
+        <p>${data.description}</p>
+        ${data.link_url ? `<a href="${data.link_url}" target="_blank" class="mt-4 inline-block px-8 py-3 bg-teal-600 text-white font-semibold rounded-md hover:bg-teal-700 transition-colors">Learn More</a>` : ''}
+    `;
+
+    sponsoredAdModal.classList.remove('hidden', 'modal-opening');
+    sponsoredAdModal.classList.add('modal-opened');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSponsoredAdModal() {
+    sponsoredAdModal.classList.remove('modal-opened');
+    sponsoredAdModal.classList.add('modal-opening');
+
+    setTimeout(() => {
+        sponsoredAdModal.classList.add('hidden');
+        sponsoredAdModal.classList.remove('modal-opening');
+        document.body.style.overflow = '';
+    }, 300);
+}
+
+
 // --- RUN ON PAGE LOAD AND LISTENERS ---
 document.addEventListener('DOMContentLoaded', () => {
     setDefaultDates();
     displaySkeletonLoader();
     getUniqueSenders();
     loadFeed();
+    loadSponsoredAd();
     setInterval(checkForNewPosts, 15000);
 
     // Custom Dropdown Listener
@@ -481,6 +548,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Modal Listeners
     modalCloseBtn.addEventListener('click', closeModal);
+    sponsoredAdModalCloseBtn.addEventListener('click', closeSponsoredAdModal);
+
 
     // Navigation Listeners
     modalPrevBtn.addEventListener('click', () => navigateToArticle(-1));

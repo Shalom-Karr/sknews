@@ -25,10 +25,10 @@
         .hamburger.is-active span:nth-child(2) { opacity: 0; }
         .hamburger.is-active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 
-        #article-modal.hidden { display: none; }
-        #modal-panel { transition: transform 0.3s ease, opacity 0.3s ease; }
-        .modal-opening #modal-panel { transform: scale(0.95); opacity: 0; }
-        .modal-opened #modal-panel { transform: scale(1); opacity: 1; }
+        #article-modal.hidden, #sponsored-ad-modal.hidden { display: none; }
+        #modal-panel, #sponsored-ad-modal-panel { transition: transform 0.3s ease, opacity 0.3s ease; }
+        .modal-opening #modal-panel, .modal-opening #sponsored-ad-modal-panel { transform: scale(0.95); opacity: 0; }
+        .modal-opened #modal-panel, .modal-opened #sponsored-ad-modal-panel { transform: scale(1); opacity: 1; }
 
         /* Custom dropdown button styling */
         .filter-select {
@@ -51,17 +51,17 @@
         }
 
         /* Modal Specific Styles */
-        #modal-content-container {
+        #modal-content-container, #sponsored-ad-modal-content-container {
             overflow-y: auto;
             flex-grow: 1;
         }
 
         /* Custom Scrollbar Styling */
-        #modal-content-container::-webkit-scrollbar {
+        #modal-content-container::-webkit-scrollbar, #sponsored-ad-modal-content-container::-webkit-scrollbar {
             width: 8px;
             background-color: #1f2937;
         }
-        #modal-content-container::-webkit-scrollbar-thumb {
+        #modal-content-container::-webkit-scrollbar-thumb, #sponsored-ad-modal-content-container::-webkit-scrollbar-thumb {
             background-color: #4b5563;
             border-radius: 4px;
         }
@@ -184,16 +184,8 @@
                 <aside class="lg:col-span-1">
                     <div class="sticky top-28 space-y-8">
                         <!-- Advertisement Widget -->
-                        <div class="bg-gray-800/50 border border-gray-700/50 rounded-lg p-6 animate-on-scroll" style="transition-delay: 200ms;">
-                            <h3 class="text-lg font-bold text-white mb-4">Sponsored</h3>
-                            <div class="bg-gray-700 rounded-md aspect-square flex items-center justify-center p-4">
-                                <div class="text-center">
-                                    <p class="text-gray-400 text-sm">Contact Shalom Karr to place an Ad</p>
-                                    <a href="tel:2164516698" class="block mt-2 text-lg font-semibold text-teal-400 hover:text-teal-300 transition-colors">
-                                        216-451-6698
-                                    </a>
-                                </div>
-                            </div>
+                        <div id="sponsored-ad-container" class="bg-gray-800/50 border border-gray-700/50 rounded-lg p-6 animate-on-scroll" style="transition-delay: 200ms;">
+                            <!-- Sponsored ad content will be loaded here -->
                         </div>
                     </div>
                 </aside>
@@ -246,6 +238,25 @@
         </button>
     </div>
     <!-- END MODAL STRUCTURE -->
+
+    <!-- Sponsored Ad Modal -->
+    <div id="sponsored-ad-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden modal-opening" role="dialog" aria-modal="true">
+        <div id="sponsored-ad-modal-panel" class="bg-gray-800 border border-teal-600/50 rounded-xl shadow-2xl shadow-teal-900/50 w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div id="sponsored-ad-modal-header-content" class="sticky top-0 z-10 bg-gray-800 flex items-center justify-between p-4 sm:p-6 border-b border-gray-700 flex-shrink-0">
+                <h3 id="sponsored-ad-modal-title" class="text-xl sm:text-2xl font-bold text-white flex-grow">Sponsored Ad</h3>
+                <button id="sponsored-ad-modal-close-btn" class="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-700/50" aria-label="Close modal" title="Close (Escape)">
+                    <svg class="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div id="sponsored-ad-modal-content-container" class="overflow-y-auto flex-grow">
+                <div id="sponsored-ad-modal-content" class="p-6 sm:p-8 text-gray-300 leading-relaxed space-y-4">
+                    <!-- Sponsored ad modal content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Sponsored Ad Modal -->
+
 
     <!-- JS files -->
     <script type="module" src="supabase-client.js"></script>

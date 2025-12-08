@@ -2,7 +2,7 @@
 // This file connects your website to your Supabase backend.
 // It uses your unique Project URL and your public 'anon' key.
 
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8/+esm';
 
 // Your unique project details from the Supabase dashboard
 const SUPABASE_URL = 'https://qvoxpfigbukidlmshiei.supabase.co';

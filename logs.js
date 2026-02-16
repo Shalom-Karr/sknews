@@ -79,7 +79,7 @@ window.trackEvent = async function(eventType, extraData = {}) {
         event_data: extraData
     };
 
-    const { error } = await supabase.from('shul_website_visitors').insert([payload]);
+    const { error } = await supabase.from('news_website_visitors').insert([payload]);
     if (error) console.error("Tracking Error:", error);
 };
 

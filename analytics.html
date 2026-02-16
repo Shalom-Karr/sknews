@@ -19,7 +19,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
-        /* --- CSS VARIABLES & THEME --- */
         :root {
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
@@ -44,7 +43,6 @@
             --border: #334155;
         }
 
-        /* --- GLOBAL RESET --- */
         * { box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; min-height: 100vh; transition: background-color 0.3s, color 0.3s; }
         .hidden { display: none !important; }
@@ -66,21 +64,20 @@
         .nav-actions { margin-left: auto; display: flex; align-items: center; gap: 12px; }
 
         /* --- MAIN CONTENT --- */
-        .main-content { max-width: 1400px; margin: 0 auto; padding: 2rem; width: 100%; }
+        .main-content { max-width: 1700px; margin: 0 auto; padding: 2rem; width: 100%; }
         .content-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end; }
         
         /* --- DASHBOARD COMPONENTS --- */
         .card { background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); padding: 1.5rem; margin-bottom: 1.5rem; }
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
         .metric-card { background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); display: flex; flex-direction: column; position: relative; overflow: hidden; }
-        .metric-value { font-size: 2rem; font-weight: 700; margin: 10px 0; color: var(--text-main); }
-        .metric-title { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
-        .metric-icon { position: absolute; right: 20px; top: 20px; font-size: 3rem; opacity: 0.05; transform: rotate(-10deg); }
+        .metric-value { font-size: 1.8rem; font-weight: 700; margin: 10px 0; color: var(--text-main); }
+        .metric-title { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+        .metric-icon { position: absolute; right: 20px; top: 20px; font-size: 2.5rem; opacity: 0.05; transform: rotate(-10deg); }
 
         /* --- BUTTONS & INPUTS --- */
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0.6rem 1.2rem; border-radius: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; white-space: nowrap; }
         .btn-primary { background: var(--primary); color: white; border: none; }
-        .btn-primary:hover { background: var(--primary-hover); }
         .btn-secondary { background: var(--bg-card); color: var(--text-main); border-color: var(--border); }
         .btn-danger-soft { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: none; padding: 0.4rem 0.6rem; font-size: 0.75rem; }
         .btn-danger-soft:hover { background: var(--danger); color: white; }
@@ -88,34 +85,29 @@
 
         /* --- TABLE --- */
         .table-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); }
-        table { width: 100%; border-collapse: collapse; background: var(--bg-card); font-size: 0.85rem; }
-        th { text-align: left; padding: 1rem; background: rgba(0,0,0,0.02); color: var(--text-muted); font-weight: 600; font-size: 0.7rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; background: var(--bg-card); font-size: 0.8rem; }
+        th { text-align: left; padding: 1rem; background: rgba(0,0,0,0.02); color: var(--text-muted); font-weight: 600; font-size: 0.65rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
         body.dark-mode th { background: rgba(255,255,255,0.02); }
         td { padding: 1rem; border-bottom: 1px solid var(--border); color: var(--text-main); vertical-align: middle; }
         
-        /* --- BADGES --- */
-        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; }
         .badge-page { background: rgba(37, 99, 235, 0.1); color: var(--primary); }
         .badge-click { background: rgba(16, 185, 129, 0.1); color: var(--success); }
 
-        .url-text { display: block; font-size: 0.75rem; color: var(--text-muted); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .event-detail-box { font-family: monospace; font-size: 0.8rem; background: rgba(0,0,0,0.03); padding: 4px 8px; border-radius: 4px; display: inline-block; }
+        .truncate-text { display: block; font-size: 0.7rem; color: var(--text-muted); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: none; }
+        .truncate-text:hover { text-decoration: underline; color: var(--primary); }
+        
+        .event-detail-box { font-family: monospace; font-size: 0.75rem; background: rgba(0,0,0,0.03); padding: 4px 8px; border-radius: 4px; display: inline-block; word-break: break-all; max-width: 250px; }
         body.dark-mode .event-detail-box { background: rgba(255,255,255,0.05); }
 
-        /* Skeletons */
-        .skeleton { background: linear-gradient(90deg, var(--bg-card) 25%, var(--border) 50%, var(--bg-card) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; color: transparent !important; }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .navbar { padding: 0 1rem; }
             .content-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-            .nav-actions .btn-text { display: none; }
         }
     </style>
 </head>
 <body class="dark-mode">
 
-    <!-- Auth View -->
     <div id="auth-container">
         <div class="auth-card">
             <div style="text-align:center; margin-bottom: 2rem;">
@@ -137,7 +129,6 @@
         </div>
     </div>
 
-    <!-- Dashboard View -->
     <div id="dashboard-view" class="hidden">
         <header class="navbar">
             <div class="navbar-brand">
@@ -150,7 +141,7 @@
                 </button>
                 <button class="btn btn-secondary" onclick="handleLogout()">
                     <i class="fa-solid fa-right-from-bracket"></i>
-                    <span class="btn-text">Logout</span>
+                    <span style="margin-left:5px">Logout</span>
                 </button>
             </div>
         </header>
@@ -158,8 +149,8 @@
         <main class="main-content">
             <div class="content-header">
                 <div>
-                    <h1 style="margin:0; font-size: 1.5rem;">Traffic Overview</h1>
-                    <p style="color:var(--text-muted); margin: 0.2rem 0 0 0; font-size: 0.9rem;">Real-time website interactions and performance.</p>
+                    <h1 style="margin:0; font-size: 1.5rem;">Live Activity</h1>
+                    <p style="color:var(--text-muted); margin: 0.2rem 0 0 0; font-size: 0.9rem;">Monitoring interactions across the SK News network.</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <select id="limit-select" class="select-input" onchange="loadData()">
@@ -174,9 +165,9 @@
 
             <div class="metrics-grid">
                 <div class="metric-card">
-                    <span class="metric-title">Total Interactions</span>
+                    <span class="metric-title">Total Logs</span>
                     <span class="metric-value" id="metric-total">--</span>
-                    <i class="fa-solid fa-fingerprint metric-icon"></i>
+                    <i class="fa-solid fa-database metric-icon"></i>
                 </div>
                 <div class="metric-card">
                     <span class="metric-title">Unique Visitors</span>
@@ -186,34 +177,31 @@
                 <div class="metric-card">
                     <span class="metric-title">Avg. Load Time</span>
                     <span class="metric-value" id="metric-load">--</span>
-                    <i class="fa-solid fa-gauge-high metric-icon"></i>
+                    <i class="fa-solid fa-clock-rotate-left metric-icon"></i>
                 </div>
             </div>
 
-            <div class="card" style="height:300px; padding-bottom: 3rem;">
-                <h3 style="font-size: 0.9rem; margin-bottom: 1.5rem;">Interaction Volume (Daily)</h3>
+            <div class="card" style="height:250px; padding-bottom: 2rem;">
                 <canvas id="trafficChart"></canvas>
             </div>
 
             <div class="card table-wrapper" style="padding: 0;">
-                <div class="flex justify-between items-center" style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);">
-                    <h3 style="margin:0; font-size: 1rem;">Live Activity Feed</h3>
-                    <div style="font-size:0.75rem; color:var(--text-muted);" id="table-status"></div>
-                </div>
                 <table id="log-table">
                     <thead>
                         <tr>
                             <th>Time</th>
                             <th>Event</th>
                             <th>Page</th>
-                            <th>IP / User</th>
-                            <th>Browser & OS</th>
+                            <th>Screen</th>
+                            <th>Browser/OS</th>
+                            <th>Referrer</th>
+                            <th>IP / Session</th>
                             <th>Event Details</th>
                             <th style="text-align:right">Action</th>
                         </tr>
                     </thead>
                     <tbody id="log-tbody">
-                        <tr><td colspan="7" style="text-align:center; padding: 3rem;">Initializing...</td></tr>
+                        <tr><td colspan="9" style="text-align:center; padding: 3rem;">Fetching interactions...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -226,12 +214,11 @@
         let state = { theme: localStorage.getItem('theme') || 'dark' };
         let myChart = null;
 
-        // --- AUTH & INITIALIZATION ---
         window.addEventListener('DOMContentLoaded', async () => {
             initTheme();
             const { data: { session } } = await supabase.auth.getSession();
             updateUIForAuth(session);
-            supabase.auth.onAuthStateChange((_, session) => updateUIForAuth(session));
+            supabase.auth.onAuthStateChange((_, s) => updateUIForAuth(s));
             document.getElementById('login-form').addEventListener('submit', handleLogin);
         });
 
@@ -240,15 +227,12 @@
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             const btn = document.getElementById('login-btn');
-            btn.disabled = true; btn.textContent = "Signing in...";
+            btn.disabled = true; btn.textContent = "Verifying...";
             const { error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) { Swal.fire('Error', error.message, 'error'); btn.disabled = false; btn.textContent = "Sign In"; }
         }
 
-        async function handleLogout() {
-            await supabase.auth.signOut();
-            window.location.reload();
-        }
+        async function handleLogout() { await supabase.auth.signOut(); window.location.reload(); }
 
         function updateUIForAuth(session) {
             document.getElementById('auth-container').classList.toggle('hidden', !!session);
@@ -256,12 +240,8 @@
             if (session) loadData();
         }
 
-        // --- DATA FETCHING ---
         async function loadData() {
             const limit = document.getElementById('limit-select').value;
-            const tbody = document.getElementById('log-tbody');
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:3rem;"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading latest logs...</td></tr>';
-
             try {
                 const { data: logs, error } = await supabase
                     .from('news_website_visitors')
@@ -270,93 +250,80 @@
                     .limit(limit);
 
                 if (error) throw error;
-                
                 processMetrics(logs);
                 renderChart(logs);
                 renderTable(logs);
-                document.getElementById('table-status').textContent = `Showing ${logs.length} most recent records`;
             } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--danger)">Error: ${err.message}</td></tr>`;
+                document.getElementById('log-tbody').innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--danger)">${err.message}</td></tr>`;
             }
         }
 
-        // --- UI RENDERING ---
         function processMetrics(logs) {
             animateValue('metric-total', logs.length);
             const uniqueIPs = new Set(logs.map(l => l.ip_address)).size;
             animateValue('metric-unique', uniqueIPs);
-
-            // Calculate Avg Load Time
-            const loadTimes = logs
-                .filter(l => l.event_type === 'page_view')
-                .map(l => {
-                    const d = typeof l.event_data === 'string' ? JSON.parse(l.event_data) : l.event_data;
-                    return d?.load_time || 0;
-                })
-                .filter(t => t > 0);
             
-            const avg = loadTimes.length ? (loadTimes.reduce((a, b) => a + b, 0) / loadTimes.length).toFixed(0) : 0;
+            const lts = logs.filter(l => l.event_type === 'page_view').map(l => {
+                const d = typeof l.event_data === 'string' ? JSON.parse(l.event_data) : l.event_data;
+                return d?.load_time || 0;
+            }).filter(t => t > 0);
+            const avg = lts.length ? (lts.reduce((a, b) => a + b, 0) / lts.length).toFixed(0) : 0;
             document.getElementById('metric-load').textContent = `${avg}ms`;
         }
 
         function renderTable(logs) {
             const tbody = document.getElementById('log-tbody');
-            if (!logs.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No data found.</td></tr>'; return; }
+            if (!logs.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">No activity recorded yet.</td></tr>'; return; }
 
             tbody.innerHTML = logs.map(log => {
                 const meta = typeof log.meta === 'string' ? JSON.parse(log.meta) : (log.meta || {});
                 const eventData = typeof log.event_data === 'string' ? JSON.parse(log.event_data) : (log.event_data || {});
                 
+                // Truncate Page Title to 20 chars
+                const rawTitle = log.page_name || 'Unnamed Page';
+                const truncatedTitle = rawTitle.length > 20 ? rawTitle.substring(0, 20) + '...' : rawTitle;
+
                 const time = new Date(log.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
                 const isClick = log.event_type === 'click';
+                const referrer = meta.referrer || 'Direct';
                 
-                // OS/Browser Icons
-                const bName = (meta.browser || '').toLowerCase();
-                let bIcon = '<i class="fa-brands fa-chrome"></i>';
-                if(bName.includes('safari')) bIcon = '<i class="fa-brands fa-safari"></i>';
-                else if(bName.includes('firefox')) bIcon = '<i class="fa-brands fa-firefox"></i>';
-                
-                const oName = (meta.os || '').toLowerCase();
-                let oIcon = '<i class="fa-solid fa-desktop"></i>';
-                if(oName.includes('win')) oIcon = '<i class="fa-brands fa-windows"></i>';
-                else if(oName.includes('mac') || oName.includes('ios')) oIcon = '<i class="fa-brands fa-apple"></i>';
-                else if(oName.includes('android')) oIcon = '<i class="fa-brands fa-android"></i>';
+                let bIcon = '<i class="fa-solid fa-globe"></i>';
+                const b = (meta.browser || '').toLowerCase();
+                if(b.includes('chrome')) bIcon = '<i class="fa-brands fa-chrome" style="color:#db4437"></i>';
+                else if(b.includes('safari')) bIcon = '<i class="fa-brands fa-safari" style="color:#00a4e4"></i>';
+                else if(b.includes('firefox')) bIcon = '<i class="fa-brands fa-firefox" style="color:#ff7139"></i>';
 
-                // Format Event Details
                 let details = '';
                 if (isClick) {
                     details = `<div class="event-detail-box">
-                        <span style="color:var(--text-muted)">${eventData.element_type || 'elem'}:</span> 
-                        "${eventData.element_text || 'unnamed'}"
-                        ${eventData.target_url ? ` <i class="fa-solid fa-arrow-right" style="font-size:10px"></i> ${eventData.target_url}` : ''}
+                        <span style="opacity:0.6">${eventData.element_type || 'elem'}:</span> "${eventData.element_text || '?'}"
+                        ${eventData.target_url ? `<br><span style="font-size:9px; opacity:0.5">To: ${eventData.target_url}</span>` : ''}
                     </div>`;
                 } else {
-                    const lt = eventData.load_time ? Math.round(eventData.load_time) : '--';
-                    details = `<div class="event-detail-box"><i class="fa-solid fa-bolt" style="color:var(--warning)"></i> ${lt}ms load time</div>`;
+                    details = `<div class="event-detail-box"><i class="fa-solid fa-bolt" style="color:var(--warning); font-size:10px"></i> ${Math.round(eventData.load_time || 0)}ms</div>`;
                 }
 
                 return `
                     <tr id="row-${log.id}">
-                        <td style="white-space:nowrap; color:var(--text-muted)">${time}</td>
+                        <td style="white-space:nowrap; opacity:0.7">${time}</td>
                         <td><span class="badge ${isClick ? 'badge-click' : 'badge-page'}">${log.event_type}</span></td>
                         <td>
-                            <div style="font-weight:600">${log.page_name || 'Unnamed Page'}</div>
-                            <a href="${log.page_url}" target="_blank" class="url-text">${log.page_url}</a>
+                            <div style="font-weight:600" title="${rawTitle}">${truncatedTitle}</div>
+                            <a href="${log.page_url}" target="_blank" class="truncate-text" title="${log.page_url}">${log.page_url}</a>
                         </td>
+                        <td style="font-family:monospace; opacity:0.8">${meta.screen || '-'}</td>
+                        <td>
+                            <span style="font-size:0.9rem" title="${meta.browser}">${bIcon}</span>
+                            <span style="font-size:0.7rem; margin-left:4px; opacity:0.7">${meta.os || ''}</span>
+                        </td>
+                        <td><span class="truncate-text" title="${referrer}">${referrer}</span></td>
                         <td>
                             <div style="font-family:monospace">${log.ip_address}</div>
-                            <div style="font-size:0.7rem; color:var(--text-muted)">ID: ${log.session_id ? log.session_id.substring(0,8) : '---'}</div>
-                        </td>
-                        <td style="font-size: 1.1rem;">
-                            <span title="${meta.browser}">${bIcon}</span> 
-                            <span title="${meta.os}" style="margin-left:8px; opacity:0.7">${oIcon}</span>
-                            <div style="font-size:0.7rem; margin-top:4px; color:var(--text-muted)">${meta.screen || ''}</div>
+                            <div style="font-size:0.6rem; opacity:0.4">UID: ${log.session_id ? log.session_id.substring(0,6) : '--'}</div>
                         </td>
                         <td>${details}</td>
                         <td style="text-align:right;">
-                            <button class="btn btn-danger-soft" onclick="deleteLog('${log.id}')">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
+                            <button class="btn btn-danger-soft" onclick="deleteLog('${log.id}')"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                 `;
@@ -364,57 +331,50 @@
         }
 
         async function deleteLog(id) {
-            const res = await Swal.fire({ title: 'Delete log?', text: "This cannot be undone.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444' });
+            const res = await Swal.fire({ title: 'Delete entry?', text: "Permanent removal.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444' });
             if (res.isConfirmed) {
                 try {
-                    const { error } = await supabase.from('news_website_visitors').delete().eq('id', id);
-                    if (error) throw error;
+                    await supabase.from('news_website_visitors').delete().eq('id', id);
                     document.getElementById(`row-${id}`).remove();
-                } catch (err) { Swal.fire('Error', 'Failed to delete record.', 'error'); }
+                } catch (err) { Swal.fire('Error', 'Failed to delete', 'error'); }
             }
         }
 
         function renderChart(logs) {
             const canvas = document.getElementById('trafficChart');
-            if(!canvas) return;
             const dateGroups = {};
             logs.forEach(log => {
                 const date = new Date(log.created_at).toLocaleDateString();
                 dateGroups[date] = (dateGroups[date] || 0) + 1;
             });
             const sortedDates = Object.keys(dateGroups).sort((a,b) => new Date(a) - new Date(b));
-            const dataPoints = sortedDates.map(d => dateGroups[d]);
-
             if(myChart) myChart.destroy();
             myChart = new Chart(canvas.getContext('2d'), {
                 type: 'line',
                 data: {
                     labels: sortedDates,
                     datasets: [{
-                        label: 'Interactions',
-                        data: dataPoints,
-                        borderColor: '#2563eb',
-                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                        fill: true, tension: 0.4, pointRadius: 4
+                        label: 'Interactions', data: sortedDates.map(d => dateGroups[d]),
+                        borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.05)',
+                        fill: true, tension: 0.4, pointRadius: 3
                     }]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { font: { size: 9 } } },
                         y: { grid: { color: state.theme === 'dark' ? '#334155' : '#e2e8f0' }, beginAtZero: true }
                     }
                 }
             });
         }
 
-        // --- THEME & HELPERS ---
         function toggleTheme() {
             state.theme = state.theme === 'light' ? 'dark' : 'light';
             localStorage.setItem('theme', state.theme);
             initTheme();
-            if (myChart) loadData(); // Reload to refresh chart colors
+            loadData();
         }
 
         function initTheme() {

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - SK News</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        /* --- CSS VARIABLES & THEME --- */
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-sidebar: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius: 12px;
+            --sidebar-width: 260px;
+            --header-height: 64px;
+        }
+
+        body.dark-mode {
+            --primary: #3b82f6;
+            --primary-hover: #60a5fa;
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-sidebar: #0f172a;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        /* --- GLOBAL RESET --- */
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; min-height: 100vh; transition: background-color 0.3s, color 0.3s; }
+        h1, h2, h3, h4 { margin: 0 0 1rem 0; font-weight: 600; }
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; }
+
+        /* --- LOGIN PAGE STYLES --- */
+        #auth-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 400px;
+            background: var(--bg-card);
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .input-group { margin-bottom: 1.25rem; }
+        .input-group label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); }
+        .input-field { width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); outline: none; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; padding: 0.75rem; border: none; font-weight: 600; border-radius: 8px; cursor: pointer; }
+        .btn-primary:hover { background: var(--primary-hover); }
+
+        /* --- LAYOUT --- */
+        .mobile-header { display: none; background: var(--bg-card); padding: 15px; border-bottom: 1px solid var(--border); align-items: center; justify-content: space-between; position: fixed; top: 0; left: 0; right: 0; z-index: 60; }
+        
+        .sidebar { width: var(--sidebar-width); background: var(--bg-sidebar); border-right: 1px solid var(--border); position: fixed; height: 100vh; z-index: 50; display: flex; flex-direction: column; transition: transform 0.3s ease; }
+        .sidebar-brand { height: var(--header-height); display: flex; align-items: center; padding: 0 1.5rem; font-size: 1.1rem; font-weight: 700; color: var(--text-main); border-bottom: 1px solid var(--border); }
+        .sidebar-nav { flex: 1; padding: 1.5rem 1rem; overflow-y: auto; }
+        .nav-item { display: flex; align-items: center; padding: 0.75rem 0.8rem; color: var(--text-muted); border-radius: 8px; margin-bottom: 2px; font-size: 0.9rem; font-weight: 500; cursor: pointer; text-decoration: none; }
+        .nav-item:hover { background: rgba(0,0,0,0.05); }
+        .nav-item.active { background: rgba(37, 99, 235, 0.1); color: var(--primary); }
+        .sidebar-footer { padding: 1rem; border-top: 1px solid var(--border); }
+        
+        .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 2rem; width: calc(100% - var(--sidebar-width)); }
+        .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; height: 40px; }
+        
+        /* --- COMPONENTS --- */
+        .card { background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); padding: 1.5rem; margin-bottom: 1.5rem; }
+        
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .metric-card { background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        .metric-value { font-size: 2rem; font-weight: 700; margin: 10px 0; color: var(--text-main); }
+        .metric-title { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+        .metric-icon { position: absolute; right: 20px; top: 20px; font-size: 3rem; opacity: 0.05; color: var(--text-main); transform: rotate(-10deg); }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0.6rem 1.2rem; border-radius: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; white-space: nowrap; }
+        .btn-secondary { background: var(--bg-card); color: var(--text-main); border-color: var(--border); }
+        .btn-danger-soft { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: none; padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+        .btn-danger-soft:hover { background: var(--danger); color: white; }
+
+        /* Tables */
+        .table-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; background: var(--bg-card); font-size: 0.9rem; }
+        th { text-align: left; padding: 1rem; background: rgba(0,0,0,0.02); color: var(--text-muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
+        body.dark-mode th { background: rgba(255,255,255,0.02); }
+        td { padding: 1rem; border-bottom: 1px solid var(--border); color: var(--text-main); vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(0,0,0,0.01); }
+
+        .select-input { padding: 0.4rem; border-radius: 8px; border: 1px solid var(--border); background-color: var(--bg-card); color: var(--text-main); outline: none; }
+
+        /* Skeletons */
+        .skeleton { background: linear-gradient(90deg, var(--bg-card) 25%, var(--border) 50%, var(--bg-card) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; color: transparent !important; pointer-events: none; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .skeleton-text { height: 1em; width: 70%; display: inline-block; }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+            .main-content { margin-left: 0; width: 100%; padding-top: 80px; }
+            .mobile-header { display: flex; }
+            .metrics-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="dark-mode">
+
+    <!-- Auth View -->
+    <div id="auth-container">
+        <div class="auth-card">
+            <div style="text-align:center; margin-bottom: 2rem;">
+                <i class="fa-solid fa-newspaper" style="color:var(--primary); font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                <h2 style="margin:0">SK News</h2>
+                <p style="color:var(--text-muted); font-size: 0.9rem;">Analytics Portal Login</p>
+            </div>
+            <form id="login-form">
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="login-email" class="input-field" placeholder="admin@sknews.com" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" class="input-field" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary" id="login-btn">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard View -->
+    <div id="dashboard-view" class="hidden">
+        <div class="mobile-header">
+            <div style="font-weight:700;">SK News</div>
+            <button class="btn btn-secondary" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fa-solid fa-bars"></i></button>
+        </div>
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <i class="fa-solid fa-newspaper" style="color:var(--primary); margin-right:10px;"></i> SK News
+            </div>
+            <nav class="sidebar-nav">
+                <a class="nav-item active"><i class="fa-solid fa-gauge-high" style="margin-right:10px;"></i> Dashboard</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket" style="margin-right:10px;"></i> Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-header">
+                <h2>Traffic Analytics</h2>
+                <div class="flex items-center gap-2">
+                    <select id="limit-select" class="select-input" onchange="loadData()">
+                        <option value="50">Last 50</option>
+                        <option value="100">Last 100</option>
+                        <option value="500">Last 500</option>
+                        <option value="1000" selected>Last 1000</option>
+                    </select>
+                    <button class="btn btn-secondary" onclick="loadData()"><i class="fa-solid fa-rotate-right"></i></button>
+                    <button class="btn btn-secondary" id="theme-btn" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></button>
+                </div>
+            </div>
+
+            <div id="dashboard-content">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <span class="metric-title">Total Logs</span>
+                        <span class="metric-value skeleton-text" id="metric-total">--</span>
+                        <i class="fa-solid fa-users metric-icon"></i>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-title">Unique IPs</span>
+                        <span class="metric-value skeleton-text" id="metric-unique">--</span>
+                        <i class="fa-solid fa-globe metric-icon"></i>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-title">Top Browser</span>
+                        <span class="metric-value skeleton-text" id="metric-browser" style="font-size:1.5rem;">--</span>
+                        <i class="fa-brands fa-chrome metric-icon"></i>
+                    </div>
+                </div>
+
+                <div class="card table-wrapper">
+                    <div class="flex justify-between items-center" style="margin-bottom:1rem; padding: 0 0.5rem;">
+                        <h3>Detailed Logs</h3>
+                        <div style="font-size:0.8rem; color:var(--text-muted);" id="table-status"></div>
+                    </div>
+                    <table id="log-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>IP Address</th>
+                                <th>Browser</th>
+                                <th>OS</th>
+                                <th>Referrer</th>
+                                <th style="text-align:right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="log-tbody">
+                            <tr><td colspan="6" style="text-align:center; padding: 2rem;">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card" style="height:350px; margin-bottom:1.5rem;">
+                    <canvas id="trafficChart"></canvas>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        // Import the initialized supabase client from your local file
+        import supabase from './supabase-client.js';
+
+        let state = { theme: localStorage.getItem('theme') || 'dark' };
+        let myChart = null;
+
+        // --- AUTH & INITIALIZATION ---
+        window.addEventListener('DOMContentLoaded', async () => {
+            initTheme();
+            
+            const { data: { session } } = await supabase.auth.getSession();
+            updateUIForAuth(session);
+
+            supabase.auth.onAuthStateChange((event, session) => {
+                updateUIForAuth(session);
+            });
+
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+        });
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const btn = document.getElementById('login-btn');
+
+            btn.disabled = true;
+            btn.textContent = "Signing in...";
+
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                Swal.fire('Auth Error', error.message, 'error');
+                btn.disabled = false;
+                btn.textContent = "Sign In";
+            }
+        }
+
+        async function handleLogout() {
+            await supabase.auth.signOut();
+            window.location.reload();
+        }
+
+        function updateUIForAuth(session) {
+            const authContainer = document.getElementById('auth-container');
+            const dashboardView = document.getElementById('dashboard-view');
+
+            if (session) {
+                authContainer.classList.add('hidden');
+                dashboardView.classList.remove('hidden');
+                loadData();
+            } else {
+                authContainer.classList.remove('hidden');
+                dashboardView.classList.add('hidden');
+            }
+        }
+
+        // --- CORE ANALYTICS LOGIC ---
+        async function loadData() {
+            const limit = document.getElementById('limit-select').value;
+            document.querySelectorAll('.skeleton-text').forEach(el => el.classList.add('skeleton'));
+            const tbody = document.getElementById('log-tbody');
+            tbody.innerHTML = '<tr><td colspan="6"><div class="skeleton" style="width:100%; height:40px;"></div></td></tr>';
+
+            try {
+                // Fetch directly from your Supabase table (assumed name: traffic_logs)
+                const { data: logs, error } = await supabase
+                    .from('news_website_visitor')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(limit);
+
+                if (error) throw error;
+                
+                processMetrics(logs);
+                renderChart(logs);
+                renderTable(logs);
+                document.getElementById('table-status').textContent = `Showing ${logs.length} records`;
+
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--danger)">Error: ${err.message}</td></tr>`;
+            } finally {
+                document.querySelectorAll('.skeleton-text').forEach(el => el.classList.remove('skeleton'));
+            }
+        }
+
+        async function deleteLog(id) {
+            const result = await Swal.fire({
+                title: 'Delete log?',
+                text: "You cannot undo this action.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Yes, delete it!'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const { error } = await supabase.from('traffic_logs').delete().eq('id', id);
+                    if (error) throw error;
+
+                    document.getElementById(`row-${id}`).remove();
+                    Swal.fire('Deleted!', 'The log has been removed.', 'success');
+                    let count = parseInt(document.getElementById('metric-total').textContent);
+                    if(!isNaN(count)) document.getElementById('metric-total').textContent = count - 1;
+                } catch (err) {
+                    Swal.fire('Error', 'Failed to delete record.', 'error');
+                }
+            }
+        }
+
+        // --- UI & THEME HELPERS ---
+        function toggleTheme() {
+            state.theme = state.theme === 'light' ? 'dark' : 'light'; 
+            localStorage.setItem('theme', state.theme); 
+            initTheme();
+            if(myChart) {
+                const gridColor = state.theme === 'dark' ? '#334155' : '#e2e8f0';
+                myChart.options.scales.x.grid.color = gridColor;
+                myChart.options.scales.y.grid.color = gridColor;
+                myChart.update();
+            }
+        }
+
+        function initTheme() {
+            const btn = document.getElementById('theme-btn');
+            if(state.theme === 'dark') { 
+                document.body.classList.add('dark-mode'); 
+                if(btn) btn.innerHTML = '<i class="fa-solid fa-sun"></i>'; 
+                if(window.Chart) Chart.defaults.color = '#94a3b8';
+            } else { 
+                document.body.classList.remove('dark-mode'); 
+                if(btn) btn.innerHTML = '<i class="fa-solid fa-moon"></i>'; 
+                if(window.Chart) Chart.defaults.color = '#64748b';
+            }
+        }
+
+        function processMetrics(logs) {
+            animateValue('metric-total', logs.length);
+            const uniqueIPs = new Set(logs.map(l => l.ip_address)).size;
+            animateValue('metric-unique', uniqueIPs);
+            if(logs.length === 0) { document.getElementById('metric-browser').textContent = "N/A"; return; }
+            const browsers = logs.map(l => l.browser || 'Unknown');
+            const counts = {};
+            browsers.forEach(b => counts[b] = (counts[b] || 0) + 1);
+            const topBrowser = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+            document.getElementById('metric-browser').textContent = topBrowser;
+        }
+
+        function renderChart(logs) {
+            const canvas = document.getElementById('trafficChart');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dateGroups = {};
+            logs.forEach(log => {
+                if(!log.created_at) return;
+                const date = new Date(log.created_at).toLocaleDateString();
+                dateGroups[date] = (dateGroups[date] || 0) + 1;
+            });
+            const sortedDates = Object.keys(dateGroups).sort((a,b) => new Date(a) - new Date(b));
+            const dataPoints = sortedDates.map(d => dateGroups[d]);
+
+            if(myChart) myChart.destroy();
+            const gridColor = state.theme === 'dark' ? '#334155' : '#e2e8f0';
+
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedDates,
+                    datasets: [{
+                        label: 'Visits',
+                        data: dataPoints,
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: gridColor, drawBorder: false } },
+                        y: { grid: { color: gridColor, drawBorder: false }, beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function renderTable(logs) {
+            const tbody = document.getElementById('log-tbody');
+            if (logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No logs found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = logs.map(log => {
+                const time = log.created_at ? new Date(log.created_at).toLocaleString() : 'Unknown';
+                const ip = log.ip_address || 'Unknown';
+                const ref = log.referrer || '-';
+                
+                const bName = (log.browser || '').toLowerCase();
+                let bIcon = '<i class="fa-solid fa-globe brand-icon"></i>';
+                if(bName.includes('chrome')) bIcon = '<i class="fa-brands fa-chrome brand-icon" style="color:#db4437"></i>';
+                else if(bName.includes('firefox')) bIcon = '<i class="fa-brands fa-firefox brand-icon" style="color:#ff7139"></i>';
+                else if(bName.includes('safari')) bIcon = '<i class="fa-brands fa-safari brand-icon" style="color:#00a4e4"></i>';
+                else if(bName.includes('edge')) bIcon = '<i class="fa-brands fa-edge brand-icon" style="color:#0078d7"></i>';
+
+                const oName = (log.os || '').toLowerCase();
+                let oIcon = '<i class="fa-solid fa-desktop brand-icon"></i>';
+                if(oName.includes('win')) oIcon = '<i class="fa-brands fa-windows brand-icon" style="color:#00a4ef"></i>';
+                else if(oName.includes('mac') || oName.includes('ios')) oIcon = '<i class="fa-brands fa-apple brand-icon"></i>';
+                else if(oName.includes('android')) oIcon = '<i class="fa-brands fa-android brand-icon" style="color:#3ddc84"></i>';
+
+                return `
+                    <tr id="row-${log.id}">
+                        <td style="color:var(--text-muted); white-space:nowrap;">${time}</td>
+                        <td style="font-family:monospace; font-weight:500;">${ip}</td>
+                        <td>${bIcon} ${log.browser || 'Unknown'}</td>
+                        <td>${oIcon} ${log.os || 'Unknown'}</td>
+                        <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${ref}">${ref}</td>
+                        <td style="text-align:right;">
+                            <button class="btn btn-danger-soft" onclick="deleteLog('${log.id}')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function animateValue(id, end) {
+            const obj = document.getElementById(id);
+            if(!obj) return;
+            let start = 0;
+            const duration = 1000;
+            const startTime = performance.now();
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const ease = 1 - Math.pow(1 - progress, 4);
+                obj.textContent = Math.floor(start + (end - start) * ease);
+                if (progress < 1) requestAnimationFrame(update); else obj.textContent = end;
+            }
+            requestAnimationFrame(update);
+        }
+
+        // Attach functions to window because this script is type="module"
+        window.loadData = loadData;
+        window.deleteLog = deleteLog;
+        window.toggleTheme = toggleTheme;
+        window.handleLogout = handleLogout;
+    </script>
+</body>
+</html>

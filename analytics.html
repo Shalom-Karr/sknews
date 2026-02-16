@@ -75,6 +75,10 @@
         .metric-title { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
         .metric-icon { position: absolute; right: 20px; top: 20px; font-size: 2.5rem; opacity: 0.05; transform: rotate(-10deg); }
 
+        /* --- FILTERS --- */
+        .filter-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border); }
+        .filter-input { padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); outline: none; font-size: 0.85rem; width: 100%; }
+
         /* --- BUTTONS & INPUTS --- */
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0.6rem 1.2rem; border-radius: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; white-space: nowrap; }
         .btn-primary { background: var(--primary); color: white; border: none; }
@@ -165,12 +169,12 @@
 
             <div class="metrics-grid">
                 <div class="metric-card">
-                    <span class="metric-title">Total Logs</span>
+                    <span class="metric-title">Filtered Interactions</span>
                     <span class="metric-value" id="metric-total">--</span>
                     <i class="fa-solid fa-database metric-icon"></i>
                 </div>
                 <div class="metric-card">
-                    <span class="metric-title">Unique Visitors</span>
+                    <span class="metric-title">Unique IPs</span>
                     <span class="metric-value" id="metric-unique">--</span>
                     <i class="fa-solid fa-users metric-icon"></i>
                 </div>
@@ -183,6 +187,22 @@
 
             <div class="card" style="height:250px; padding-bottom: 2rem;">
                 <canvas id="trafficChart"></canvas>
+            </div>
+
+            <!-- FILTERS SECTION -->
+            <div class="filter-bar">
+                <input type="text" id="filter-ip" class="filter-input" placeholder="Filter by IP Address..." oninput="applyFilters()">
+                <select id="filter-event" class="filter-input" onchange="applyFilters()">
+                    <option value="">All Events</option>
+                    <option value="page_view">Page Views</option>
+                    <option value="click">Clicks</option>
+                </select>
+                <select id="filter-browser" class="filter-input" onchange="applyFilters()">
+                    <option value="">All Browsers</option>
+                </select>
+                <select id="filter-page" class="filter-input" onchange="applyFilters()">
+                    <option value="">All Pages</option>
+                </select>
             </div>
 
             <div class="card table-wrapper" style="padding: 0;">
@@ -213,6 +233,7 @@
 
         let state = { theme: localStorage.getItem('theme') || 'dark' };
         let myChart = null;
+        let allLogs = []; // Stores the raw data from Supabase
 
         window.addEventListener('DOMContentLoaded', async () => {
             initTheme();
@@ -250,12 +271,52 @@
                     .limit(limit);
 
                 if (error) throw error;
-                processMetrics(logs);
-                renderChart(logs);
-                renderTable(logs);
+                
+                allLogs = logs.map(l => ({
+                    ...l,
+                    parsedMeta: typeof l.meta === 'string' ? JSON.parse(l.meta) : (l.meta || {}),
+                    parsedEvent: typeof l.event_data === 'string' ? JSON.parse(l.event_data) : (l.event_data || {})
+                }));
+
+                populateFilterOptions();
+                applyFilters(); // This calls renderTable and processMetrics
+                renderChart(allLogs);
             } catch (err) {
                 document.getElementById('log-tbody').innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--danger)">${err.message}</td></tr>`;
             }
+        }
+
+        function populateFilterOptions() {
+            const browserSelect = document.getElementById('filter-browser');
+            const pageSelect = document.getElementById('filter-page');
+            
+            // Clear existing except first
+            browserSelect.innerHTML = '<option value="">All Browsers</option>';
+            pageSelect.innerHTML = '<option value="">All Pages</option>';
+
+            const browsers = [...new Set(allLogs.map(l => l.parsedMeta.browser).filter(Boolean))].sort();
+            const pages = [...new Set(allLogs.map(l => l.page_name).filter(Boolean))].sort();
+
+            browsers.forEach(b => browserSelect.innerHTML += `<option value="${b}">${b}</option>`);
+            pages.forEach(p => pageSelect.innerHTML += `<option value="${p}">${p}</option>`);
+        }
+
+        function applyFilters() {
+            const ipVal = document.getElementById('filter-ip').value.toLowerCase();
+            const eventVal = document.getElementById('filter-event').value;
+            const browserVal = document.getElementById('filter-browser').value;
+            const pageVal = document.getElementById('filter-page').value;
+
+            const filtered = allLogs.filter(log => {
+                const matchIP = log.ip_address.toLowerCase().includes(ipVal);
+                const matchEvent = !eventVal || log.event_type === eventVal;
+                const matchBrowser = !browserVal || log.parsedMeta.browser === browserVal;
+                const matchPage = !pageVal || log.page_name === pageVal;
+                return matchIP && matchEvent && matchBrowser && matchPage;
+            });
+
+            processMetrics(filtered);
+            renderTable(filtered);
         }
 
         function processMetrics(logs) {
@@ -263,26 +324,21 @@
             const uniqueIPs = new Set(logs.map(l => l.ip_address)).size;
             animateValue('metric-unique', uniqueIPs);
             
-            const lts = logs.filter(l => l.event_type === 'page_view').map(l => {
-                const d = typeof l.event_data === 'string' ? JSON.parse(l.event_data) : l.event_data;
-                return d?.load_time || 0;
-            }).filter(t => t > 0);
+            const lts = logs.filter(l => l.event_type === 'page_view').map(l => l.parsedEvent?.load_time || 0).filter(t => t > 0);
             const avg = lts.length ? (lts.reduce((a, b) => a + b, 0) / lts.length).toFixed(0) : 0;
             document.getElementById('metric-load').textContent = `${avg}ms`;
         }
 
         function renderTable(logs) {
             const tbody = document.getElementById('log-tbody');
-            if (!logs.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">No activity recorded yet.</td></tr>'; return; }
+            if (!logs.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 2rem;">No logs match your filters.</td></tr>'; return; }
 
             tbody.innerHTML = logs.map(log => {
-                const meta = typeof log.meta === 'string' ? JSON.parse(log.meta) : (log.meta || {});
-                const eventData = typeof log.event_data === 'string' ? JSON.parse(log.event_data) : (log.event_data || {});
+                const meta = log.parsedMeta;
+                const eventData = log.parsedEvent;
                 
-                // Truncate Page Title to 20 chars
                 const rawTitle = log.page_name || 'Unnamed Page';
                 const truncatedTitle = rawTitle.length > 20 ? rawTitle.substring(0, 20) + '...' : rawTitle;
-
                 const time = new Date(log.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
                 const isClick = log.event_type === 'click';
                 const referrer = meta.referrer || 'Direct';
@@ -336,6 +392,9 @@
                 try {
                     await supabase.from('news_website_visitors').delete().eq('id', id);
                     document.getElementById(`row-${id}`).remove();
+                    // Update the local state array too
+                    allLogs = allLogs.filter(l => l.id !== parseInt(id));
+                    applyFilters();
                 } catch (err) { Swal.fire('Error', 'Failed to delete', 'error'); }
             }
         }
@@ -374,7 +433,7 @@
             state.theme = state.theme === 'light' ? 'dark' : 'light';
             localStorage.setItem('theme', state.theme);
             initTheme();
-            loadData();
+            applyFilters(); // Re-render table and update colors
         }
 
         function initTheme() {
@@ -403,6 +462,7 @@
         window.deleteLog = deleteLog;
         window.toggleTheme = toggleTheme;
         window.handleLogout = handleLogout;
+        window.applyFilters = applyFilters;
     </script>
 </body>
 </html>

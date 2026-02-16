@@ -445,7 +445,7 @@
                 const ip = log.ip_address || 'Unknown';
                 const ref = log.referrer || '-';
                 
-                const bName = (log.browser || '').toLowerCase();
+                const bName = (log.meta.browser || '').toLowerCase();
                 let bIcon = '<i class="fa-solid fa-globe brand-icon"></i>';
                 if(bName.includes('chrome')) bIcon = '<i class="fa-brands fa-chrome brand-icon" style="color:#db4437"></i>';
                 else if(bName.includes('firefox')) bIcon = '<i class="fa-brands fa-firefox brand-icon" style="color:#ff7139"></i>';
@@ -462,7 +462,7 @@
                     <tr id="row-${log.id}">
                         <td style="color:var(--text-muted); white-space:nowrap;">${time}</td>
                         <td style="font-family:monospace; font-weight:500;">${ip}</td>
-                        <td>${bIcon} ${log.browser || 'Unknown'}</td>
+                        <td>${bIcon} ${log.meta.browser || 'Unknown'}</td>
                         <td>${oIcon} ${log.os || 'Unknown'}</td>
                         <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${ref}">${ref}</td>
                         <td style="text-align:right;">

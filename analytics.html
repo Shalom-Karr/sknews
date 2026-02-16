@@ -16,7 +16,6 @@
     <!-- Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Supabase Client Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
@@ -51,7 +50,7 @@
 
         /* --- GLOBAL RESET --- */
         * { box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; min-height: 100vh; transition: background-color 0.3s, color 0.3s; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; min-height: 100vh; transition: background-color 0.3s, color 0.3s; overflow-x: hidden; }
         h1, h2, h3, h4 { margin: 0 0 1rem 0; font-weight: 600; }
         .hidden { display: none !important; }
         .flex { display: flex; }
@@ -60,22 +59,8 @@
         .gap-2 { gap: 0.5rem; }
 
         /* --- LOGIN PAGE STYLES --- */
-        #auth-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .auth-card {
-            width: 100%;
-            max-width: 400px;
-            background: var(--bg-card);
-            padding: 2.5rem;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-        }
+        #auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .auth-card { width: 100%; max-width: 400px; background: var(--bg-card); padding: 2.5rem; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
         .input-group { margin-bottom: 1.25rem; }
         .input-group label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); }
         .input-field { width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); outline: none; }
@@ -84,7 +69,6 @@
 
         /* --- LAYOUT --- */
         .mobile-header { display: none; background: var(--bg-card); padding: 15px; border-bottom: 1px solid var(--border); align-items: center; justify-content: space-between; position: fixed; top: 0; left: 0; right: 0; z-index: 60; }
-        
         .sidebar { width: var(--sidebar-width); background: var(--bg-sidebar); border-right: 1px solid var(--border); position: fixed; height: 100vh; z-index: 50; display: flex; flex-direction: column; transition: transform 0.3s ease; }
         .sidebar-brand { height: var(--header-height); display: flex; align-items: center; padding: 0 1.5rem; font-size: 1.1rem; font-weight: 700; color: var(--text-main); border-bottom: 1px solid var(--border); }
         .sidebar-nav { flex: 1; padding: 1.5rem 1rem; overflow-y: auto; }
@@ -94,11 +78,10 @@
         .sidebar-footer { padding: 1rem; border-top: 1px solid var(--border); }
         
         .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 2rem; width: calc(100% - var(--sidebar-width)); }
-        .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; height: 40px; }
+        .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
         
         /* --- COMPONENTS --- */
         .card { background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); padding: 1.5rem; margin-bottom: 1.5rem; }
-        
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
         .metric-card { background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); display: flex; flex-direction: column; position: relative; overflow: hidden; }
         .metric-value { font-size: 2rem; font-weight: 700; margin: 10px 0; color: var(--text-main); }
@@ -110,15 +93,15 @@
         .btn-danger-soft { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: none; padding: 0.4rem 0.8rem; font-size: 0.8rem; }
         .btn-danger-soft:hover { background: var(--danger); color: white; }
 
-        /* Tables */
         .table-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); }
-        table { width: 100%; border-collapse: collapse; background: var(--bg-card); font-size: 0.9rem; }
+        table { width: 100%; border-collapse: collapse; background: var(--bg-card); font-size: 0.85rem; }
         th { text-align: left; padding: 1rem; background: rgba(0,0,0,0.02); color: var(--text-muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
         body.dark-mode th { background: rgba(255,255,255,0.02); }
         td { padding: 1rem; border-bottom: 1px solid var(--border); color: var(--text-main); vertical-align: middle; }
         tr:last-child td { border-bottom: none; }
         tr:hover td { background: rgba(0,0,0,0.01); }
 
+        .brand-icon { width: 20px; margin-right: 8px; }
         .select-input { padding: 0.4rem; border-radius: 8px; border: 1px solid var(--border); background-color: var(--bg-card); color: var(--text-main); outline: none; }
 
         /* Skeletons */
@@ -126,12 +109,11 @@
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         .skeleton-text { height: 1em; width: 70%; display: inline-block; }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); box-shadow: 0 0 50px rgba(0,0,0,0.5); }
             .main-content { margin-left: 0; width: 100%; padding-top: 80px; }
             .mobile-header { display: flex; }
-            .metrics-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -224,16 +206,19 @@
                                 <th>IP Address</th>
                                 <th>Browser</th>
                                 <th>OS</th>
+                                <th>Screen</th>
                                 <th>Referrer</th>
                                 <th style="text-align:right">Action</th>
                             </tr>
                         </thead>
                         <tbody id="log-tbody">
-                            <tr><td colspan="6" style="text-align:center; padding: 2rem;">Loading...</td></tr>
+                            <tr><td colspan="7" style="text-align:center; padding: 2rem;">Loading...</td></tr>
                         </tbody>
                     </table>
                 </div>
-                <div class="card" style="height:350px; margin-bottom:1.5rem;">
+                
+                <div class="card" style="height:350px;">
+                    <h3 style="margin-bottom:1rem; font-size: 1rem;">Visitor Trend</h3>
                     <canvas id="trafficChart"></canvas>
                 </div>
             </div>
@@ -241,7 +226,6 @@
     </div>
 
     <script type="module">
-        // Import the initialized supabase client from your local file
         import { supabase } from './supabase-client.js';
 
         let state = { theme: localStorage.getItem('theme') || 'dark' };
@@ -303,10 +287,9 @@
             const limit = document.getElementById('limit-select').value;
             document.querySelectorAll('.skeleton-text').forEach(el => el.classList.add('skeleton'));
             const tbody = document.getElementById('log-tbody');
-            tbody.innerHTML = '<tr><td colspan="6"><div class="skeleton" style="width:100%; height:40px;"></div></td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7"><div class="skeleton" style="width:100%; height:40px;"></div></td></tr>';
 
             try {
-                // Fetch directly from your Supabase table (assumed name: traffic_logs)
                 const { data: logs, error } = await supabase
                     .from('news_website_visitors')
                     .select('*')
@@ -321,7 +304,7 @@
                 document.getElementById('table-status').textContent = `Showing ${logs.length} records`;
 
             } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--danger)">Error: ${err.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--danger)">Error: ${err.message}</td></tr>`;
             } finally {
                 document.querySelectorAll('.skeleton-text').forEach(el => el.classList.remove('skeleton'));
             }
@@ -340,7 +323,7 @@
 
             if (result.isConfirmed) {
                 try {
-                    const { error } = await supabase.from('traffic_logs').delete().eq('id', id);
+                    const { error } = await supabase.from('news_website_visitors').delete().eq('id', id);
                     if (error) throw error;
 
                     document.getElementById(`row-${id}`).remove();
@@ -353,7 +336,118 @@
             }
         }
 
-        // --- UI & THEME HELPERS ---
+        function processMetrics(logs) {
+            animateValue('metric-total', logs.length);
+            const uniqueIPs = new Set(logs.map(l => l.ip_address)).size;
+            animateValue('metric-unique', uniqueIPs);
+            
+            if(logs.length === 0) { document.getElementById('metric-browser').textContent = "N/A"; return; }
+            
+            const browsers = logs.map(l => l.meta?.browser || 'Unknown');
+            const counts = {};
+            browsers.forEach(b => counts[b] = (counts[b] || 0) + 1);
+            const topBrowser = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+            document.getElementById('metric-browser').textContent = topBrowser;
+        }
+
+        function renderChart(logs) {
+            const canvas = document.getElementById('trafficChart');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dateGroups = {};
+            
+            // Group by date
+            logs.forEach(log => {
+                if(!log.created_at) return;
+                const date = new Date(log.created_at).toLocaleDateString();
+                dateGroups[date] = (dateGroups[date] || 0) + 1;
+            });
+            
+            const sortedDates = Object.keys(dateGroups).sort((a,b) => new Date(a) - new Date(b));
+            const dataPoints = sortedDates.map(d => dateGroups[d]);
+
+            if(myChart) myChart.destroy();
+            const gridColor = state.theme === 'dark' ? '#334155' : '#e2e8f0';
+
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedDates,
+                    datasets: [{
+                        label: 'Visits',
+                        data: dataPoints,
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#2563eb',
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: gridColor, drawBorder: false } },
+                        y: { grid: { color: gridColor, drawBorder: false }, beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function renderTable(logs) {
+            const tbody = document.getElementById('log-tbody');
+            if (logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No logs found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = logs.map(log => {
+                const meta = log.meta || {};
+                const browser = meta.browser || 'Unknown';
+                const os = meta.os || 'Unknown';
+                const screen = meta.screen || '-';
+                const referrer = meta.referrer || 'Direct';
+
+                const time = log.created_at ? new Date(log.created_at).toLocaleString() : 'Unknown';
+                const ip = log.ip_address || 'Unknown';
+                
+                // Browser Icon
+                const bName = browser.toLowerCase();
+                let bIcon = '<i class="fa-solid fa-globe brand-icon"></i>';
+                if(bName.includes('chrome')) bIcon = '<i class="fa-brands fa-chrome brand-icon" style="color:#db4437"></i>';
+                else if(bName.includes('firefox')) bIcon = '<i class="fa-brands fa-firefox brand-icon" style="color:#ff7139"></i>';
+                else if(bName.includes('safari')) bIcon = '<i class="fa-brands fa-safari brand-icon" style="color:#00a4e4"></i>';
+                else if(bName.includes('edge')) bIcon = '<i class="fa-brands fa-edge brand-icon" style="color:#0078d7"></i>';
+
+                // OS Icon
+                const oName = os.toLowerCase();
+                let oIcon = '<i class="fa-solid fa-desktop brand-icon"></i>';
+                if(oName.includes('win')) oIcon = '<i class="fa-brands fa-windows brand-icon" style="color:#00a4ef"></i>';
+                else if(oName.includes('mac') || oName.includes('ios')) oIcon = '<i class="fa-brands fa-apple brand-icon"></i>';
+                else if(oName.includes('android')) oIcon = '<i class="fa-brands fa-android brand-icon" style="color:#3ddc84"></i>';
+                else if(oName.includes('linux')) oIcon = '<i class="fa-brands fa-linux brand-icon"></i>';
+
+                return `
+                    <tr id="row-${log.id}">
+                        <td style="color:var(--text-muted); white-space:nowrap;">${time}</td>
+                        <td style="font-family:monospace; font-weight:500;">${ip}</td>
+                        <td>${bIcon} ${browser}</td>
+                        <td>${oIcon} ${os}</td>
+                        <td style="font-family:monospace; color:var(--text-muted)">${screen}</td>
+                        <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${referrer}">${referrer}</td>
+                        <td style="text-align:right;">
+                            <button class="btn btn-danger-soft" onclick="deleteLog('${log.id}')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // --- UI HELPERS ---
         function toggleTheme() {
             state.theme = state.theme === 'light' ? 'dark' : 'light'; 
             localStorage.setItem('theme', state.theme); 
@@ -379,102 +473,6 @@
             }
         }
 
-        function processMetrics(logs) {
-            animateValue('metric-total', logs.length);
-            const uniqueIPs = new Set(logs.map(l => l.ip_address)).size;
-            animateValue('metric-unique', uniqueIPs);
-            if(logs.length === 0) { document.getElementById('metric-browser').textContent = "N/A"; return; }
-            const browsers = logs.map(l => l.browser || 'Unknown');
-            const counts = {};
-            browsers.forEach(b => counts[b] = (counts[b] || 0) + 1);
-            const topBrowser = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
-            document.getElementById('metric-browser').textContent = topBrowser;
-        }
-
-        function renderChart(logs) {
-            const canvas = document.getElementById('trafficChart');
-            if(!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const dateGroups = {};
-            logs.forEach(log => {
-                if(!log.created_at) return;
-                const date = new Date(log.created_at).toLocaleDateString();
-                dateGroups[date] = (dateGroups[date] || 0) + 1;
-            });
-            const sortedDates = Object.keys(dateGroups).sort((a,b) => new Date(a) - new Date(b));
-            const dataPoints = sortedDates.map(d => dateGroups[d]);
-
-            if(myChart) myChart.destroy();
-            const gridColor = state.theme === 'dark' ? '#334155' : '#e2e8f0';
-
-            myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: sortedDates,
-                    datasets: [{
-                        label: 'Visits',
-                        data: dataPoints,
-                        borderColor: '#2563eb',
-                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                        fill: true,
-                        tension: 0.3,
-                        pointBackgroundColor: '#ffffff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { color: gridColor, drawBorder: false } },
-                        y: { grid: { color: gridColor, drawBorder: false }, beginAtZero: true }
-                    }
-                }
-            });
-        }
-
-        function renderTable(logs) {
-            const tbody = document.getElementById('log-tbody');
-            if (logs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No logs found</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = logs.map(log => {
-                const time = log.created_at ? new Date(log.created_at).toLocaleString() : 'Unknown';
-                const ip = log.ip_address || 'Unknown';
-                const ref = log.referrer || '-';
-                
-                const bName = (log.meta.browser || '').toLowerCase();
-                let bIcon = '<i class="fa-solid fa-globe brand-icon"></i>';
-                if(bName.includes('chrome')) bIcon = '<i class="fa-brands fa-chrome brand-icon" style="color:#db4437"></i>';
-                else if(bName.includes('firefox')) bIcon = '<i class="fa-brands fa-firefox brand-icon" style="color:#ff7139"></i>';
-                else if(bName.includes('safari')) bIcon = '<i class="fa-brands fa-safari brand-icon" style="color:#00a4e4"></i>';
-                else if(bName.includes('edge')) bIcon = '<i class="fa-brands fa-edge brand-icon" style="color:#0078d7"></i>';
-
-                const oName = (log.os || '').toLowerCase();
-                let oIcon = '<i class="fa-solid fa-desktop brand-icon"></i>';
-                if(oName.includes('win')) oIcon = '<i class="fa-brands fa-windows brand-icon" style="color:#00a4ef"></i>';
-                else if(oName.includes('mac') || oName.includes('ios')) oIcon = '<i class="fa-brands fa-apple brand-icon"></i>';
-                else if(oName.includes('android')) oIcon = '<i class="fa-brands fa-android brand-icon" style="color:#3ddc84"></i>';
-
-                return `
-                    <tr id="row-${log.id}">
-                        <td style="color:var(--text-muted); white-space:nowrap;">${time}</td>
-                        <td style="font-family:monospace; font-weight:500;">${ip}</td>
-                        <td>${bIcon} ${log.meta.browser || 'Unknown'}</td>
-                        <td>${oIcon} ${log.os || 'Unknown'}</td>
-                        <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${ref}">${ref}</td>
-                        <td style="text-align:right;">
-                            <button class="btn btn-danger-soft" onclick="deleteLog('${log.id}')">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
         function animateValue(id, end) {
             const obj = document.getElementById(id);
             if(!obj) return;
@@ -491,7 +489,6 @@
             requestAnimationFrame(update);
         }
 
-        // Attach functions to window because this script is type="module"
         window.loadData = loadData;
         window.deleteLog = deleteLog;
         window.toggleTheme = toggleTheme;

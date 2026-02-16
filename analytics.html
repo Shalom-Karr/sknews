@@ -242,7 +242,7 @@
 
     <script type="module">
         // Import the initialized supabase client from your local file
-        import supabase from './supabase-client.js';
+        import { supabase } from './supabase-client.js';
 
         let state = { theme: localStorage.getItem('theme') || 'dark' };
         let myChart = null;

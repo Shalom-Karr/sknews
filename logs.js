@@ -1,3 +1,9 @@
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const SUPABASE_URL = 'https://qvoxpfigbukidlmshiei.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2b3hwZmlnYnVraWRsbXNoaWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyOTM2OTEsImV4cCI6MjA2NTg2OTY5MX0.CEbyeIw6QiMxbLBhU7x7Re7SL_unWJMyaJQPS9y-k60';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
 let userIP = null;
 let startTime = Date.now();
 let maxScroll = 0;
@@ -48,12 +54,8 @@ function getOSInfo() {
 function getPageName() {
     const path = window.location.pathname;
     if (path === '/' || path.endsWith('/') || path.endsWith('index.html')) return 'Home';
-    if (path.includes('zmanim')) return 'Zmanim';
-    if (path.includes('schedule')) return 'Schedule';
-    if (path.includes('mikvah')) return 'Mikvah';
-    if (path.includes('archive')) return 'Archive';
-    if (path.includes('donate')) return 'Donate';
-    if (path.includes('admin')) return 'Admin Portal';
+    if (path.includes('feed')) return 'News Feed';
+    if (path.includes('news')) return 'News Home';
     return document.title || 'Unknown Page';
 }
 

@@ -308,7 +308,7 @@
             try {
                 // Fetch directly from your Supabase table (assumed name: traffic_logs)
                 const { data: logs, error } = await supabase
-                    .from('news_website_visitor')
+                    .from('news_website_visitors')
                     .select('*')
                     .order('created_at', { ascending: false })
                     .limit(limit);

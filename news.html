@@ -1,104 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Hub - SK News</title>
-    <meta name="description" content="Explore the news services offered by SK News. Choose between our live feed, full news updates, or headlines-only service to stay informed.">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>News Hub - SK News</title>
+  <meta name="description" content="Explore the news services offered by SK News. Choose between our live feed, full news updates, or headlines-only service to stay informed." />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="canonical" href="https://SKNews.pages.dev/news.html" />
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Libre+Franklin:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="logs.js" type="module" defer></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0a0e16', surface: '#111828', card: '#161f31', line: '#232f45',
+            paper: '#eaf0f7', dim: '#a7b4c8', muted: '#6d7c94',
+            teal: { DEFAULT: '#2dd4bf', deep: '#0d9488', bright: '#5eead4' },
+            amber: { DEFAULT: '#f5b13d', deep: '#d98a1f' },
+          },
+          fontFamily: {
+            display: ['Fraunces', 'Georgia', 'serif'],
+            sans: ['"Libre Franklin"', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
 
-    <style>
-        body { font-family: 'Poppins', sans-serif; }
-    </style>
-    <link rel="canonical" href="https://SKNews.pages.dev/news.html" />
+  <!-- Analytics (keep) -->
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "f3dacb26e75d41c29c14ac75f4731516"}'></script>
+  <script src="https://cdn.amplitude.com/script/df87271eb764c9d53a0cdf951edee3e7.js"></script>
+  <script>window.amplitude.add(window.sessionReplay.plugin({sampleRate: 1}));window.amplitude.init('df87271eb764c9d53a0cdf951edee3e7', {"fetchRemoteConfig":true,"autocapture":true});</script>
+  <script src="assets/js/logs.js" type="module" defer></script>
+
+  <style>
+    :root { color-scheme: dark; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Libre Franklin', system-ui, sans-serif; background-color: #0a0e16; color: #a7b4c8; }
+    .font-display { font-family: 'Fraunces', Georgia, serif; }
+
+    body::before {
+      content: ""; position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    header, main, footer { position: relative; z-index: 2; }
+
+    .animate-on-scroll { opacity: 0; transform: translateY(24px); transition: opacity .6s ease-out, transform .6s ease-out; }
+    .animate-on-scroll.is-visible { opacity: 1; transform: none; }
+
+    .hamburger span { transition: all .3s ease-in-out; }
+    .hamburger.is-active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+    .hamburger.is-active span:nth-child(2) { opacity: 0; }
+    .hamburger.is-active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: #0a0e16; }
+    ::-webkit-scrollbar-thumb { background: #232f45; border-radius: 5px; }
+    ::-webkit-scrollbar-thumb:hover { background: #2f3d57; }
+    ::selection { background: #2dd4bf; color: #0a0e16; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .animate-on-scroll { opacity: 1; transform: none; transition: none; }
+      *,*::before,*::after { animation-duration: .001ms !important; }
+    }
+  </style>
 </head>
-<body class="bg-gray-900 text-gray-200">
+<body>
 
-    <header class="fixed top-0 left-0 right-0 z-40 bg-gray-900/80 backdrop-blur-sm border-b border-gray-800 transition-all duration-300">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <a href="index.html" class="text-2xl font-bold text-teal-400 hover:text-teal-300 transition-colors">SK News</a>
-                <nav class="hidden md:flex space-x-8" id="main-nav">
-                    <a href="index.html" class="text-gray-300 hover:text-teal-400 transition-colors">Home</a>
-                    <a href="feed.html" class="text-gray-300 hover:text-teal-400 transition-colors">Live</a>
-                    <a href="news.html" class="text-gray-300 hover:text-teal-400 transition-colors">News</a>
-                    <a href="chats.html" class="text-gray-300 hover:text-teal-400 transition-colors">Chats</a>
-                    <a href="sites.html" class="text-gray-300 hover:text-teal-400 transition-colors">Sites</a>
-                    <a href="join.html" class="text-gray-300 hover:text-teal-400 transition-colors">Join</a>
-                    <a href="about.html" class="text-gray-300 hover:text-teal-400 transition-colors">About</a>
-                    <a href="advertise.html" class="text-gray-300 hover:text-teal-400 transition-colors">Advertise</a>
-                    <a href="contact.html" class="text-gray-300 hover:text-teal-400 transition-colors">Contact</a>
-                </nav>
-                <button class="md:hidden hamburger flex flex-col justify-center items-center h-8 w-8 space-y-1.5" id="hamburger-menu" aria-label="Open Menu">
-                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
-                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
-                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
-                </button>
-            </div>
-        </div>
-        <div id="mobile-menu" class="hidden md:hidden bg-gray-900/95 backdrop-blur-sm">
-            <nav class="flex flex-col items-center space-y-4 py-6">
-                <a href="index.html" class="text-gray-300 hover:text-teal-400 transition-colors">Home</a>
-                <a href="feed.html" class="text-gray-300 hover:text-teal-400 transition-colors">Live</a>
-                <a href="news.html" class="text-gray-300 hover:text-teal-400 transition-colors">News</a>
-                <a href="chats.html" class="text-gray-300 hover:text-teal-400 transition-colors">Chats</a>
-                <a href="sites.html" class="text-gray-300 hover:text-teal-400 transition-colors">Sites</a>
-                <a href="join.html" class="text-gray-300 hover:text-teal-400 transition-colors">Join</a>
-                <a href="about.html" class="text-gray-300 hover:text-teal-400 transition-colors">About</a>
-                <a href="advertise.html" class="text-gray-300 hover:text-teal-400 transition-colors">Advertise</a>
-                <a href="contact.html" class="text-gray-300 hover:text-teal-400 transition-colors">Contact</a>
-            </nav>
-        </div>
-    </header>
+<header class="fixed top-0 inset-x-0 z-40 bg-ink/85 backdrop-blur-md border-b border-line">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-[4.5rem]">
+      <a href="index.html" class="group flex items-center gap-2.5">
+        <span class="font-display text-2xl font-black tracking-tight text-paper">SK<span class="text-teal">News</span></span>
+        <span class="hidden sm:inline text-[10px] uppercase tracking-[0.18em] text-muted border-l border-line pl-2.5">Kosher · By Text</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium" id="main-nav">
+        <a href="index.html" class="text-dim hover:text-teal transition-colors">Home</a>
+        <a href="feed.html" class="text-dim hover:text-teal transition-colors">Live</a>
+        <a href="news.html" class="text-teal transition-colors" aria-current="page">News</a>
+        <a href="chats.html" class="text-dim hover:text-teal transition-colors">Chats</a>
+        <a href="sites.html" class="text-dim hover:text-teal transition-colors">Sites</a>
+        <a href="about.html" class="text-dim hover:text-teal transition-colors">About</a>
+        <a href="advertise.html" class="text-dim hover:text-teal transition-colors">Advertise</a>
+        <a href="contact.html" class="text-dim hover:text-teal transition-colors">Contact</a>
+        <a href="join.html" class="ml-1 inline-flex items-center px-4 py-2 rounded-full bg-teal text-ink font-semibold hover:bg-teal-bright transition-colors">Join Free</a>
+      </nav>
+      <button class="md:hidden hamburger flex flex-col justify-center items-center h-9 w-9 gap-1.5" id="hamburger-menu" aria-label="Open menu">
+        <span class="block h-0.5 w-6 bg-paper rounded-full"></span>
+        <span class="block h-0.5 w-6 bg-paper rounded-full"></span>
+        <span class="block h-0.5 w-6 bg-paper rounded-full"></span>
+      </button>
+    </div>
+  </div>
+  <div id="mobile-menu" class="hidden md:hidden bg-ink/95 backdrop-blur-md border-t border-line">
+    <nav class="flex flex-col px-6 py-4 text-base">
+      <a href="index.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">Home</a>
+      <a href="feed.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">Live</a>
+      <a href="news.html" class="py-2.5 text-teal border-b border-line/60" aria-current="page">News</a>
+      <a href="chats.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">Chats</a>
+      <a href="sites.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">Sites</a>
+      <a href="about.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">About</a>
+      <a href="advertise.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">Advertise</a>
+      <a href="contact.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">Contact</a>
+      <a href="join.html" class="mt-3 text-center px-4 py-2.5 rounded-full bg-teal text-ink font-semibold">Join Free</a>
+    </nav>
+  </div>
+</header>
 
-    <main class="pt-20">
-        <section class="py-20 text-center bg-gray-800/50">
-            <div class="container mx-auto px-4">
-                <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent">News Services</h1>
-                <p class="mt-4 text-lg text-gray-300 max-w-3xl mx-auto">Choose your preferred way to stay informed. Get full news updates with SK News, just the top stories with SK Headlines, or view the live feed.</p>
-            </div>
-        </section>
+<main class="pt-[4.5rem]">
 
-        <section class="py-20">
-            <div class="container mx-auto px-4">
-                <h2 class="text-3xl font-bold text-center text-white mb-12">Select a Service</h2>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <a href="feed.html" class="block p-8 bg-gray-800/50 border border-gray-700 rounded-lg hover:bg-gray-800 transition-colors">
-                        <h3 class="text-2xl font-semibold text-white">View Live Feed</h3>
-                        <p class="mt-2 text-gray-400">See a real-time feed of the latest headlines and breaking news as it happens on our site.</p>
-                    </a>
-                    <a href="join.html" class="block p-8 bg-gray-800/50 border border-gray-700 rounded-lg hover:bg-gray-800 transition-colors">
-                        <h3 class="text-2xl font-semibold text-white">SK News Texts</h3>
-                        <p class="mt-2 text-gray-400">Sign up for our primary service to receive full, reliable news updates directly via text message.</p>
-                    </a>
-                    <a href="headlines.html" class="block p-8 bg-gray-800/50 border border-gray-700 rounded-lg hover:bg-gray-800 transition-colors">
-                        <h3 class="text-2xl font-semibold text-white">SK Headlines Texts</h3>
-                        <p class="mt-2 text-gray-400">Join our headlines service to get just the most important, breaking news headlines sent to your phone.</p>
-                    </a>
-                </div>
-            </div>
-        </section>
-    </main>
+  <!-- Hero -->
+  <section class="relative overflow-hidden py-24 sm:py-32 text-center bg-surface/40">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(45,212,191,0.14),transparent_60%)] pointer-events-none"></div>
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="animate-on-scroll inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-teal" style="transition-delay:0ms">Services</span>
+      <h1 class="animate-on-scroll mt-4 font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-paper leading-tight" style="transition-delay:100ms">News Services</h1>
+      <p class="animate-on-scroll mt-6 text-lg text-dim max-w-2xl mx-auto leading-relaxed" style="transition-delay:200ms">Choose your preferred way to stay informed. Get full news updates with SK News, just the top stories with SK Headlines, or view the live feed.</p>
+    </div>
+  </section>
 
-    <footer class="border-t border-gray-800 bg-gray-900">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8"><div class="flex flex-col sm:flex-row items-center justify-between py-6 text-sm text-gray-500"><p>© 2025 SK News. All Rights Reserved.</p><a href="terms.html" class="mt-2 sm:mt-0 hover:text-teal-400 transition-colors">Terms & Conditions</a></div></div>
-    </footer>
+  <!-- Services grid -->
+  <section class="py-20 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12 animate-on-scroll">
+        <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-teal">Choose a Service</span>
+        <h2 class="mt-4 font-display text-3xl sm:text-4xl font-bold text-paper">Select a Service</h2>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
 
-    <script>
-        const hamburgerBtn = document.getElementById('hamburger-menu');
-        const mobileMenu = document.getElementById('mobile-menu');
-        hamburgerBtn.addEventListener('click', () => {
-            hamburgerBtn.classList.toggle('is-active');
-            mobileMenu.classList.toggle('hidden');
-        });
-    </script>
+        <!-- Live Feed -->
+        <a href="feed.html" class="animate-on-scroll bg-card border border-line rounded-xl p-8 transition-all duration-300 hover:border-teal/50 hover:-translate-y-1 block group" style="transition-delay:50ms">
+          <div class="mb-5 inline-flex items-center justify-center h-12 w-12 rounded-lg bg-teal/10 border border-teal/20 group-hover:bg-teal/20 transition-colors">
+            <svg class="w-6 h-6 text-teal" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12A2.25 2.25 0 0020.25 14.25V3M3.75 3h16.5M3.75 21h16.5"/></svg>
+          </div>
+          <h3 class="font-display text-xl font-semibold text-paper group-hover:text-teal transition-colors">View Live Feed</h3>
+          <p class="mt-3 text-dim leading-relaxed">See a real-time feed of the latest headlines and breaking news as it happens on our site.</p>
+          <span class="mt-5 inline-flex items-center gap-1 text-sm text-teal font-medium">Open feed <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"/></svg></span>
+        </a>
+
+        <!-- SK News Texts -->
+        <a href="join.html" class="animate-on-scroll bg-card border border-teal/30 rounded-xl p-8 transition-all duration-300 hover:border-teal/60 hover:-translate-y-1 block group relative" style="transition-delay:150ms">
+          <div class="absolute -top-3 left-8">
+            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-teal text-ink text-[10px] font-bold uppercase tracking-wider">Primary</span>
+          </div>
+          <div class="mb-5 inline-flex items-center justify-center h-12 w-12 rounded-lg bg-teal/10 border border-teal/20 group-hover:bg-teal/20 transition-colors">
+            <svg class="w-6 h-6 text-teal" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"/></svg>
+          </div>
+          <h3 class="font-display text-xl font-semibold text-paper group-hover:text-teal transition-colors">SK News Texts</h3>
+          <p class="mt-3 text-dim leading-relaxed">Sign up for our primary service to receive full, reliable news updates directly via text message.</p>
+          <span class="mt-5 inline-flex items-center gap-1 text-sm text-teal font-medium">Join free <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"/></svg></span>
+        </a>
+
+        <!-- SK Headlines Texts -->
+        <a href="headlines.html" class="animate-on-scroll bg-card border border-line rounded-xl p-8 transition-all duration-300 hover:border-teal/50 hover:-translate-y-1 block group" style="transition-delay:250ms">
+          <div class="mb-5 inline-flex items-center justify-center h-12 w-12 rounded-lg bg-amber/10 border border-amber/20 group-hover:bg-amber/20 transition-colors">
+            <svg class="w-6 h-6 text-amber" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6V7.5z"/></svg>
+          </div>
+          <h3 class="font-display text-xl font-semibold text-paper group-hover:text-teal transition-colors">SK Headlines Texts</h3>
+          <p class="mt-3 text-dim leading-relaxed">Join our headlines service to get just the most important, breaking news headlines sent to your phone.</p>
+          <span class="mt-5 inline-flex items-center gap-1 text-sm text-amber font-medium">Join headlines <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"/></svg></span>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="border-t border-line bg-surface/40 mt-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="grid gap-10 md:grid-cols-4">
+      <div class="md:col-span-2">
+        <span class="font-display text-2xl font-black text-paper">SK<span class="text-teal">News</span></span>
+        <p class="mt-3 max-w-sm text-sm text-muted leading-relaxed">Kosher-filtered headlines and breaking news for the Yeshiva community — delivered by text, in real time.</p>
+        <a href="tel:2164516698" class="mt-4 inline-block font-display text-lg text-teal hover:text-teal-bright transition-colors">216-451-6698</a>
+      </div>
+      <div>
+        <h4 class="text-xs uppercase tracking-[0.16em] text-muted mb-4">Explore</h4>
+        <ul class="space-y-2.5 text-sm">
+          <li><a href="feed.html" class="text-dim hover:text-teal transition-colors">Live Feed</a></li>
+          <li><a href="news.html" class="text-dim hover:text-teal transition-colors">News Services</a></li>
+          <li><a href="chats.html" class="text-dim hover:text-teal transition-colors">Chats</a></li>
+          <li><a href="sites.html" class="text-dim hover:text-teal transition-colors">Sites</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-xs uppercase tracking-[0.16em] text-muted mb-4">Get Involved</h4>
+        <ul class="space-y-2.5 text-sm">
+          <li><a href="join.html" class="text-dim hover:text-teal transition-colors">Join Free</a></li>
+          <li><a href="advertise.html" class="text-dim hover:text-teal transition-colors">Advertise</a></li>
+          <li><a href="contact.html" class="text-dim hover:text-teal transition-colors">Contact</a></li>
+          <li><a href="https://g.page/r/CTLinSMb3y4IEBM/review" target="_blank" rel="noopener" class="text-dim hover:text-teal transition-colors">Review Us</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="mt-12 pt-6 border-t border-line flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-muted">
+      <p>© 2025 SK News. All Rights Reserved.</p>
+      <a href="terms.html" class="hover:text-teal transition-colors">Terms &amp; Conditions</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var btn = document.getElementById('hamburger-menu');
+    var menu = document.getElementById('mobile-menu');
+    if (btn && menu) {
+      btn.addEventListener('click', function () {
+        btn.classList.toggle('is-active');
+        menu.classList.toggle('hidden');
+      });
+      menu.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () { btn.classList.remove('is-active'); menu.classList.add('hidden'); });
+      });
+    }
+    var els = document.querySelectorAll('.animate-on-scroll');
+    if (els.length) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); } });
+      }, { threshold: 0.12 });
+      els.forEach(function (el) { io.observe(el); });
+    }
+  })();
+</script>
 </body>
 </html>

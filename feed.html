@@ -1,279 +1,374 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Live Feed - SK News</title>
-    <meta name="description" content="The live feed from SK News, with real-time updates and breaking news for the Yeshiva community.">
+    <meta name="description" content="The live feed from SK News, with real-time updates and breaking news for the Yeshiva community." />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="canonical" href="https://SKNews.pages.dev/feed.html" />
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Libre+Franklin:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "f3dacb26e75d41c29c14ac75f4731516"}'></script>
-    <script src="https://cdn.amplitude.com/script/df87271eb764c9d53a0cdf951edee3e7.js"></script><script>window.amplitude.add(window.sessionReplay.plugin({sampleRate: 1}));window.amplitude.init('df87271eb764c9d53a0cdf951edee3e7', {"fetchRemoteConfig":true,"autocapture":true});</script>
-    <script src="https://cdn.amplitude.com/libs/analytics-browser-2.11.1-min.js.gz"></script><script src="https://cdn.amplitude.com/libs/plugin-session-replay-browser-1.23.2-min.js.gz"></script><script>window.amplitude.add(window.sessionReplay.plugin({sampleRate: 1}));window.amplitude.init('df87271eb764c9d53a0cdf951edee3e7', {"autocapture":{"elementInteractions":true}});</script>
-    <script src="logs.js" type="module" defer></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: '#0a0e16', surface: '#111828', card: '#161f31', line: '#232f45',
+              paper: '#eaf0f7', dim: '#a7b4c8', muted: '#6d7c94',
+              teal: { DEFAULT: '#2dd4bf', deep: '#0d9488', bright: '#5eead4' },
+              amber: { DEFAULT: '#f5b13d', deep: '#d98a1f' },
+            },
+            fontFamily: {
+              display: ['Fraunces', 'Georgia', 'serif'],
+              sans: ['"Libre Franklin"', 'system-ui', 'sans-serif'],
+            },
+          },
+        },
+      };
+    </script>
 
+    <!-- Analytics (keep) -->
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "f3dacb26e75d41c29c14ac75f4731516"}'></script>
+    <script src="https://cdn.amplitude.com/script/df87271eb764c9d53a0cdf951edee3e7.js"></script>
+    <script>window.amplitude.add(window.sessionReplay.plugin({sampleRate: 1}));window.amplitude.init('df87271eb764c9d53a0cdf951edee3e7', {"fetchRemoteConfig":true,"autocapture":true});</script>
+    <script src="assets/js/logs.js" type="module" defer></script>
 
-    <!-- Custom CSS -->
     <style>
-        body { font-family: 'Poppins', sans-serif; }
-        .animate-on-scroll { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease-out, transform 0.5s ease-out; }
-        .animate-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
-        .hamburger span { transition: all 0.3s ease-in-out; }
-        .hamburger.is-active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-        .hamburger.is-active span:nth-child(2) { opacity: 0; }
-        .hamburger.is-active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+      :root { color-scheme: dark; }
+      html { scroll-behavior: smooth; }
+      body { font-family: 'Libre Franklin', system-ui, sans-serif; background-color: #0a0e16; color: #a7b4c8; }
+      .font-display { font-family: 'Fraunces', Georgia, serif; }
 
-        #article-modal.hidden, #sponsored-ad-modal.hidden { display: none; }
-        #modal-panel, #sponsored-ad-modal-panel { transition: transform 0.3s ease, opacity 0.3s ease; }
-        .modal-opening #modal-panel, .modal-opening #sponsored-ad-modal-panel { transform: scale(0.95); opacity: 0; }
-        .modal-opened #modal-panel, .modal-opened #sponsored-ad-modal-panel { transform: scale(1); opacity: 1; }
+      /* Atmospheric grain */
+      body::before {
+        content: ""; position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.04;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+      header, main, footer { position: relative; z-index: 2; }
 
-        /* Custom dropdown button styling */
-        .filter-select {
-            color: #E5E7EB;
-        }
-        .filter-select svg {
-            transition: transform 0.2s ease;
-        }
-        .filter-select.open svg {
-            transform: rotate(180deg);
-        }
+      /* Scroll reveal — DO NOT rename these classes (JS observers depend on them) */
+      .animate-on-scroll { opacity: 0; transform: translateY(24px); transition: opacity .6s ease-out, transform .6s ease-out; }
+      .animate-on-scroll.is-visible { opacity: 1; transform: none; }
 
-        .filter-select:not([data-value=""]) {
-             background-color: #0d94884d;
-             border-color: #2dd4bf;
-        }
-        input[type="date"]:not([value=""]):not(:placeholder-shown) {
-            background-color: #0d94884d;
-            border-color: #2dd4bf;
-        }
+      /* Hamburger */
+      .hamburger span { transition: all .3s ease-in-out; }
+      .hamburger.is-active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+      .hamburger.is-active span:nth-child(2) { opacity: 0; }
+      .hamburger.is-active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 
-        /* Modal Specific Styles */
-        #modal-content-container, #sponsored-ad-modal-content-container {
-            overflow-y: auto;
-            flex-grow: 1;
-        }
+      /* Custom scrollbar */
+      ::-webkit-scrollbar { width: 10px; }
+      ::-webkit-scrollbar-track { background: #0a0e16; }
+      ::-webkit-scrollbar-thumb { background: #232f45; border-radius: 5px; }
+      ::-webkit-scrollbar-thumb:hover { background: #2f3d57; }
+      ::selection { background: #2dd4bf; color: #0a0e16; }
 
-        /* Custom Scrollbar Styling */
-        #modal-content-container::-webkit-scrollbar, #sponsored-ad-modal-content-container::-webkit-scrollbar {
-            width: 8px;
-            background-color: #1f2937;
-        }
-        #modal-content-container::-webkit-scrollbar-thumb, #sponsored-ad-modal-content-container::-webkit-scrollbar-thumb {
-            background-color: #4b5563;
-            border-radius: 4px;
-        }
+      /* Live pulse dot */
+      @keyframes live-pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.8); } }
+      .live-dot { animation: live-pulse 1.6s ease-in-out infinite; }
 
-        .nav-btn-disabled {
-            opacity: 0.3;
-            pointer-events: none;
-            cursor: default;
-        }
+      /* ============================================================
+         FEED-SPECIFIC RULES — feed.js toggles these; keep names intact
+         ============================================================ */
+
+      /* Modal show/hide + open transitions (JS toggles .hidden / .modal-opening / .modal-opened) */
+      #article-modal.hidden, #sponsored-ad-modal.hidden { display: none; }
+      #modal-panel, #sponsored-ad-modal-panel { transition: transform .3s ease, opacity .3s ease; }
+      .modal-opening #modal-panel, .modal-opening #sponsored-ad-modal-panel { transform: scale(.95); opacity: 0; }
+      .modal-opened #modal-panel, .modal-opened #sponsored-ad-modal-panel { transform: scale(1); opacity: 1; }
+
+      /* Custom poster dropdown button */
+      .filter-select { color: #eaf0f7; }
+      .filter-select svg { transition: transform .2s ease; }
+      .filter-select.open svg { transform: rotate(180deg); }
+      .filter-select:not([data-value=""]) { background-color: rgba(13,148,136,.30); border-color: #2dd4bf; }
+      input[type="date"]:not([value=""]):not(:placeholder-shown) { border-color: #2dd4bf; }
+
+      /* Modal scroll containers */
+      #modal-content-container, #sponsored-ad-modal-content-container { overflow-y: auto; flex-grow: 1; }
+      #modal-content-container::-webkit-scrollbar, #sponsored-ad-modal-content-container::-webkit-scrollbar { width: 8px; background-color: #111828; }
+      #modal-content-container::-webkit-scrollbar-thumb, #sponsored-ad-modal-content-container::-webkit-scrollbar-thumb { background-color: #232f45; border-radius: 4px; }
+
+      /* Disabled prev/next nav arrows */
+      .nav-btn-disabled { opacity: .3; pointer-events: none; cursor: default; }
+
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        .animate-on-scroll { opacity: 1; transform: none; transition: none; }
+        .live-dot { animation: none; }
+        *,*::before,*::after { animation-duration: .001ms !important; }
+      }
     </style>
 
-    <link rel="canonical" href="https://SKNews.pages.dev/feed.html" />
     <script src='https://cdn.jotfor.ms/agent/embedjs/01955ca9772271df8b07b04d0cf624510bf5/embed.js?skipWelcome=1&maximizable=1'></script>
 </head>
-<body class="bg-gray-900 text-gray-200">
+<body class="bg-ink text-dim">
 
-    <header class="fixed top-0 left-0 right-0 z-40 bg-gray-900/80 backdrop-blur-sm border-b border-gray-800 transition-all duration-300">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <a href="index.html" class="text-2xl font-bold text-teal-400 hover:text-teal-300 transition-colors">SK News</a>
-                <nav class="hidden md:flex space-x-8" id="main-nav">
-                    <a href="index.html" class="text-gray-300 hover:text-teal-400 transition-colors">Home</a>
-                    <a href="news.html" class="text-gray-300 hover:text-teal-400 transition-colors">News</a>
-                    <a href="chats.html" class="text-gray-300 hover:text-teal-400 transition-colors">Chats</a>
-                    <a href="sites.html" class="text-gray-300 hover:text-teal-400 transition-colors">Sites</a>
-                    <a href="join.html" class="text-gray-300 hover:text-teal-400 transition-colors">Join</a>
-                    <a href="about.html" class="text-gray-300 hover:text-teal-400 transition-colors">About</a>
-                    <a href="advertise.html" class="text-gray-300 hover:text-teal-400 transition-colors">Advertise</a>
-                    <a href="contact.html" class="text-gray-300 hover:text-teal-400 transition-colors">Contact</a>
-                </nav>
-                <button class="md:hidden hamburger flex flex-col justify-center items-center h-8 w-8 space-y-1.5" id="hamburger-menu" aria-label="Open Menu">
-                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
-                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
-                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
-                </button>
-            </div>
+    <header class="fixed top-0 inset-x-0 z-40 bg-ink/85 backdrop-blur-md border-b border-line">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-[4.5rem]">
+          <a href="index.html" class="group flex items-center gap-2.5">
+            <span class="font-display text-2xl font-black tracking-tight text-paper">SK<span class="text-teal">News</span></span>
+            <span class="hidden sm:inline text-[10px] uppercase tracking-[0.18em] text-muted border-l border-line pl-2.5">Kosher · By Text</span>
+          </a>
+          <nav class="hidden md:flex items-center gap-7 text-sm font-medium" id="main-nav">
+            <a href="index.html" class="text-dim hover:text-teal transition-colors">Home</a>
+            <a href="feed.html" class="text-teal transition-colors" aria-current="page">Live</a>
+            <a href="news.html" class="text-dim hover:text-teal transition-colors">News</a>
+            <a href="chats.html" class="text-dim hover:text-teal transition-colors">Chats</a>
+            <a href="sites.html" class="text-dim hover:text-teal transition-colors">Sites</a>
+            <a href="about.html" class="text-dim hover:text-teal transition-colors">About</a>
+            <a href="advertise.html" class="text-dim hover:text-teal transition-colors">Advertise</a>
+            <a href="contact.html" class="text-dim hover:text-teal transition-colors">Contact</a>
+            <a href="join.html" class="ml-1 inline-flex items-center px-4 py-2 rounded-full bg-teal text-ink font-semibold hover:bg-teal-bright transition-colors">Join Free</a>
+          </nav>
+          <button class="md:hidden hamburger flex flex-col justify-center items-center h-9 w-9 gap-1.5" id="hamburger-menu" aria-label="Open menu">
+            <span class="block h-0.5 w-6 bg-paper rounded-full"></span>
+            <span class="block h-0.5 w-6 bg-paper rounded-full"></span>
+            <span class="block h-0.5 w-6 bg-paper rounded-full"></span>
+          </button>
         </div>
-        <div id="mobile-menu" class="hidden md:hidden bg-gray-900/95 backdrop-blur-sm">
-            <nav class="flex flex-col items-center space-y-4 py-6">
-                <a href="index.html" class="text-gray-300 hover:text-teal-400 transition-colors">Home</a>
-                <a href="news.html" class="text-gray-300 hover:text-teal-400 transition-colors">News</a>
-                <a href="chats.html" class="text-gray-300 hover:text-teal-400 transition-colors">Chats</a>
-                <a href="sites.html" class="text-gray-300 hover:text-teal-400 transition-colors">Sites</a>
-                <a href="join.html" class="text-gray-300 hover:text-teal-400 transition-colors">Join</a>
-                <a href="about.html" class="text-gray-300 hover:text-teal-400 transition-colors">About</a>
-                <a href="advertise.html" class="text-gray-300 hover:text-teal-400 transition-colors">Advertise</a>
-                <a href="contact.html" class="text-gray-300 hover:text-teal-400 transition-colors">Contact</a>
-            </nav>
-        </div>
+      </div>
+      <div id="mobile-menu" class="hidden md:hidden bg-ink/95 backdrop-blur-md border-t border-line">
+        <nav class="flex flex-col px-6 py-4 text-base">
+          <a href="index.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">Home</a>
+          <a href="feed.html" class="py-2.5 text-teal border-b border-line/60" aria-current="page">Live</a>
+          <a href="news.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">News</a>
+          <a href="chats.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">Chats</a>
+          <a href="sites.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">Sites</a>
+          <a href="about.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">About</a>
+          <a href="advertise.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">Advertise</a>
+          <a href="contact.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">Contact</a>
+          <a href="join.html" class="mt-3 text-center px-4 py-2.5 rounded-full bg-teal text-ink font-semibold">Join Free</a>
+        </nav>
+      </div>
     </header>
 
-    <main class="pt-28 sm:pt-32">
-        <section class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+    <main class="pt-24 sm:pt-28">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                <!-- Main Content Area -->
-                <div class="lg:col-span-2">
-                    <div class="mb-8 animate-on-scroll">
-                        <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent">Latest Updates</h1>
-                        <p class="mt-2 text-md text-gray-400">Headlines and breaking news, posted in real-time.</p>
-                    </div>
-
-                    <!-- FILTER AND SEARCH CONTAINER (FIXED: Added relative z-30 here) -->
-                    <div class="mb-12 animate-on-scroll space-y-4 relative z-30" style="transition-delay: 100ms;">
-                        <!-- Search Bar -->
-                        <div>
-                            <input type="text" id="feed-search-input" placeholder="Search headlines and content..."
-                                class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500
-                                       focus:ring-teal-500 focus:border-teal-500 transition-shadow duration-200 shadow-md shadow-inner">
-                        </div>
-
-                        <!-- Date and Poster Filters -->
-                        <div class="grid grid-cols-3 gap-4">
-                            <!-- Poster Filter (CUSTOM DROPDOWN - Z-50 APPLIED HERE) -->
-                            <div class="relative z-50">
-                                <label for="feed-poster-filter" class="block text-xs font-medium text-gray-400 mb-1">Posted By:</label>
-
-                                <button id="poster-dropdown-btn"
-                                        class="filter-select w-full px-3 py-2 bg-gray-700 border border-gray-700 rounded-lg text-gray-200 focus:ring-teal-500 focus:border-teal-500 text-left transition-colors flex justify-between items-center"
-                                        data-value="">
-                                    <span id="poster-selected-text">All Posters</span>
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                </button>
-
-                                <ul id="poster-dropdown-options"
-                                    class="absolute z-50 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl max-h-60 overflow-y-auto hidden">
-                                    <!-- Options populated by JS -->
-                                </ul>
-                            </div>
-
-                            <!-- From Date Filter -->
-                            <div>
-                                <label for="feed-start-date" class="block text-xs font-medium text-gray-400 mb-1">From Date:</label>
-                                <input type="date" id="feed-start-date"
-                                    class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-teal-500 focus:border-teal-500">
-                            </div>
-                            <!-- To Date Filter -->
-                            <div>
-                                <label for="feed-end-date" class="block text-xs font-medium text-gray-400 mb-1">To Date:</label>
-                                <input type="date" id="feed-end-date"
-                                    class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-teal-500 focus:border-teal-500">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- END FILTER AND SEARCH CONTAINER -->
-
-                    <div id="featured-article-container" class="mb-12"></div>
-
-                    <!-- NEW POSTS INDICATOR -->
-                    <div id="new-posts-indicator" class="hidden mb-4 p-3 bg-teal-900/50 border border-teal-700 text-teal-200 rounded-lg cursor-pointer text-center font-medium transition-opacity duration-300">
-                        New updates available! Click to refresh.
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="feed-container">
-                        <p class="text-center text-gray-400 md:col-span-2">Loading feed...</p>
-                    </div>
-                </div>
-
-                <!-- Sidebar Area -->
-                <aside class="lg:col-span-1">
-                    <div class="sticky top-28 space-y-8">
-                        <!-- Advertisement Widget -->
-                        <div id="sponsored-ad-container"
-                             class="bg-gray-800/50 border border-gray-700/50 rounded-lg animate-on-scroll overflow-hidden group transition-all duration-300 ease-in-out hover:border-teal-500/50 hover:shadow-xl hover:shadow-teal-900/40"
-                             style="transition-delay: 200ms;">
-                            <!-- Sponsored ad content will be loaded here. The container itself now handles the main styling. -->
-                        </div>
-                    </div>
-                </aside>
-
-            </div>
+        <!-- ===== PAGE HEADER ===== -->
+        <section class="relative pt-6 pb-8">
+          <div class="pointer-events-none absolute -top-10 left-0 h-64 w-full bg-[radial-gradient(circle_at_20%_0%,rgba(45,212,191,0.14),transparent_60%)]" aria-hidden="true"></div>
+          <div class="relative animate-on-scroll">
+            <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-teal">
+              <span class="relative flex h-2 w-2">
+                <span class="live-dot absolute inline-flex h-full w-full rounded-full bg-amber"></span>
+                <span class="relative inline-flex h-2 w-2 rounded-full bg-amber"></span>
+              </span>
+              Live Feed
+            </span>
+            <h1 class="mt-4 font-display text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-paper">Latest&nbsp;Updates</h1>
+            <p class="mt-3 max-w-2xl text-base sm:text-lg text-dim leading-relaxed">
+              Headlines and breaking news for the Yeshiva community — posted in real time, kosher-filtered, straight from the wire.
+            </p>
+          </div>
+          <div class="mt-8 h-px w-full bg-gradient-to-r from-line via-line to-transparent"></div>
         </section>
+
+        <!-- ===== FILTER + SEARCH BAR ===== -->
+        <section class="mb-12 animate-on-scroll relative z-30" style="transition-delay: 100ms;">
+          <div class="bg-surface/60 border border-line rounded-2xl p-4 sm:p-5 backdrop-blur-sm">
+            <!-- Search -->
+            <div class="relative">
+              <svg class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"></path>
+              </svg>
+              <input type="text" id="feed-search-input" placeholder="Search headlines and content…"
+                     class="w-full pl-11 pr-4 py-3 bg-ink/70 border border-line rounded-xl text-paper placeholder-muted focus:outline-none focus:border-teal focus:ring-1 focus:ring-teal/60 transition-colors" />
+            </div>
+
+            <!-- Poster + date filters -->
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <!-- Poster (CUSTOM DROPDOWN — wrapper MUST keep class "relative") -->
+              <div class="relative z-50">
+                <label for="poster-dropdown-btn" class="block text-[11px] font-semibold uppercase tracking-[0.14em] text-muted mb-1.5">Posted By</label>
+                <button id="poster-dropdown-btn"
+                        class="filter-select w-full px-3.5 py-2.5 bg-ink/70 border border-line rounded-xl text-paper text-left transition-colors flex justify-between items-center gap-2 focus:outline-none focus:border-teal focus:ring-1 focus:ring-teal/60"
+                        data-value="">
+                  <span id="poster-selected-text" class="truncate">All Posters</span>
+                  <svg class="w-4 h-4 flex-shrink-0 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <ul id="poster-dropdown-options"
+                    class="absolute z-50 w-full mt-1.5 bg-surface border border-line rounded-xl shadow-2xl shadow-black/50 max-h-60 overflow-y-auto hidden">
+                  <!-- Options populated by JS -->
+                </ul>
+              </div>
+
+              <!-- From date -->
+              <div>
+                <label for="feed-start-date" class="block text-[11px] font-semibold uppercase tracking-[0.14em] text-muted mb-1.5">From Date</label>
+                <input type="date" id="feed-start-date"
+                       class="w-full px-3.5 py-2.5 bg-ink/70 border border-line rounded-xl text-paper focus:outline-none focus:border-teal focus:ring-1 focus:ring-teal/60 transition-colors" />
+              </div>
+
+              <!-- To date -->
+              <div>
+                <label for="feed-end-date" class="block text-[11px] font-semibold uppercase tracking-[0.14em] text-muted mb-1.5">To Date</label>
+                <input type="date" id="feed-end-date"
+                       class="w-full px-3.5 py-2.5 bg-ink/70 border border-line rounded-xl text-paper focus:outline-none focus:border-teal focus:ring-1 focus:ring-teal/60 transition-colors" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== FEED GRID + SIDEBAR ===== -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 pb-4">
+
+          <!-- Main column -->
+          <div class="lg:col-span-2">
+            <!-- Featured article (rendered by feed.js) -->
+            <div id="featured-article-container" class="mb-10"></div>
+
+            <!-- New posts indicator (feed.js toggles .hidden) -->
+            <div id="new-posts-indicator" class="hidden mb-6 p-3.5 bg-teal-deep/20 border border-teal/40 text-teal-bright rounded-xl cursor-pointer text-center font-semibold transition-opacity duration-300 hover:bg-teal-deep/30">
+              New updates available — click to refresh.
+            </div>
+
+            <div class="flex items-center gap-3 mb-6">
+              <span class="text-xs font-semibold uppercase tracking-[0.16em] text-muted">More Updates</span>
+              <span class="h-px flex-1 bg-line"></span>
+            </div>
+
+            <!-- Feed grid (rendered by feed.js) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="feed-container">
+              <p class="text-center text-muted md:col-span-2">Loading feed…</p>
+            </div>
+          </div>
+
+          <!-- Sidebar -->
+          <aside class="lg:col-span-1">
+            <div class="sticky top-24 space-y-6">
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Sponsored</span>
+                <span class="h-px flex-1 bg-line"></span>
+              </div>
+              <!-- Sponsored ad widget (rendered by feed.js) -->
+              <div id="sponsored-ad-container"
+                   class="bg-card border border-line rounded-2xl animate-on-scroll overflow-hidden group transition-all duration-300 ease-in-out hover:border-teal/50 hover:shadow-xl hover:shadow-teal-deep/20"
+                   style="transition-delay: 200ms;">
+                <!-- Sponsored ad content loaded by feed.js -->
+              </div>
+            </div>
+          </aside>
+
+        </section>
+      </div>
     </main>
 
-    <footer class="mt-24 border-t border-gray-800 bg-gray-900">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8"><div class="flex flex-col sm:flex-row items-center justify-between py-6 text-sm text-gray-500"><p>© 2025 SK News. All Rights Reserved.</p><a href="terms.html" class="mt-2 sm:mt-0 hover:text-teal-400 transition-colors">Terms & Conditions</a></div></div>
+    <footer class="border-t border-line bg-surface/40 mt-24">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+        <div class="grid gap-10 md:grid-cols-4">
+          <div class="md:col-span-2">
+            <span class="font-display text-2xl font-black text-paper">SK<span class="text-teal">News</span></span>
+            <p class="mt-3 max-w-sm text-sm text-muted leading-relaxed">Kosher-filtered headlines and breaking news for the Yeshiva community — delivered by text, in real time.</p>
+            <a href="tel:2164516698" class="mt-4 inline-block font-display text-lg text-teal hover:text-teal-bright transition-colors">216-451-6698</a>
+          </div>
+          <div>
+            <h4 class="text-xs uppercase tracking-[0.16em] text-muted mb-4">Explore</h4>
+            <ul class="space-y-2.5 text-sm">
+              <li><a href="feed.html" class="text-dim hover:text-teal transition-colors">Live Feed</a></li>
+              <li><a href="news.html" class="text-dim hover:text-teal transition-colors">News Services</a></li>
+              <li><a href="chats.html" class="text-dim hover:text-teal transition-colors">Chats</a></li>
+              <li><a href="sites.html" class="text-dim hover:text-teal transition-colors">Sites</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-xs uppercase tracking-[0.16em] text-muted mb-4">Get Involved</h4>
+            <ul class="space-y-2.5 text-sm">
+              <li><a href="join.html" class="text-dim hover:text-teal transition-colors">Join Free</a></li>
+              <li><a href="advertise.html" class="text-dim hover:text-teal transition-colors">Advertise</a></li>
+              <li><a href="contact.html" class="text-dim hover:text-teal transition-colors">Contact</a></li>
+              <li><a href="https://g.page/r/CTLinSMb3y4IEBM/review" target="_blank" rel="noopener" class="text-dim hover:text-teal transition-colors">Review Us</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-12 pt-6 border-t border-line flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-muted">
+          <p>© 2025 SK News. All Rights Reserved.</p>
+          <a href="terms.html" class="hover:text-teal transition-colors">Terms &amp; Conditions</a>
+        </div>
+      </div>
     </footer>
 
-    <!-- MODAL STRUCTURE -->
+    <!-- ===== ARTICLE MODAL (feed.js binds these IDs) ===== -->
     <div id="article-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden modal-opening"
-         role="dialog" aria-modal="true">
+         role="dialog" aria-modal="true" aria-labelledby="modal-title">
 
-        <!-- Navigation Button: Previous Article -->
-        <button id="modal-prev-btn" class="absolute left-4 z-50 p-3 bg-gray-800/70 text-teal-400 rounded-full shadow-lg transition-colors hover:bg-gray-700/90 hidden sm:flex items-center justify-center w-12 h-12 hover:scale-105" title="Previous Article (Left Arrow)" aria-label="Previous Article">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-        </button>
+      <!-- Previous article -->
+      <button id="modal-prev-btn" class="absolute left-4 z-50 p-3 bg-surface/80 text-teal rounded-full shadow-lg border border-line transition-all hover:bg-card hover:scale-105 hidden sm:flex items-center justify-center w-12 h-12" title="Previous Article (Left Arrow)" aria-label="Previous Article">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+      </button>
 
-        <div id="modal-panel" class="bg-gray-800 border border-teal-600/50 rounded-xl shadow-2xl shadow-teal-900/50 w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div id="modal-panel" class="bg-card border border-teal/40 rounded-2xl shadow-2xl shadow-teal-deep/30 w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden">
 
-            <!-- Modal Header (Sticky Top) -->
-            <div id="modal-header-content" class="sticky top-0 z-10 bg-gray-800 flex items-center justify-between p-4 sm:p-6 border-b border-gray-700 flex-shrink-0">
-                <h3 id="modal-title" class="text-xl sm:text-2xl font-bold text-white flex-grow">Article Title</h3>
-
-                <div class="flex items-center space-x-4">
-                    <span id="article-counter" class="text-sm text-gray-400 hidden sm:inline"></span>
-                    <button id="modal-close-btn" class="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-700/50"
-                            aria-label="Close modal" title="Close (Escape)">
-                        <svg class="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Modal Content Scroll Container -->
-            <div id="modal-content-container" class="overflow-y-auto flex-grow">
-                <div id="modal-content" class="p-6 sm:p-8 text-gray-300 leading-relaxed space-y-4">
-                    <p>Article content will be loaded here.</p>
-                </div>
-                <!-- Modal Footer (Injected by JS below modal-content div) -->
-            </div>
-
+        <!-- Sticky header -->
+        <div id="modal-header-content" class="sticky top-0 z-10 bg-card flex items-center justify-between gap-4 p-4 sm:p-6 border-b border-line flex-shrink-0">
+          <h3 id="modal-title" class="font-display text-2xl sm:text-3xl font-bold text-paper flex-grow leading-tight">Article Title</h3>
+          <div class="flex items-center gap-4 flex-shrink-0">
+            <span id="article-counter" class="text-sm text-muted hidden sm:inline"></span>
+            <button id="modal-close-btn" class="text-dim hover:text-paper transition-colors p-2 rounded-full hover:bg-line/60"
+                    aria-label="Close modal" title="Close (Escape)">
+              <svg class="w-6 h-6 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+          </div>
         </div>
 
-        <!-- Navigation Button: Next Article -->
-        <button id="modal-next-btn" class="absolute right-4 z-50 p-3 bg-gray-800/70 text-teal-400 rounded-full shadow-lg transition-colors hover:bg-gray-700/90 hidden sm:flex items-center justify-center w-12 h-12 hover:scale-105" title="Next Article (Right Arrow)" aria-label="Next Article">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-        </button>
-    </div>
-    <!-- END MODAL STRUCTURE -->
-
-    <!-- Sponsored Ad Modal -->
-    <div id="sponsored-ad-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden modal-opening" role="dialog" aria-modal="true">
-        <div id="sponsored-ad-modal-panel" class="bg-gray-800 border border-teal-600/50 rounded-xl shadow-2xl shadow-teal-900/50 w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
-            <div id="sponsored-ad-modal-header-content" class="sticky top-0 z-10 bg-gray-800 flex items-center justify-between p-4 sm:p-6 border-b border-gray-700 flex-shrink-0">
-                <h3 id="sponsored-ad-modal-title" class="text-xl sm:text-2xl font-bold text-white flex-grow text-center">Sponsored Ad</h3>
-                <button id="sponsored-ad-modal-close-btn" class="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-700/50" aria-label="Close modal" title="Close (Escape)">
-                    <svg class="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <div id="sponsored-ad-modal-content-container" class="overflow-y-auto flex-grow">
-                <div id="sponsored-ad-modal-content" class="p-6 sm:p-8 text-gray-300 leading-relaxed space-y-4">
-                    <!-- Sponsored ad modal content will be loaded here -->
-                </div>
-            </div>
+        <!-- Scroll body (feed.js injects #modal-footer at end) -->
+        <div id="modal-content-container" class="overflow-y-auto flex-grow">
+          <div id="modal-content" class="p-6 sm:p-8 text-dim leading-relaxed space-y-4">
+            <p>Article content will be loaded here.</p>
+          </div>
         </div>
+
+      </div>
+
+      <!-- Next article -->
+      <button id="modal-next-btn" class="absolute right-4 z-50 p-3 bg-surface/80 text-teal rounded-full shadow-lg border border-line transition-all hover:bg-card hover:scale-105 hidden sm:flex items-center justify-center w-12 h-12" title="Next Article (Right Arrow)" aria-label="Next Article">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </button>
     </div>
-    <!-- END Sponsored Ad Modal -->
 
+    <!-- ===== SPONSORED AD MODAL (feed.js binds these IDs) ===== -->
+    <div id="sponsored-ad-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden modal-opening" role="dialog" aria-modal="true" aria-labelledby="sponsored-ad-modal-title">
+      <div id="sponsored-ad-modal-panel" class="bg-card border border-teal/40 rounded-2xl shadow-2xl shadow-teal-deep/30 w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+        <div id="sponsored-ad-modal-header-content" class="sticky top-0 z-10 bg-card flex items-center justify-between gap-4 p-4 sm:p-6 border-b border-line flex-shrink-0">
+          <h3 id="sponsored-ad-modal-title" class="font-display text-2xl sm:text-3xl font-bold text-paper flex-grow text-center">Sponsored Ad</h3>
+          <button id="sponsored-ad-modal-close-btn" class="text-dim hover:text-paper transition-colors p-2 rounded-full hover:bg-line/60" aria-label="Close modal" title="Close (Escape)">
+            <svg class="w-6 h-6 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+        <div id="sponsored-ad-modal-content-container" class="overflow-y-auto flex-grow">
+          <div id="sponsored-ad-modal-content" class="p-6 sm:p-8 text-dim leading-relaxed space-y-4">
+            <!-- Sponsored ad modal content loaded by feed.js -->
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <!-- JS files -->
-    <script type="module" src="supabase-client.js"></script>
-    <script type="module" src="feed.js"></script>
+    <!-- JS files (keep exactly) -->
+    <script type="module" src="assets/js/supabase-client.js"></script>
+    <script type="module" src="assets/js/feed.js"></script>
 
+    <!-- Shared hamburger script (feed.js handles scroll-reveal on this page) -->
     <script>
-        const hamburgerBtn = document.getElementById('hamburger-menu');
-        const mobileMenu = document.getElementById('mobile-menu');
-        hamburgerBtn.addEventListener('click', () => {
-            hamburgerBtn.classList.toggle('is-active');
-            mobileMenu.classList.toggle('hidden');
-        });
+      (function () {
+        var btn = document.getElementById('hamburger-menu');
+        var menu = document.getElementById('mobile-menu');
+        if (btn && menu) {
+          btn.addEventListener('click', function () {
+            btn.classList.toggle('is-active');
+            menu.classList.toggle('hidden');
+          });
+          menu.querySelectorAll('a').forEach(function (a) {
+            a.addEventListener('click', function () { btn.classList.remove('is-active'); menu.classList.add('hidden'); });
+          });
+        }
+      })();
     </script>
 </body>
 </html>

@@ -1,102 +1,88 @@
-# SK News Website
+# SK News
 
-![SK News](https://SKNews.pages.dev/img/news-banner.jpg)
+![SK News](assets/img/news-banner.jpg)
 
-**Live Demo:** [**SKNews.pages.dev**](https://SKNews.pages.dev/)
+Kosher-filtered news and SMS text alerts for the Yeshiva community. SK News
+delivers breaking headlines straight to your phone by text, backed by a live web
+feed, topic/GroupMe chats, and a curated directory of community sites.
 
-## About The Project
+**Live:** [sknews.pages.dev](https://sknews.pages.dev)
 
-SK News is a modern, dynamic web platform for a text-based news service tailored for the Yeshiva community. The project's core mission is to deliver reliable, kosher-filtered news updates, community information, and engaging discussions directly to users' phones.
+## About
 
-The website serves as a central hub for all SK News services. It provides clear pathways for users to join various news and community chats via SMS or GroupMe, learn about the organization, and view a live feed of breaking news. The site features a clean, professional, dark-themed design built with Tailwind CSS that is fully responsive and accessible on all devices.
+SK News is a text-based news service for the Yeshiva community, delivering
+reliable, kosher-filtered news, community information, and discussions directly
+to users' phones. The website is the hub for all SK News services: join news and
+community chats via SMS or GroupMe, browse the live feed of breaking news, and
+explore related community sites. Content is driven by a Supabase backend and
+managed through two admin panels.
 
-A key feature of this project is its deep integration with a Supabase backend, which powers a real-time news feed and two secure admin panels for comprehensive content management.
+## Features
 
-## Key Features
+- **Live, database-driven feed** — real-time news from Supabase, with search,
+  date and poster filters, a featured/pinned article, an article reader modal,
+  and a sponsored-ad slot.
+- **Dual admin panels** (not linked publicly):
+  - `admin.html` — manage the news feed (add / edit / pin articles).
+  - `admin_new.html` — manage chats, sites, and editable copy on Join / Terms.
+- **Community pages** — a dynamic Chats directory and a Sites directory.
+- **SEO** — canonical URLs, `sitemap.xml`, `robots.txt`, and an IndexNow key.
 
-*   **Dynamic, Database-Driven Content:** Most of the website's content, including the live feed, chats, and site links, is fetched dynamically from a Supabase database.
-*   **Dual Admin Panels:**
-    *   **News Feed Admin (`admin.html`):** A secure panel for managing the live news feed, including adding, editing, and pinning articles.
-    *   **Website Content Admin (`admin_new.html`):** A second panel for managing all other dynamic content, including the chat directory, other sites, and editable content on the "Terms" and "Join" pages.
-*   **Modern Frontend:** The entire user interface has been redesigned with Tailwind CSS for a consistent, modern, and responsive experience.
-*   **Interactive Community Pages:**
-    *   **Chats Page:** A consolidated, dynamic page that displays all community chats in a grid, with a modal for detailed information and join links.
-    *   **Sites Page:** A page dedicated to showcasing other projects and websites, managed entirely from the admin panel.
-*   **SEO Optimized:**
-    *   **Canonical URLs:** All pages include a `<link rel="canonical">` tag pointing to `https://SKNews.pages.dev` to prevent duplicate content issues.
-    *   **Sitemap:** A comprehensive `sitemap.xml` is included for efficient indexing by search engines.
-    *   **Robots.txt:** A `robots.txt` file is configured to guide crawlers.
+## Tech stack
 
-## Tech Stack
+- **Frontend:** HTML5, [Tailwind CSS](https://tailwindcss.com) (via CDN), vanilla JS (ES modules)
+- **Type:** Fraunces (display) + Libre Franklin (body)
+- **Backend:** [Supabase](https://supabase.com) (Postgres + auth for admin + realtime reads)
+- **Hosting:** [Cloudflare Pages](https://pages.cloudflare.com) — served from the repo root, no build step
 
-This project is built with a focus on modern, lightweight, and powerful technologies:
+## Structure
 
-*   **Frontend:**
-    *   HTML5
-    *   [**Tailwind CSS**](https://tailwindcss.com/): A utility-first CSS framework for rapid UI development.
-    *   Vanilla JavaScript (ES Modules)
-*   **Backend & Database:**
-    *   [**Supabase**](https://supabase.com/): Used for the PostgreSQL database, user authentication (for the admin panels), and real-time data fetching.
-*   **Hosting & Deployment:**
-    *   [**Cloudflare Pages**](https://pages.cloudflare.com/): For continuous deployment and hosting.
+```
+/                     HTML pages (served at the site root)
+├─ index.html  feed.html  chats.html  news.html  sites.html
+├─ join.html  about.html  advertise.html  contact.html  terms.html
+├─ headlines.html  not-found.html
+├─ admin.html  admin_new.html     Internal admin tools
+├─ assets/
+│   ├─ img/           Images and logos
+│   └─ js/            feed.js, chats.js, supabase-client.js, logs.js, admin.js, …
+├─ docs/              Project documentation
+├─ src/  tailwind.config.js   Optional Tailwind build inputs (site uses the CDN)
+├─ _redirects  robots.txt  sitemap.xml  favicon.ico
+└─ (site-verification + IndexNow key files)
+```
 
-## Database Structure
+## Database (Supabase)
 
-The Supabase database consists of the following key tables:
+Public reads use the anon key in `assets/js/supabase-client.js`. Key tables:
 
-*   **`feed`:** Stores all the live feed items for the website.
-*   **`chats`:** Contains information about the various community chats, including names, descriptions, and join links.
-*   **`sites`:** Manages the list of other websites and projects displayed on the "Sites" page.
-*   **`news_admin`:** A key-value store for managing editable content on static pages like "Terms" and "Join".
-*   **`contacts`:** Stores submissions from the contact form.
+- `feed` — live feed items (title, content, sender_name, created_at, is_pinned, pinned_until)
+- `poster_config` — ordered posters for the feed filter
+- `sponsored_ad` — the feed sidebar ad
+- `chats` — community chat directory (names, descriptions, join links)
+- `sites` — the Sites directory
+- `news_admin` — key/value store for editable copy (Join, Terms)
+- `contacts` — contact-form submissions
 
-## Local Development
+## Local development
 
-To get a local copy up and running, follow these steps.
+No build step — Tailwind loads from the CDN. Serve the folder to avoid CORS
+issues with the ES-module scripts:
 
-### Prerequisites
+```sh
+npx serve .      # or: python -m http.server
+```
 
-You will need a free [Supabase](https://app.supabase.com/) account.
+To run your own instance, create a Supabase project and set your Project URL and
+anon key in `assets/js/supabase-client.js`, then create the tables above and an
+admin user for the panels.
 
-### Installation
+## Deploy
 
-1.  **Clone the repository:**
-    ```sh
-    git clone https://github.com/your-username/your-repo-name.git
-    cd your-repo-name
-    ```
-
-2.  **Create a Supabase Project:**
-    *   Create a new project in your Supabase dashboard.
-    *   Save your **Project URL** and **anon (public) key**.
-
-3.  **Create `supabase-client.js`:**
-    *   In the project root, create a file named `supabase-client.js`.
-    *   Add the following code, replacing the placeholders with your Supabase credentials:
-        ```javascript
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-        const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-
-        export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        ```
-
-4.  **Set up the Database Tables:**
-    *   In your Supabase project's SQL Editor, run the SQL scripts provided by the development team to create the `feed`, `chats`, `sites`, `news_admin`, and `contacts` tables and their corresponding policies.
-
-5.  **Create an Admin User:**
-    *   In Supabase, go to **Authentication** and add a new user with the email and password you will use for both admin panels.
-
-6.  **Run Locally:**
-    *   To avoid CORS issues, run a simple local server. If you have Python installed, you can run:
-        ```sh
-        python -m http.server
-        ```
-    *   Open your browser to `http://localhost:8000`.
+Pushing to `main` triggers a Cloudflare Pages deployment; the output directory is
+the repo root.
 
 ## Contact
 
-Shalom Karr - [info.skjmedia@gmail.com](mailto:info.skjmedia@gmail.com)
-
-Project Link: [https://SKNews.pages.dev](https://SKNews.pages.dev)
+Shalom Karr — [info.skjmedia@gmail.com](mailto:info.skjmedia@gmail.com) ·
+[sknews.pages.dev](https://sknews.pages.dev)

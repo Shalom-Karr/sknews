@@ -1,114 +1,240 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terms and Conditions - SK News</title>
-    <meta name="description" content="Read the terms and conditions for using SK News chat and text services.">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms and Conditions - SK News</title>
+  <meta name="description" content="Read the terms and conditions for using SK News chat and text services." />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="canonical" href="https://SKNews.pages.dev/terms.html" />
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Libre+Franklin:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="logs.js" type="module" defer></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0a0e16', surface: '#111828', card: '#161f31', line: '#232f45',
+            paper: '#eaf0f7', dim: '#a7b4c8', muted: '#6d7c94',
+            teal: { DEFAULT: '#2dd4bf', deep: '#0d9488', bright: '#5eead4' },
+            amber: { DEFAULT: '#f5b13d', deep: '#d98a1f' },
+          },
+          fontFamily: {
+            display: ['Fraunces', 'Georgia', 'serif'],
+            sans: ['"Libre Franklin"', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
 
-    <style>
-        body { font-family: 'Poppins', sans-serif; }
-    </style>
-    <link rel="canonical" href="https://SKNews.pages.dev/terms.html" />
+  <!-- Analytics (keep) -->
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "f3dacb26e75d41c29c14ac75f4731516"}'></script>
+  <script src="https://cdn.amplitude.com/script/df87271eb764c9d53a0cdf951edee3e7.js"></script>
+  <script>window.amplitude.add(window.sessionReplay.plugin({sampleRate: 1}));window.amplitude.init('df87271eb764c9d53a0cdf951edee3e7', {"fetchRemoteConfig":true,"autocapture":true});</script>
+  <script src="assets/js/logs.js" type="module" defer></script>
+
+  <style>
+    :root { color-scheme: dark; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Libre Franklin', system-ui, sans-serif; background-color: #0a0e16; color: #a7b4c8; }
+    .font-display { font-family: 'Fraunces', Georgia, serif; }
+
+    body::before {
+      content: ""; position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    header, main, footer { position: relative; z-index: 2; }
+
+    .animate-on-scroll { opacity: 0; transform: translateY(24px); transition: opacity .6s ease-out, transform .6s ease-out; }
+    .animate-on-scroll.is-visible { opacity: 1; transform: none; }
+
+    .hamburger span { transition: all .3s ease-in-out; }
+    .hamburger.is-active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+    .hamburger.is-active span:nth-child(2) { opacity: 0; }
+    .hamburger.is-active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: #0a0e16; }
+    ::-webkit-scrollbar-thumb { background: #232f45; border-radius: 5px; }
+    ::-webkit-scrollbar-thumb:hover { background: #2f3d57; }
+    ::selection { background: #2dd4bf; color: #0a0e16; }
+
+    /* Prose styling for terms content */
+    #terms-content { color: #a7b4c8; line-height: 1.8; }
+    #terms-content p { margin-bottom: 1.2em; }
+    #terms-content h3 { font-family: 'Fraunces', Georgia, serif; font-size: 1.2rem; font-weight: 600; color: #2dd4bf; margin-top: 2em; margin-bottom: 0.6em; }
+    #terms-content ul, #terms-content ol { margin-left: 1.5em; margin-bottom: 1.2em; }
+    #terms-content li { margin-bottom: 0.4em; }
+    #terms-content a { color: #2dd4bf; text-decoration: underline; text-underline-offset: 3px; }
+    #terms-content strong { color: #eaf0f7; font-weight: 600; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .animate-on-scroll { opacity: 1; transform: none; transition: none; }
+      *,*::before,*::after { animation-duration: .001ms !important; }
+    }
+  </style>
 </head>
-<body class="bg-gray-900 text-gray-200">
+<body>
 
-    <header class="fixed top-0 left-0 right-0 z-40 bg-gray-900/80 backdrop-blur-sm border-b border-gray-800 transition-all duration-300">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <a href="index.html" class="text-2xl font-bold text-teal-400 hover:text-teal-300 transition-colors">SK News</a>
-                <nav class="hidden md:flex space-x-8" id="main-nav">
-                    <a href="index.html" class="text-gray-300 hover:text-teal-400 transition-colors">Home</a>
-                    <a href="news.html" class="text-gray-300 hover:text-teal-400 transition-colors">News</a>
-                    <a href="chats.html" class="text-gray-300 hover:text-teal-400 transition-colors">Chats</a>
-                    <a href="sites.html" class="text-gray-300 hover:text-teal-400 transition-colors">Sites</a>
-                    <a href="join.html" class="text-gray-300 hover:text-teal-400 transition-colors">Join</a>
-                    <a href="about.html" class="text-gray-300 hover:text-teal-400 transition-colors">About</a>
-                    <a href="advertise.html" class="text-gray-300 hover:text-teal-400 transition-colors">Advertise</a>
-                    <a href="contact.html" class="text-gray-300 hover:text-teal-400 transition-colors">Contact</a>
-                </nav>
-                <button class="md:hidden hamburger flex flex-col justify-center items-center h-8 w-8 space-y-1.5" id="hamburger-menu" aria-label="Open Menu">
-                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
-                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
-                    <span class="block h-0.5 w-6 bg-gray-200 rounded-full"></span>
-                </button>
-            </div>
+<header class="fixed top-0 inset-x-0 z-40 bg-ink/85 backdrop-blur-md border-b border-line">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-[4.5rem]">
+      <a href="index.html" class="group flex items-center gap-2.5">
+        <span class="font-display text-2xl font-black tracking-tight text-paper">SK<span class="text-teal">News</span></span>
+        <span class="hidden sm:inline text-[10px] uppercase tracking-[0.18em] text-muted border-l border-line pl-2.5">Kosher · By Text</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium" id="main-nav">
+        <a href="index.html" class="text-dim hover:text-teal transition-colors">Home</a>
+        <a href="feed.html" class="text-dim hover:text-teal transition-colors">Live</a>
+        <a href="news.html" class="text-dim hover:text-teal transition-colors">News</a>
+        <a href="chats.html" class="text-dim hover:text-teal transition-colors">Chats</a>
+        <a href="sites.html" class="text-dim hover:text-teal transition-colors">Sites</a>
+        <a href="about.html" class="text-dim hover:text-teal transition-colors">About</a>
+        <a href="advertise.html" class="text-dim hover:text-teal transition-colors">Advertise</a>
+        <a href="contact.html" class="text-dim hover:text-teal transition-colors">Contact</a>
+        <a href="join.html" class="ml-1 inline-flex items-center px-4 py-2 rounded-full bg-teal text-ink font-semibold hover:bg-teal-bright transition-colors">Join Free</a>
+      </nav>
+      <button class="md:hidden hamburger flex flex-col justify-center items-center h-9 w-9 gap-1.5" id="hamburger-menu" aria-label="Open menu">
+        <span class="block h-0.5 w-6 bg-paper rounded-full"></span>
+        <span class="block h-0.5 w-6 bg-paper rounded-full"></span>
+        <span class="block h-0.5 w-6 bg-paper rounded-full"></span>
+      </button>
+    </div>
+  </div>
+  <div id="mobile-menu" class="hidden md:hidden bg-ink/95 backdrop-blur-md border-t border-line">
+    <nav class="flex flex-col px-6 py-4 text-base">
+      <a href="index.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">Home</a>
+      <a href="feed.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">Live</a>
+      <a href="news.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">News</a>
+      <a href="chats.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">Chats</a>
+      <a href="sites.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">Sites</a>
+      <a href="about.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">About</a>
+      <a href="advertise.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">Advertise</a>
+      <a href="contact.html" class="py-2.5 text-dim hover:text-teal border-b border-line/60">Contact</a>
+      <a href="join.html" class="mt-3 text-center px-4 py-2.5 rounded-full bg-teal text-ink font-semibold">Join Free</a>
+    </nav>
+  </div>
+</header>
+
+<main class="pt-[4.5rem]">
+
+  <!-- Header -->
+  <section class="relative overflow-hidden py-20 sm:py-28 text-center bg-surface/40">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(45,212,191,0.10),transparent_60%)] pointer-events-none"></div>
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="animate-on-scroll inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-teal" style="transition-delay:0ms">Legal</span>
+      <h1 class="animate-on-scroll mt-4 font-display text-4xl sm:text-5xl font-bold text-paper leading-tight" style="transition-delay:100ms">Terms and Conditions</h1>
+      <p class="animate-on-scroll mt-5 text-dim max-w-xl mx-auto leading-relaxed" style="transition-delay:200ms">Please read these terms carefully before using our chat and text services.</p>
+    </div>
+  </section>
+
+  <!-- Terms content -->
+  <section class="py-16 sm:py-20">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="animate-on-scroll bg-card border border-line rounded-xl p-8 sm:p-12">
+        <div id="terms-content">
+          <!-- Content will be loaded here from Supabase -->
+          <p class="text-center text-muted">Loading terms…</p>
         </div>
-        <div id="mobile-menu" class="hidden md:hidden bg-gray-900/95 backdrop-blur-sm">
-            <nav class="flex flex-col items-center space-y-4 py-6">
-                <a href="index.html" class="text-gray-300 hover:text-teal-400 transition-colors">Home</a>
-                <a href="news.html" class="text-gray-300 hover:text-teal-400 transition-colors">News</a>
-                <a href="chats.html" class="text-gray-300 hover:text-teal-400 transition-colors">Chats</a>
-                <a href="sites.html" class="text-gray-300 hover:text-teal-400 transition-colors">Sites</a>
-                <a href="join.html" class="text-gray-300 hover:text-teal-400 transition-colors">Join</a>
-                <a href="about.html" class="text-gray-300 hover:text-teal-400 transition-colors">About</a>
-                <a href="advertise.html" class="text-gray-300 hover:text-teal-400 transition-colors">Advertise</a>
-                <a href="contact.html" class="text-gray-300 hover:text-teal-400 transition-colors">Contact</a>
-            </nav>
-        </div>
-    </header>
+      </div>
+      <div class="mt-10 text-center animate-on-scroll">
+        <p class="text-muted text-sm">Questions about these terms? <a href="contact.html" class="text-teal hover:text-teal-bright transition-colors underline underline-offset-4">Contact us</a>.</p>
+      </div>
+    </div>
+  </section>
 
-    <main class="pt-28 sm:pt-32">
-        <section class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="max-w-4xl mx-auto">
-                <h1 class="text-4xl font-bold text-center bg-gradient-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent">Terms and Conditions</h1>
-                <p class="mt-4 text-lg text-gray-400 text-center">Please read these terms carefully before using our chat and text services.</p>
+</main>
 
-                <div id="terms-content" class="mt-12 prose prose-invert max-w-none prose-p:text-gray-300 prose-headings:text-teal-400">
-                    <!-- Content will be loaded here from Supabase -->
-                    <p class="text-center">Loading terms...</p>
-                </div>
-            </div>
-        </section>
-    </main>
+<footer class="border-t border-line bg-surface/40 mt-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="grid gap-10 md:grid-cols-4">
+      <div class="md:col-span-2">
+        <span class="font-display text-2xl font-black text-paper">SK<span class="text-teal">News</span></span>
+        <p class="mt-3 max-w-sm text-sm text-muted leading-relaxed">Kosher-filtered headlines and breaking news for the Yeshiva community — delivered by text, in real time.</p>
+        <a href="tel:2164516698" class="mt-4 inline-block font-display text-lg text-teal hover:text-teal-bright transition-colors">216-451-6698</a>
+      </div>
+      <div>
+        <h4 class="text-xs uppercase tracking-[0.16em] text-muted mb-4">Explore</h4>
+        <ul class="space-y-2.5 text-sm">
+          <li><a href="feed.html" class="text-dim hover:text-teal transition-colors">Live Feed</a></li>
+          <li><a href="news.html" class="text-dim hover:text-teal transition-colors">News Services</a></li>
+          <li><a href="chats.html" class="text-dim hover:text-teal transition-colors">Chats</a></li>
+          <li><a href="sites.html" class="text-dim hover:text-teal transition-colors">Sites</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-xs uppercase tracking-[0.16em] text-muted mb-4">Get Involved</h4>
+        <ul class="space-y-2.5 text-sm">
+          <li><a href="join.html" class="text-dim hover:text-teal transition-colors">Join Free</a></li>
+          <li><a href="advertise.html" class="text-dim hover:text-teal transition-colors">Advertise</a></li>
+          <li><a href="contact.html" class="text-dim hover:text-teal transition-colors">Contact</a></li>
+          <li><a href="https://g.page/r/CTLinSMb3y4IEBM/review" target="_blank" rel="noopener" class="text-dim hover:text-teal transition-colors">Review Us</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="mt-12 pt-6 border-t border-line flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-muted">
+      <p>© 2025 SK News. All Rights Reserved.</p>
+      <a href="terms.html" class="hover:text-teal transition-colors">Terms &amp; Conditions</a>
+    </div>
+  </div>
+</footer>
 
-    <footer class="mt-24 border-t border-gray-800 bg-gray-900">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8"><div class="flex flex-col sm:flex-row items-center justify-between py-6 text-sm text-gray-500"><p>© 2025 SK News. All Rights Reserved.</p><a href="terms.html" class="mt-2 sm:mt-0 hover:text-teal-400 transition-colors">Terms & Conditions</a></div></div>
-    </footer>
+<!-- Page-specific script: loads terms from Supabase -->
+<script type="module">
+  import { supabase } from './supabase-client.js';
 
-    <script type="module">
-        import { supabase } from './supabase-client.js';
+  async function loadTerms() {
+    const contentContainer = document.getElementById('terms-content');
+    const { data, error } = await supabase
+      .from('news_admin')
+      .select('content')
+      .eq('page', 'terms')
+      .eq('element_id', 'terms-content')
+      .single();
 
-        async function loadTerms() {
-            const contentContainer = document.getElementById('terms-content');
-            const { data, error } = await supabase
-                .from('news_admin')
-                .select('content')
-                .eq('page', 'terms')
-                .eq('element_id', 'terms-content')
-                .single();
+    if (error || !data) {
+      console.error('Error fetching terms:', error);
+      contentContainer.innerHTML = '<p>Could not load the terms and conditions at this time. Please try again later.</p>';
+    } else {
+      // Basic markdown to HTML conversion
+      let htmlContent = data.content;
+      // Simple conversion for headings, lists, etc.
+      htmlContent = htmlContent.replace(/^### (.*$)/gim, '<h3 class="text-xl font-semibold text-teal-400 mt-6 mb-2">$1</h3>');
+      htmlContent = htmlContent.replace(/\\n/g, '<br>');
+      contentContainer.innerHTML = htmlContent;
+    }
+  }
 
-            if (error || !data) {
-                console.error('Error fetching terms:', error);
-                contentContainer.innerHTML = '<p>Could not load the terms and conditions at this time. Please try again later.</p>';
-            } else {
-                // Basic markdown to HTML conversion
-                let htmlContent = data.content;
-                // Simple conversion for headings, lists, etc.
-                htmlContent = htmlContent.replace(/^### (.*$)/gim, '<h3 class="text-xl font-semibold text-teal-400 mt-6 mb-2">$1</h3>');
-                htmlContent = htmlContent.replace(/\\n/g, '<br>');
-                contentContainer.innerHTML = htmlContent;
-            }
-        }
+  document.addEventListener('DOMContentLoaded', loadTerms);
+</script>
 
-        document.addEventListener('DOMContentLoaded', loadTerms);
-    </script>
-    <script>
-        const hamburgerBtn = document.getElementById('hamburger-menu');
-        const mobileMenu = document.getElementById('mobile-menu');
-        hamburgerBtn.addEventListener('click', () => {
-            hamburgerBtn.classList.toggle('is-active');
-            mobileMenu.classList.toggle('hidden');
-        });
-    </script>
+<script>
+  (function () {
+    var btn = document.getElementById('hamburger-menu');
+    var menu = document.getElementById('mobile-menu');
+    if (btn && menu) {
+      btn.addEventListener('click', function () {
+        btn.classList.toggle('is-active');
+        menu.classList.toggle('hidden');
+      });
+      menu.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () { btn.classList.remove('is-active'); menu.classList.add('hidden'); });
+      });
+    }
+    var els = document.querySelectorAll('.animate-on-scroll');
+    if (els.length) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); } });
+      }, { threshold: 0.12 });
+      els.forEach(function (el) { io.observe(el); });
+    }
+  })();
+</script>
 </body>
 </html>
